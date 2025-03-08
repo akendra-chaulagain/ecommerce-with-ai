@@ -35,7 +35,6 @@ const userScheme = new mongoose.Schema(
       zip: String,
       country: String,
     },
-
     cart: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "cart",

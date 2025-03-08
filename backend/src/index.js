@@ -1,9 +1,10 @@
 import express from "express";
 const app = express();
-import dotenv from "dotenv";
 import connectDb from "./database/database.js";
 import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
 dotenv.config();
+
 
 // middleware
 

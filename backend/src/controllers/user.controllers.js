@@ -1,26 +1,47 @@
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.models.js";
+import bcrypt from "bcrypt";
+import { uploadPhoto } from "../utils/cloudinary.js";
 
 const registerUser = async (req, res) => {
-  const { name, email, password, role, avatar, contact } = req.body;
+  const { name, email, password, role, contact } = req.body;
   try {
+    if (!name || !email || !password || contact === undefined) {
+      return res.status(400).json({ message: "Enter all the data" });
+    }
+
     const uerExist = await User.findOne({ email });
     if (uerExist) {
-      return res.status(400).json({ message: "User already exists enter a new email" });
+      return res
+        .status(400)
+        .json({ message: "User already exists enter a new email" });
     }
+
+    // password hash
+    const hashPassword = bcrypt.hashSync(password, 10);
+
+    // upload photo
+    const localFilePath = req.file?.path;
+    if (!localFilePath) {
+      res.status(402).json({ message: "Select a file" });
+    }
+    const avtar = await uploadPhoto(localFilePath);
+
+    // user created
     const user = await User.create({
       name,
       email,
-      password,
+      password: hashPassword,
       role,
-      avatar,
+      avtar: avtar.url,
       contact,
     });
-
-    // const userCreated = user.save();
-    return res.status(401).json({ message: "User Created", user });
+    const userData = await User.findById(user._id).select("-password");
+    return res.status(401).json({ message: "User Created", userData });
   } catch (error) {
-    return res.status(401).json(error);
+    return res
+      .status(401)
+      .json({ message: "Something went wrong !", error: error.message });
   }
 };
 
