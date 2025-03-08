@@ -9,6 +9,7 @@ dotenv.config();
 
 // for cookies
 app.use(cookieParser());
+app.use(express.json());
 
 // database connected
 connectDb()
@@ -20,3 +21,8 @@ connectDb()
   .catch((err) => {
     console.log("connection failed", err);
   });
+
+// routes decleration
+import userRoute from "../src/routes/user.routes.js";
+
+app.use("/api/v1/users", userRoute);

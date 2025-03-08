@@ -15,10 +15,19 @@ const userScheme = new mongoose.Schema(
       type: String,
       requird: true,
     },
+    contact: {
+      type: String,
+      requird: true,
+    },
     role: {
       type: String,
       enum: ["Admin", "User"],
+      default: "User",
     },
+    avtar: {
+      type: String,
+    },
+
     address: {
       street: String,
       city: String,
@@ -26,11 +35,12 @@ const userScheme = new mongoose.Schema(
       zip: String,
       country: String,
     },
+
     cart: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "cart",
     },
-    orders: { type: Mongoose.Schema.Types.ObjectId, ref: "orders" },
+    orders: { type: mongoose.Schema.Types.ObjectId, ref: "orders" },
     notification: { type: mongoose.Schema.Types.ObjectId, ref: "notification" },
   },
   { timestamps: true }
