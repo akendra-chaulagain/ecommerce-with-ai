@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 const connectDb = async () => {
-  
   try {
     await mongoose.connect(`${process.env.DATABASE}/ecommerce-with-ai`);
     console.log("Database Connetcetd");
@@ -11,4 +10,4 @@ const connectDb = async () => {
 };
 export default connectDb;
 
-export {connectDb}
+export { connectDb };
