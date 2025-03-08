@@ -18,12 +18,11 @@ const uploadPhoto = async (localFilePath) => {
       folder: "photos",
       resource_type: "auto",
     });
-    
+
     fs.unlinkSync(localFilePath);
     return response;
   } catch (error) {
     fs.unlinkSync(localFilePath);
-   
   }
 };
 

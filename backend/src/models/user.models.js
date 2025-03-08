@@ -26,6 +26,7 @@ const userScheme = new mongoose.Schema(
     },
     avtar: {
       type: String,
+      requird: false,
     },
 
     address: {

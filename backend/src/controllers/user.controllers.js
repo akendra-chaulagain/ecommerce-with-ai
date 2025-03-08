@@ -3,8 +3,9 @@ import { User } from "../models/user.models.js";
 import bcrypt from "bcrypt";
 import { uploadPhoto } from "../utils/cloudinary.js";
 
+// register
 const registerUser = async (req, res) => {
-  const { name, email, password, role, contact } = req.body;
+  const { name, email, password, role, contact, avtar } = req.body;
   try {
     if (!name || !email || !password || contact === undefined) {
       return res.status(400).json({ message: "Enter all the data" });
@@ -22,9 +23,10 @@ const registerUser = async (req, res) => {
 
     // upload photo
     const localFilePath = req.file?.path;
-    if (!localFilePath) {
-      res.status(402).json({ message: "Select a file" });
-    }
+
+    // if (!localFilePath) {
+    //   res.status(402).json({ message: "Select a file" });
+    // }
     const avtar = await uploadPhoto(localFilePath);
 
     // user created
@@ -33,7 +35,7 @@ const registerUser = async (req, res) => {
       email,
       password: hashPassword,
       role,
-      avtar: avtar.url,
+      avtar: avtar.url || " ",
       contact,
     });
     const userData = await User.findById(user._id).select("-password");
@@ -45,4 +47,29 @@ const registerUser = async (req, res) => {
   }
 };
 
-export { registerUser };
+// login
+const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      throw new Error("Enter all the fields");
+    }
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json("User doesnot exist");
+    }
+    // compare password
+    const comparePassword = await bcrypt.compare(password, user.password);
+    if (!comparePassword) {
+      return res.status(401).json("Wrong Password");
+    }
+    const loggedInUser = await User.findById(user._id).select(
+      "-password"
+    );
+    res.status(200).json({ message: "login successfully", loggedInUser });
+  } catch (error) {
+    res.status(400).json({ message: "Server error", message: error });
+  }
+};
+
+export { registerUser, loginUser };
