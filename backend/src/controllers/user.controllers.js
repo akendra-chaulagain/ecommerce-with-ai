@@ -5,8 +5,8 @@ import { uploadPhoto } from "../utils/cloudinary.js";
 
 // register
 const registerUser = async (req, res) => {
-  const { name, email, password, role, contact, avtar } = req.body;
   try {
+    const { name, email, password, role, contact } = req.body;
     if (!name || !email || !password || contact === undefined) {
       return res.status(400).json({ message: "Enter all the data" });
     }
@@ -21,13 +21,16 @@ const registerUser = async (req, res) => {
     // password hash
     const hashPassword = bcrypt.hashSync(password, 10);
 
-    // upload photo
+    // local file path
+    // const localFilePath = req.file?.path;
+    // const avtar = await uploadPhoto(localFilePath);
+    // Upload avatar if provided
     const localFilePath = req.file?.path;
+    let avatarUpload = null;
 
-    // if (!localFilePath) {
-    //   res.status(402).json({ message: "Select a file" });
-    // }
-    const avtar = await uploadPhoto(localFilePath);
+    if (localFilePath) {
+      avatarUpload = await uploadPhoto(localFilePath);
+    }
 
     // user created
     const user = await User.create({
@@ -35,9 +38,11 @@ const registerUser = async (req, res) => {
       email,
       password: hashPassword,
       role,
-      avtar: avtar.url || " ",
+      // avtar: avtar.url || " ",
+      avtar: avtar?.url, // Ensure secure URL or default
       contact,
     });
+
     const userData = await User.findById(user._id).select("-password");
     return res.status(401).json({ message: "User Created", userData });
   } catch (error) {
@@ -63,9 +68,7 @@ const loginUser = async (req, res) => {
     if (!comparePassword) {
       return res.status(401).json("Wrong Password");
     }
-    const loggedInUser = await User.findById(user._id).select(
-      "-password"
-    );
+    const loggedInUser = await User.findById(user._id).select("-password");
     res.status(200).json({ message: "login successfully", loggedInUser });
   } catch (error) {
     res.status(400).json({ message: "Server error", message: error });
