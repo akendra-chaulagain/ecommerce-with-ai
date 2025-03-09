@@ -21,10 +21,6 @@ const registerUser = async (req, res) => {
     // password hash
     const hashPassword = bcrypt.hashSync(password, 10);
 
-    // local file path
-    // const localFilePath = req.file?.path;
-    // const avtar = await uploadPhoto(localFilePath);
-    // Upload avatar if provided
     const localFilePath = req.file?.path;
     let avatarUpload = null;
 
@@ -39,7 +35,7 @@ const registerUser = async (req, res) => {
       password: hashPassword,
       role,
       // avtar: avtar.url || " ",
-      avtar: avtar?.url, // Ensure secure URL or default
+      avtar: avatarUpload?.secure_url || "",
       contact,
     });
 
