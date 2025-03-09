@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken";
 import { User } from "../models/user.models.js";
 import bcrypt from "bcrypt";
 import { uploadPhoto } from "../utils/cloudinary.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 // register
 const registerUser = async (req, res) => {
@@ -64,10 +66,41 @@ const loginUser = async (req, res) => {
     if (!comparePassword) {
       return res.status(401).json("Wrong Password");
     }
+    // creating an accesstoken
+    const accessToken = await jwt.sign(
+      { id: user._id },
+      process.env.ACCESS_JSONTOKEN,
+      {
+        expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+      }
+    );
+
+    // creating an refreshtoken
+    const refreshToken = await jwt.sign(
+      { id: user._id },
+      process.env.REFRESH_JSONTOKEN,
+      {
+        expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+      }
+    );
+    // save refreshtoken in the database
+    user.save = refreshToken;
     const loggedInUser = await User.findById(user._id).select("-password");
-    res.status(200).json({ message: "login successfully", loggedInUser });
+    const options = {
+      httpOnly: true, // Prevent XSS attacks
+      secure: true, // Send only over HTTPS
+    };
+    res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json({
+        message: "login successfully",
+        user: loggedInUser,
+        refreshToken,
+      });
   } catch (error) {
-    res.status(400).json({ message: "Server error", message: error });
+    res.status(400).json({ message: "Server error", error: error.message });
   }
 };
 
