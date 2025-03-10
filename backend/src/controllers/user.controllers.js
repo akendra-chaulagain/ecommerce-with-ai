@@ -24,6 +24,7 @@ const registerUser = async (req, res) => {
     const hashPassword = bcrypt.hashSync(password, 10);
 
     const localFilePath = req.file?.path;
+
     let avatarUpload = null;
 
     if (localFilePath) {
@@ -75,7 +76,7 @@ const loginUser = async (req, res) => {
       }
     );
 
-    // creating an refreshtoken
+    // creating an refreshToken
     const refreshToken = await jwt.sign(
       { id: user._id },
       process.env.REFRESH_JSONTOKEN,
@@ -83,8 +84,9 @@ const loginUser = async (req, res) => {
         expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
       }
     );
-    // save refreshtoken in the database
-    user.save = refreshToken;
+    // save refreshToken in the database
+    user.refreshToken = refreshToken;
+    user.save({ validateBeforeSave: false });
     const loggedInUser = await User.findById(user._id).select("-password");
     const options = {
       httpOnly: true, // Prevent XSS attacks
@@ -96,12 +98,42 @@ const loginUser = async (req, res) => {
       .cookie("refreshToken", refreshToken, options)
       .json({
         message: "login successfully",
-        user: loggedInUser,
-        refreshToken,
+        loggedInUser,
       });
   } catch (error) {
     res.status(400).json({ message: "Server error", error: error.message });
   }
 };
 
-export { registerUser, loginUser };
+// logout user
+const logOutUser = async (req, res) => {
+  try {
+    await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        refreshToken: null,
+      },
+      { new: true }
+    );
+
+    const options = {
+      httpOnly: true, // Prevent XSS attacks
+      secure: true, // Send only over HTTPS
+    };
+    return res
+      .status(200)
+      .clearCookie("accessToken", options)
+      .clearCookie("refreshToken", options)
+      .json({ message: "Logout successfully" });
+
+    // if (user) {
+    //   return res.status(200).json({ message: "Log out successfully" });
+    // }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "server error. Try again later", error: error.message });
+  }
+};
+
+export { registerUser, loginUser, logOutUser };

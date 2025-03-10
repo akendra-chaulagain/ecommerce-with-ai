@@ -26,7 +26,6 @@ const userScheme = new mongoose.Schema(
     },
     avtar: {
       type: String,
-     
     },
 
     address: {
@@ -35,6 +34,9 @@ const userScheme = new mongoose.Schema(
       state: String,
       zip: String,
       country: String,
+    },
+    refreshToken: {
+      type: String,
     },
     cart: {
       type: mongoose.Schema.Types.ObjectId,
