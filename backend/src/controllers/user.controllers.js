@@ -3,6 +3,7 @@ import { User } from "../models/user.models.js";
 import bcrypt from "bcrypt";
 import { uploadPhoto } from "../utils/cloudinary.js";
 import dotenv from "dotenv";
+import { read } from "fs";
 dotenv.config();
 
 // register
@@ -159,8 +160,38 @@ const updatePassword = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
-export { registerUser, loginUser, logOutUser, updatePassword };
+// update user
+const updateUser = async (req, res) => {
+  // Get the user details
+  const { name, email, contact, role, address } = req.body;
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        name,
+        email,
+        contact,
+        role,
+        address,
+      },
+      { new: true },
+      { runValidators: true } // to run the validators
+    );
 
+    // If user is not found
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const updatedUser = await User.findById(user._id).select("-password");
+    // Send the response
+    return res
+      .status(200)
+      .json({ message: "User updated successfully", user: updatedUser });
+  } catch (error) {
+    // If there is an error
+    console.error("Error updating user:", error);
+    res.error(500).json({ message: "Server error", error: error.message });
+  }
+};
 
-
-
+export { registerUser, loginUser, logOutUser, updatePassword, updateUser };

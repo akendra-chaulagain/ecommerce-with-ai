@@ -5,7 +5,6 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 dotenv.config();
 
-
 // middleware
 
 // for cookies
@@ -15,8 +14,8 @@ app.use(express.json());
 // database connected
 connectDb()
   .then(() => {
-    app.listen(process.env.PORT || 8000, () => {
-      console.log(`server is running at port ${process.env.PORT || 8000}`);
+    app.listen(process.env.PORT || 5001, () => {
+      console.log(`server is running at port ${process.env.PORT || 5001}`);
     });
   })
   .catch((err) => {
@@ -24,6 +23,8 @@ connectDb()
   });
 
 // routes decleration
-import userRoute from "../src/routes/user.routes.js";
+import userRoute from "../src/routes/user.routes.js"; //user routes
 
 app.use("/api/v1/users", userRoute);
+
+

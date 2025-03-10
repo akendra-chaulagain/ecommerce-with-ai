@@ -4,6 +4,7 @@ import {
   logOutUser,
   registerUser,
   updatePassword,
+  updateUser,
 } from "../controllers/user.controllers.js";
 const router = Router();
 import { upload } from "../middleware/multer.middleware.js";
@@ -13,12 +14,9 @@ import { attemptLimit } from "../middleware/rateLimit.middleware.js";
 router.route("/register-user").post(upload.single("avtar"), registerUser);
 
 // secure routes
-
 router.route("/login-user").post(attemptLimit, loginUser); // login routes
 router.route("/logout-user").post(verifyJwt, logOutUser); // logout routes
-router.route("/reset-password").post(attemptLimit,verifyJwt, updatePassword); // reset or update password routes
+router.route("/reset-password").post(attemptLimit, verifyJwt, updatePassword); // reset or update password routes
+router.route("/update-user").post( verifyJwt, updateUser); // reset or update password routes
 
 export default router;
-
-
-
