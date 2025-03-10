@@ -125,10 +125,6 @@ const logOutUser = async (req, res) => {
       .clearCookie("accessToken", options)
       .clearCookie("refreshToken", options)
       .json({ message: "Logout successfully" });
-
-    // if (user) {
-    //   return res.status(200).json({ message: "Log out successfully" });
-    // }
   } catch (error) {
     return res
       .status(500)
@@ -136,4 +132,35 @@ const logOutUser = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, logOutUser };
+// update password
+const updatePassword = async (req, res) => {
+  try {
+    const { password, newPassword } = req.body;
+    if (!password || !newPassword) {
+      return res.status(400).json({ message: "Enter all the fields" });
+    }
+    if (password === newPassword) {
+      return res
+        .status(400)
+        .json({ message: "old password and new password should not be same" });
+    }
+
+    const user = await User.findById(req.user.id);
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Incorrect current password" });
+    }
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+    return res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+export { registerUser, loginUser, logOutUser, updatePassword };
+
+
+
+
