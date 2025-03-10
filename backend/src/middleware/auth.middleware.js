@@ -14,6 +14,7 @@ const verifyJwt = async (req, res, next) => {
       return res.status(401).json("User Logged out, login again");
     }
     req.user = user;
+
     next();
   } catch (error) {
     return res
@@ -22,4 +23,14 @@ const verifyJwt = async (req, res, next) => {
   }
 };
 
-export { verifyJwt };
+// Authorize middleware to restrict access based on user role
+const authorize = (...roles) => {
+  return (req, res, next) => {
+    if (!req.user || !roles.includes(req.user.role)) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+    next();
+  };
+};
+
+export { verifyJwt, authorize };

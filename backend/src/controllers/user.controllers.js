@@ -71,7 +71,7 @@ const loginUser = async (req, res) => {
     }
     // creating an accesstoken
     const accessToken = await jwt.sign(
-      { id: user._id },
+      { id: user._id, role: user.role },
       process.env.ACCESS_JSONTOKEN,
       {
         expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
@@ -80,7 +80,7 @@ const loginUser = async (req, res) => {
 
     // creating an refreshToken
     const refreshToken = await jwt.sign(
-      { id: user._id },
+      { id: user._id, role: user.role },
       process.env.REFRESH_JSONTOKEN,
       {
         expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
@@ -296,10 +296,3 @@ export {
   getUser,
   deleteUser,
 };
-
-// let publicId = user.avtar
-//   ? user.avtar.split("/").pop().split(".")[0]
-//   : undefined;
-
-// // Call updatePhoto() with publicId (if exists) and new file path
-// const uploadResponse = await updatePhoto(publicId, req.file.path);
