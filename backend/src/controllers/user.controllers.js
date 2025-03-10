@@ -3,6 +3,7 @@ import { User } from "../models/user.models.js";
 import bcrypt from "bcrypt";
 import { updatePhoto, uploadPhoto } from "../utils/cloudinary.js";
 import dotenv from "dotenv";
+import { v2 as cloudinary } from "cloudinary";
 
 dotenv.config();
 
@@ -211,7 +212,7 @@ const updateAvtar = async (req, res) => {
   // this function will run only if the user is uploading the photo athe first time
   if (!user.avtar) {
     const localFilePath = req.file?.path;
-    // let avatarUpload = null;
+    let avatarUpload = null;
     if (localFilePath) {
       avatarUpload = await uploadPhoto(localFilePath);
     }
@@ -248,12 +249,42 @@ const updateAvtar = async (req, res) => {
       .json({ message: "Avtar updated successfully", updatedUserData }); // Send the response
   }
 };
+// get user
+const getUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id).select("-password");
+    return res.status(200).json({ message: "User found", user });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+};
 
+// delete user
+const deleteUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select("-password");
 
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
+    let publicId;
+    if (user.avtar) {
+      publicId = user.avtar.split("/").pop().split(".")[0];
+      await cloudinary.uploader.destroy(`photos/${publicId}`);
+    }
 
-
-
+    await User.findByIdAndDelete(req.params.id);
+    return res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+};
 
 export {
   registerUser,
@@ -262,4 +293,13 @@ export {
   updatePassword,
   updateUser,
   updateAvtar,
+  getUser,
+  deleteUser,
 };
+
+// let publicId = user.avtar
+//   ? user.avtar.split("/").pop().split(".")[0]
+//   : undefined;
+
+// // Call updatePhoto() with publicId (if exists) and new file path
+// const uploadResponse = await updatePhoto(publicId, req.file.path);

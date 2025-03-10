@@ -1,5 +1,7 @@
 import { Router } from "express";
 import {
+  deleteUser,
+  getUser,
   loginUser,
   logOutUser,
   registerUser,
@@ -23,5 +25,7 @@ router.route("/update-user").post(verifyJwt, updateUser); // reset or update pas
 router
   .route("/update-avtar")
   .patch(verifyJwt, upload.single("avtar"), updateAvtar); // reset or update password routes
+router.route("/user-details/:id").get(verifyJwt, getUser);
+router.route("/delete-user/:id").delete(verifyJwt, deleteUser);
 
 export default router;
