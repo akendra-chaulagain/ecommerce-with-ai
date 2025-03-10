@@ -26,4 +26,24 @@ const uploadPhoto = async (localFilePath) => {
   }
 };
 
-export { uploadPhoto };
+const updatePhoto = async (publicId, localFilePath) => {
+  try {
+    const options = publicId
+      ? { public_id: publicId, overwrite: true } // Use existing publicId to overwrite the image
+      : {};
+    if (!publicId || !localFilePath) {
+      throw new Error("Public ID and file path are required");
+    }
+    const response = await cloudinary.uploader.upload(localFilePath, {
+      ...options,
+      folder: "photos",
+      type: "upload",
+    });
+    fs.unlinkSync(localFilePath);
+    return response;
+  } catch (error) {
+    fs.unlinkSync(localFilePath);
+  }
+};
+
+export { uploadPhoto, updatePhoto };

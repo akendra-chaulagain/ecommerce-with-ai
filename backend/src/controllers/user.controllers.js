@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.models.js";
 import bcrypt from "bcrypt";
-import { uploadPhoto } from "../utils/cloudinary.js";
+import { updatePhoto, uploadPhoto } from "../utils/cloudinary.js";
 import dotenv from "dotenv";
-import { read } from "fs";
+
 dotenv.config();
 
 // register
@@ -39,7 +39,7 @@ const registerUser = async (req, res) => {
       password: hashPassword,
       role,
       // avtar: avtar.url || " ",
-      avtar: avatarUpload?.secure_url || "",
+      avtar: avatarUpload?.secure_url,
       contact,
     });
 
@@ -162,10 +162,17 @@ const updatePassword = async (req, res) => {
 };
 // update user
 const updateUser = async (req, res) => {
-  // Get the user details
-  const { name, email, contact, role, address } = req.body;
   try {
-    const user = await User.findByIdAndUpdate(
+    const { name, email, contact, role, address } = req.body;
+
+    // Fetch existing user
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const updatedUserData = await User.findByIdAndUpdate(
       req.user.id,
       {
         name,
@@ -173,25 +180,86 @@ const updateUser = async (req, res) => {
         contact,
         role,
         address,
+
+        // // ...(avtar && { avtar }),
       },
       { new: true },
-      { runValidators: true } // to run the validators
-    );
+      { runValidators: true }
+    ).select("-password");
 
-    // If user is not found
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    const updatedUser = await User.findById(user._id).select("-password");
     // Send the response
     return res
       .status(200)
-      .json({ message: "User updated successfully", user: updatedUser });
+      .json({ message: "User updated successfully", user: updatedUserData });
   } catch (error) {
     // If there is an error
     console.error("Error updating user:", error);
-    res.error(500).json({ message: "Server error", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+};
+// update avtar
+
+const updateAvtar = async (req, res) => {
+  const user = await User.findById(req.user.id);
+
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  // this function will run only if the user is uploading the photo athe first time
+  if (!user.avtar) {
+    const localFilePath = req.file?.path;
+    // let avatarUpload = null;
+    if (localFilePath) {
+      avatarUpload = await uploadPhoto(localFilePath);
+    }
+    user.avtar = avatarUpload?.secure_url;
+    await user.save();
+    const updatedUserData = await User.findById(req.user.id).select(
+      "-password"
+    );
+    return res
+      .status(200)
+      .json({ message: "Avtar updated successfully", updatedUserData });
+  } else {
+    // this will run if user already has an avtar
+    let avtar = user.avtar;
+    if (req.file?.path) {
+      let publicId = user.avtar
+        ? user.avtar.split("/").pop().split(".")[0]
+        : undefined;
+
+      // Call updatePhoto() with publicId (if exists) and new file path
+      const uploadResponse = await updatePhoto(publicId, req.file.path);
+      avtar = uploadResponse.secure_url;
+    }
+    const updatedUserData = await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        avtar,
+      },
+      { new: true },
+      { runValidators: true }
+    ).select("-password");
+    res
+      .status(200)
+      .json({ message: "Avtar updated successfully", updatedUserData }); // Send the response
   }
 };
 
-export { registerUser, loginUser, logOutUser, updatePassword, updateUser };
+
+
+
+
+
+
+export {
+  registerUser,
+  loginUser,
+  logOutUser,
+  updatePassword,
+  updateUser,
+  updateAvtar,
+};
