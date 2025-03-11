@@ -44,12 +44,18 @@ const creatCategory = async (req, res) => {
 //  edit category
 const editCategory = async (req, res) => {
   try {
-    const { name, description } = req.body;
+    const { name, description, categoryImage } = req.body;
     const { id } = req.params;
     const category = await Category.findById(id);
+    if (!category) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
 
-    // for category image
     if (!category.categoryImage) {
+      // this code will run only at the first time when categoryImage is not available
       // for category image
       const localImage = req.file?.path;
 
@@ -58,15 +64,9 @@ const editCategory = async (req, res) => {
         categoryImageUpload = await uploadPhoto(localImage);
       }
       category.categoryImage = categoryImageUpload?.secure_url;
-      await category.save();
-
-      const updatedCategory = await Category.findById(id);
-      return res.status(201).json({
-        success: true,
-        message: "Category updated",
-        data: updatedCategory,
-      });
+      // await category.save();
     } else {
+      // this code will run when categoryImage is already available
       let categoryImage = category.categoryImage;
 
       if (req.file?.path) {
@@ -78,25 +78,23 @@ const editCategory = async (req, res) => {
         const uploadResponse = await updatePhoto(publicId, req.file.path);
         categoryImage = uploadResponse.secure_url;
       }
-
-      const updatedCategory = await Category.findByIdAndUpdate(
-        id,
-        {
-          name,
-          categoryImage,
-          description,
-        },
-        {
-          new: true,
-        }
-      );
-
-      return res.status(201).json({
-        success: true,
-        message: "Category updated",
-        data: updatedCategory,
-      });
     }
+    const updatedCategory = await Category.findByIdAndUpdate(
+      id,
+      {
+        name,
+        categoryImage,
+        description,
+      },
+      {
+        new: true,
+      }
+    );
+    return res.status(201).json({
+      success: true,
+      message: "Category updated",
+      data: updatedCategory,
+    });
   } catch (error) {
     res.status(501).json({
       success: false,
