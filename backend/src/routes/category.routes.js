@@ -1,6 +1,9 @@
 import { Router } from "express";
 const router = Router();
-import { creatCategory } from "../controllers/category.controllers.js";
+import {
+  creatCategory,
+  editCategory,
+} from "../controllers/category.controllers.js";
 import { authorize, verifyJwt } from "../middleware/auth.middleware.js";
 import { upload } from "../middleware/multer.middleware.js";
 
@@ -17,11 +20,13 @@ router.route("/create-category").post(
 );
 
 // edit category route
-router.route("/edit-category/:id").put(
+router.route("/edit-category/:id").patch(
   // verify token
   verifyJwt,
   // access control
   authorize("Admin"),
+  // update image
+  upload.single("categoryImage"),
   // edit category
   editCategory
 );

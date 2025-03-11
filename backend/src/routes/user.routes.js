@@ -19,9 +19,9 @@ router.route("/register-user").post(upload.single("avtar"), registerUser);
 // secure routes
 router.route("/login-user").post(attemptLimit, loginUser); // login routes
 router.route("/logout-user").post(verifyJwt, logOutUser); // logout routes
-router.route("/reset-password").post(attemptLimit, verifyJwt, updatePassword); // reset or update password routes
+router.route("/reset-password").patch(attemptLimit, verifyJwt, updatePassword); // reset or update password routes
 // router.route("/update-user").post(verifyJwt, updateUser); // reset or update password routes
-router.route("/update-user").post(verifyJwt, updateUser); // reset or update user routes
+router.route("/update-user").patch(verifyJwt, updateUser); // reset or update user routes
 router
   .route("/update-avtar")
   .patch(verifyJwt, upload.single("avtar"), updateAvtar); // reset or update password routes

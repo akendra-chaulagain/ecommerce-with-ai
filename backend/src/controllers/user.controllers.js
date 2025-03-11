@@ -208,7 +208,7 @@ const updateAvtar = async (req, res) => {
     return res.status(404).json({ message: "User not found" });
   }
 
-  // this function will run only if the user is uploading the photo athe first time
+  // this function will run only if the user is uploading the photo for the  first time
   if (!user.avtar) {
     const localFilePath = req.file?.path;
     let avatarUpload = null;
