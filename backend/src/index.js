@@ -25,6 +25,8 @@ connectDb()
 // routes decleration
 import userRoute from "../src/routes/user.routes.js"; //user routes
 import categoryRoute from "../src/routes/category.routes.js"; //category routes
+import productRoute from "../src/routes/product.routes.js"; //category routes
 
 app.use("/api/v1/users", userRoute);
 app.use("/api/v1/category", categoryRoute);
+app.use("/api/v1/product", productRoute);

@@ -2,6 +2,7 @@ import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import dotenv from "dotenv";
 dotenv.config();
+import path from "path";
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -46,4 +47,31 @@ const updatePhoto = async (publicId, localFilePath) => {
   }
 };
 
-export { uploadPhoto, updatePhoto };
+// Function to upload multiple images to Cloudinary
+const uploadMultipleImagesToCloudinary = async (files) => {
+  try {
+    const uploadPromises = files.map(async (file) => {
+      const result = await cloudinary.uploader.upload(file.path, {
+        folder: "products", // Change folder name if needed
+      });
+      return result.secure_url;
+    });
+
+    const uploadedImages = await Promise.all(uploadPromises);
+
+    // Safely delete files after upload
+    files.forEach((file) => {
+      const filePath = path.resolve(file.path); // Ensure correct path
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    });
+
+    return uploadedImages;
+  } catch (error) {
+    console.error("Error uploading images to Cloudinary:", error.message);
+    throw new Error("Error uploading images");
+  }
+};
+
+export { uploadPhoto, updatePhoto, uploadMultipleImagesToCloudinary };
