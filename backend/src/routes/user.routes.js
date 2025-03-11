@@ -13,7 +13,7 @@ const router = Router();
 import { upload } from "../middleware/multer.middleware.js";
 import { verifyJwt } from "../middleware/auth.middleware.js";
 import { attemptLimit } from "../middleware/rateLimit.middleware.js";
-import multer from "multer";
+
 // register user
 router.route("/register-user").post(upload.single("avtar"), registerUser);
 // secure routes
