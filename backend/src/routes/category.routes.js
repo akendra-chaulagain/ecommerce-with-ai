@@ -1,8 +1,11 @@
 import { Router } from "express";
 const router = Router();
 import {
+  categoryDetails,
   creatCategory,
+  deleteCategory,
   editCategory,
+  getAllCategories,
 } from "../controllers/category.controllers.js";
 import { authorize, verifyJwt } from "../middleware/auth.middleware.js";
 import { upload } from "../middleware/multer.middleware.js";
@@ -30,5 +33,37 @@ router.route("/edit-category/:id").patch(
   // edit category
   editCategory
 );
+
+// edit category route
+router.route("/").get(
+  // verify token
+  verifyJwt,
+  // access control
+  authorize("Admin", "User"),
+
+  // get all category
+  getAllCategories
+);
+
+// category details route
+router.route("/category_details/:id").get(
+  // verify token
+  verifyJwt,
+  // access control
+  authorize("Admin", "User"),
+  // get  individual category details
+  categoryDetails
+);
+// category details route
+router.route("/delete_category/:id").delete(
+  // verify token
+  verifyJwt,
+  // access control
+  authorize("Admin"),
+  // get  individual category details
+  deleteCategory
+);
+
+// delete category route
 
 export default router;

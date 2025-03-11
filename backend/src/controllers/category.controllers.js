@@ -1,5 +1,6 @@
 import { Category } from "../models/category.models.js";
 import { updatePhoto, uploadPhoto } from "../utils/cloudinary.js";
+import { v2 as cloudinary } from "cloudinary";
 
 // create catehory
 const creatCategory = async (req, res) => {
@@ -64,7 +65,7 @@ const editCategory = async (req, res) => {
         categoryImageUpload = await uploadPhoto(localImage);
       }
       category.categoryImage = categoryImageUpload?.secure_url;
-      // await category.save();
+      await category.save({ validateBeforeSave: false });
     } else {
       // this code will run when categoryImage is already available
       let categoryImage = category.categoryImage;
@@ -104,4 +105,84 @@ const editCategory = async (req, res) => {
   }
 };
 
-export { creatCategory, editCategory };
+// delete category
+const deleteCategory = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const category = await Category.findById(id);
+    if (!category) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
+
+    // CLOUDINARY IMAGE ALSO NEED TO DELETE WHILE DELETING THE CATEGORY
+    if (category.categoryImage) {
+      const publicId = category.categoryImage.split("/").pop().split(".")[0];
+      await cloudinary.uploader.destroy(`photos/${publicId}`);
+      console.log(publicId);
+    }
+    await Category.findByIdAndDelete(id);
+    return res.status(200).json({
+      success: true,
+      message: "Category deleted",
+    });
+  } catch (error) {
+    res.status(501).json({
+      success: false,
+      message: "Something went wrong! try again later",
+      error: error.message,
+    });
+  }
+};
+
+// get all categories
+const getAllCategories = async (req, res) => {
+  try {
+    const cetegories = await Category.find();
+    return res.status(200).json({
+      success: true,
+      message: "All categories",
+      data: cetegories,
+    });
+  } catch (error) {
+    res.status(501).json({
+      success: false,
+      message: "Something went wrong! try again later",
+      error: error.message,
+    });
+  }
+};
+
+// get a category details
+const categoryDetails = async (req, res) => {
+  try {
+    const category = await Category.findById(req.params.id);
+    if (!category) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Category details",
+      data: category,
+    });
+  } catch (error) {
+    res.status(501).json({
+      success: false,
+      message: "Something went wrong! try again later",
+      error: error.message,
+    });
+  }
+};
+
+export {
+  creatCategory,
+  editCategory,
+  getAllCategories,
+  categoryDetails,
+  deleteCategory,
+};
