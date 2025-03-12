@@ -10,13 +10,13 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET, // Click 'View API Keys' above to copy your API secret
 });
 
-const uploadPhoto = async (localFilePath) => {
+const uploadPhoto = async (localFilePath, folderName) => {
   try {
     if (!localFilePath) {
       throw new Error("No file pathway selecetd");
     }
     const response = await cloudinary.uploader.upload(localFilePath, {
-      folder: "photos",
+      folder: folderName,
       resource_type: "auto",
     });
 
@@ -27,7 +27,7 @@ const uploadPhoto = async (localFilePath) => {
   }
 };
 
-const updatePhoto = async (publicId, localFilePath) => {
+const updatePhoto = async (publicId, localFilePath, folderName) => {
   try {
     const options = publicId
       ? { public_id: publicId, overwrite: true } // Use existing publicId to overwrite the image
@@ -37,7 +37,7 @@ const updatePhoto = async (publicId, localFilePath) => {
     }
     const response = await cloudinary.uploader.upload(localFilePath, {
       ...options,
-      folder: "photos",
+      folder: folderName,
       type: "upload",
     });
     fs.unlinkSync(localFilePath);
@@ -48,11 +48,11 @@ const updatePhoto = async (publicId, localFilePath) => {
 };
 
 // Function to upload multiple images to Cloudinary
-const uploadMultipleImagesToCloudinary = async (files) => {
+const uploadMultipleImagesToCloudinary = async (files, folderName) => {
   try {
     const uploadPromises = files.map(async (file) => {
       const result = await cloudinary.uploader.upload(file.path, {
-        folder: "products", // Change folder name if needed
+        folder: folderName, // Change folder name if needed
       });
       return result.secure_url;
     });

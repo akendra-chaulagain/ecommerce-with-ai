@@ -19,9 +19,10 @@ const creatCategory = async (req, res) => {
 
     // for category image
     const localImage = req.file?.path;
+    const folderName = "category";
     let cloudinaryImage = null;
     if (localImage) {
-      cloudinaryImage = await uploadPhoto(localImage);
+      cloudinaryImage = await uploadPhoto(localImage, folderName);
     }
 
     // create new category
@@ -69,6 +70,7 @@ const editCategory = async (req, res) => {
     } else {
       // this code will run when categoryImage is already available
       let categoryImage = category.categoryImage;
+      const folderName = "category";
 
       if (req.file?.path) {
         let publicId = category.categoryImage
@@ -76,7 +78,11 @@ const editCategory = async (req, res) => {
           : undefined;
 
         // Call updatePhoto() with publicId (if exists) and new file path
-        const uploadResponse = await updatePhoto(publicId, req.file.path);
+        const uploadResponse = await updatePhoto(
+          publicId,
+          req.file.path,
+          folderName
+        );
         categoryImage = uploadResponse.secure_url;
       }
     }
@@ -120,8 +126,8 @@ const deleteCategory = async (req, res) => {
     // CLOUDINARY IMAGE ALSO NEED TO DELETE WHILE DELETING THE CATEGORY
     if (category.categoryImage) {
       const publicId = category.categoryImage.split("/").pop().split(".")[0];
-      await cloudinary.uploader.destroy(`photos/${publicId}`);
-      console.log(publicId);
+      await cloudinary.uploader.destroy(`category/${publicId}`);
+      
     }
     await Category.findByIdAndDelete(id);
     return res.status(200).json({
@@ -136,9 +142,6 @@ const deleteCategory = async (req, res) => {
     });
   }
 };
-
-
-
 
 // get all categories
 const getAllCategories = async (req, res) => {
