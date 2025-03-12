@@ -32,6 +32,8 @@ const updatePhoto = async (publicId, localFilePath, folderName) => {
     const options = publicId
       ? { public_id: publicId, overwrite: true } // Use existing publicId to overwrite the image
       : {};
+      
+      
     if (!publicId || !localFilePath) {
       throw new Error("Public ID and file path are required");
     }
@@ -48,22 +50,31 @@ const updatePhoto = async (publicId, localFilePath, folderName) => {
 };
 
 // Function to upload multiple images to Cloudinary
-const uploadMultipleImagesToCloudinary = async (files, folderName) => {
+const uploadMultipleImagesToCloudinary = async (
+  files,
+  folderName,
+  existingImagesArray = []
+) => {
   try {
     const uploadPromises = files.map(async (file) => {
-      const result = await cloudinary.uploader.upload(file.path, {
-        folder: folderName, // Change folder name if needed
-      });
+      const option = {
+        folder: folderName,
+      };
+      if (existingImagesArray) {
+        option.public_id = existingImagesArray[index]; // Set the public_id for existing image
+        option.overwrite = true; // Overwrite the existing image
+      }
+
+      const result = await cloudinary.uploader.upload(file.path, option);
       return result.secure_url;
     });
-
     const uploadedImages = await Promise.all(uploadPromises);
 
-    // Safely delete files after upload
+    // Safely delete files from the local server after upload
     files.forEach((file) => {
       const filePath = path.resolve(file.path); // Ensure correct path
       if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
+        fs.unlinkSync(filePath); // Delete the local file after successful upload
       }
     });
 
@@ -75,3 +86,48 @@ const uploadMultipleImagesToCloudinary = async (files, folderName) => {
 };
 
 export { uploadPhoto, updatePhoto, uploadMultipleImagesToCloudinary };
+
+// const uploadMultipleImagesToCloudinary = async (
+//   files,
+//   folderName,
+//   existingImageIds = []
+// ) => {
+//   try {
+//     const uploadPromises = files.map(async (file, index) => {
+//       // const result = await cloudinary.uploader.upload(file.path, {
+//       //   folder: folderName, // Change folder name if needed
+//       // });
+
+//       const options = {
+//         folder: folderName, // The folder where images will be stored
+//         resource_type: "auto", // Automatically detect file type (image, video, etc.)
+//       };
+
+//       // this function is just for update photos in the cloudinary
+//       if (existingImageIds[index]) {
+//         options.public_id = existingImageIds[index]; // Set the public_id for existing image
+//         options.overwrite = true; // Overwrite the existing image
+//       }
+
+//       // Upload the image to Cloudinary
+//       const result = await cloudinary.uploader.upload(file.path, options);
+
+//       return result.secure_url;
+//     });
+
+//     const uploadedImages = await Promise.all(uploadPromises);
+
+//     // Safely delete files after upload
+//     files.forEach((file) => {
+//       const filePath = path.resolve(file.path); // Ensure correct path
+//       if (fs.existsSync(filePath)) {
+//         fs.unlinkSync(filePath);
+//       }
+//     });
+
+//     return uploadedImages;
+//   } catch (error) {
+//     console.error("Error uploading images to Cloudinary:", error.message);
+//     throw new Error("Error uploading images");
+//   }
+// };

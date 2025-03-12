@@ -1,6 +1,9 @@
+import mongoose from "mongoose";
 import { Product } from "../models/product.models.js";
-import { v2 as cloudinary } from "cloudinary";
-import { uploadMultipleImagesToCloudinary } from "../utils/cloudinary.js";
+import {
+  updatePhoto,
+  uploadMultipleImagesToCloudinary,
+} from "../utils/cloudinary.js";
 
 const createProduct = async (req, res) => {
   try {
@@ -20,17 +23,20 @@ const createProduct = async (req, res) => {
     } else if (req.files.length > 4) {
       return res
         .status(400)
-        .json({ success: false, message: "You can upload up to 5 images" });
+        .json({ success: false, message: "You can upload up to 4 images" });
     }
 
     // multiple images are save in the cloudinary and the urls are returned
     const folderName = "products";
+
+    // let publicId = category.categoryImage
+    //   ? category.categoryImage.split("/").pop().split(".")[0]
+    //   : undefined;
+
     const uploadImages = await uploadMultipleImagesToCloudinary(
       req.files,
       folderName
     );
-
-    
 
     const product = new Product({
       name,
@@ -54,4 +60,110 @@ const createProduct = async (req, res) => {
   }
 };
 
-export { createProduct };
+const editProduct = async (req, res) => {
+  try {
+    const { name, description, price, categoryId, size, color } = req.body;
+    const { id } = req.params;
+
+    // Validate MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid product ID" });
+    }
+    // find user by req.params.id
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+    // update images
+    // const productImages = product.images;
+    // console.log(...productImages);
+
+    // const folderName = "products";
+
+    // const updateImages = await uploadMultipleImagesToCloudinary(
+    //   productImages,
+    //   folderName
+    // );
+    // console.log(updateImages, 'updated');
+
+    // update data
+    const updatedProducts = await Product.findByIdAndUpdate(
+      id,
+      {
+        name,
+        description,
+        price,
+        categoryId,
+        size,
+        color,
+      },
+      { new: true },
+      { varlidateBeforeSave: true }
+    );
+
+    const updatedFields = Object.keys(req.body).join(", ");
+    const message = ` ${updatedFields} updated successfully.`;
+
+    return res.status(200).json({
+      success: true,
+      message,
+      product: updatedProducts,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+// update product images
+const editProductImage = async (req, res) => {
+  try {
+    const { productId, imagePublicId } = req.params;
+
+    // update images
+    const folderName = "category";
+    const localImage = req.file.path;
+    // console.log(localImage);
+
+    const uploadResponse = await updatePhoto(
+      imagePublicId,
+      localImage,
+      folderName
+    );
+
+    // update data
+    const updatedProducts = await Product.findByIdAndUpdate(
+      productId,
+      {
+        images: uploadResponse.secure_url,
+      },
+      { new: true },
+      { varlidateBeforeSave: true }
+    );
+
+    const updatedFields = Object.keys(req.body).join(", ");
+    const message = ` ${updatedFields} updated successfully.`;
+
+    return res.status(200).json({
+      success: true,
+      message,
+      product: updatedProducts,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+export { createProduct, editProduct, editProductImage };
