@@ -29,10 +29,6 @@ const createProduct = async (req, res) => {
     // multiple images are save in the cloudinary and the urls are returned
     const folderName = "products";
 
-    // let publicId = category.categoryImage
-    //   ? category.categoryImage.split("/").pop().split(".")[0]
-    //   : undefined;
-
     const uploadImages = await uploadMultipleImagesToCloudinary(
       req.files,
       folderName
@@ -65,12 +61,6 @@ const editProduct = async (req, res) => {
     const { name, description, price, categoryId, size, color } = req.body;
     const { id } = req.params;
 
-    // Validate MongoDB ObjectId
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid product ID" });
-    }
     // find user by req.params.id
     const product = await Product.findById(id);
     if (!product) {
@@ -79,19 +69,23 @@ const editProduct = async (req, res) => {
         message: "Product not found",
       });
     }
-    // update images
-    // const productImages = product.images;
-    // console.log(...productImages);
 
-    // const folderName = "products";
+    const productImage = await Product.findById(id);
+    if (productImage.images.length + req.files.length <= 4) {
+      // add images
+      const folderName = "products";
+      const uploadedImages = await uploadMultipleImagesToCloudinary(
+        req.files,
+        folderName
+      );
+      // Append new images to the existing array (instead of replacing)
+      productImage.images.push(...uploadedImages);
+      // Save the updated product without validation errors
+      await productImage.save({ validateBeforeSave: false });
+    }
 
-    // const updateImages = await uploadMultipleImagesToCloudinary(
-    //   productImages,
-    //   folderName
-    // );
-    // console.log(updateImages, 'updated');
+    // console.log(productImage.images.length);
 
-    // update data
     const updatedProducts = await Product.findByIdAndUpdate(
       id,
       {
@@ -129,7 +123,7 @@ const editProductImage = async (req, res) => {
     const { productId, imagePublicId } = req.params;
 
     // update images
-    const folderName = "category";
+    const folderName = "products";
     const localImage = req.file.path;
     // console.log(localImage);
 
@@ -139,15 +133,24 @@ const editProductImage = async (req, res) => {
       folderName
     );
 
-    // update data
-    const updatedProducts = await Product.findByIdAndUpdate(
-      productId,
-      {
-        images: uploadResponse.secure_url,
-      },
-      { new: true },
-      { varlidateBeforeSave: true }
+    const product = await Product.findById(productId);
+
+    // Find index of the image to update
+    const imageIndex = product.images.findIndex((img) =>
+      img.includes(imagePublicId)
     );
+
+     if (imageIndex === -1) {
+       return res.status(404).json({
+         success: false,
+         message: "Image not found in product",
+       });
+     }
+    // Replace the specific image in the array
+    product.images[imageIndex] = uploadResponse.secure_url;
+
+    // Save the updated product
+    await product.save({ validateBeforeSave: false });
 
     const updatedFields = Object.keys(req.body).join(", ");
     const message = ` ${updatedFields} updated successfully.`;
@@ -155,7 +158,7 @@ const editProductImage = async (req, res) => {
     return res.status(200).json({
       success: true,
       message,
-      product: updatedProducts,
+      product,
     });
   } catch (error) {
     return res.status(500).json({

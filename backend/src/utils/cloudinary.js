@@ -32,8 +32,7 @@ const updatePhoto = async (publicId, localFilePath, folderName) => {
     const options = publicId
       ? { public_id: publicId, overwrite: true } // Use existing publicId to overwrite the image
       : {};
-      
-      
+
     if (!publicId || !localFilePath) {
       throw new Error("Public ID and file path are required");
     }
@@ -50,20 +49,12 @@ const updatePhoto = async (publicId, localFilePath, folderName) => {
 };
 
 // Function to upload multiple images to Cloudinary
-const uploadMultipleImagesToCloudinary = async (
-  files,
-  folderName,
-  existingImagesArray = []
-) => {
+const uploadMultipleImagesToCloudinary = async (files, folderName) => {
   try {
     const uploadPromises = files.map(async (file) => {
       const option = {
         folder: folderName,
       };
-      if (existingImagesArray) {
-        option.public_id = existingImagesArray[index]; // Set the public_id for existing image
-        option.overwrite = true; // Overwrite the existing image
-      }
 
       const result = await cloudinary.uploader.upload(file.path, option);
       return result.secure_url;
