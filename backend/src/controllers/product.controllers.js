@@ -5,6 +5,7 @@ import {
   updatePhoto,
   uploadMultipleImagesToCloudinary,
 } from "../utils/cloudinary.js";
+import { Review } from "../models/review.models.js";
 
 const createProduct = async (req, res) => {
   try {
@@ -197,7 +198,7 @@ const deleteProduct = async (req, res) => {
 const getAllproducts = async (req, res) => {
   try {
     const allproducts = await Product.find();
-    return res.status(401).json({
+    return res.status(200).json({
       message: "all products",
 
       data: allproducts,
@@ -215,7 +216,7 @@ const productDetails = async (req, res) => {
   try {
     const { id } = req.params;
     const details = await Product.findById(id);
-    return res.status(401).json({
+    return res.status(200).json({
       message: "product detail",
       data: details,
     });

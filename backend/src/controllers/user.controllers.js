@@ -25,11 +25,14 @@ const registerUser = async (req, res) => {
     const hashPassword = bcrypt.hashSync(password, 10);
 
     const localFilePath = req.file?.path;
+   
 
     let avatarUpload = null;
-
+    const folderName = "Users";
     if (localFilePath) {
-      avatarUpload = await uploadPhoto(localFilePath);
+      
+
+      avatarUpload = await uploadPhoto(localFilePath, folderName);
     }
 
     // user created
@@ -38,7 +41,7 @@ const registerUser = async (req, res) => {
       email,
       password: hashPassword,
       role,
-      // avtar: avtar.url || " ",
+
       avtar: avatarUpload?.secure_url,
       contact,
     });
@@ -211,9 +214,11 @@ const updateAvtar = async (req, res) => {
   // this function will run only if the user is uploading the photo for the  first time
   if (!user.avtar) {
     const localFilePath = req.file?.path;
+
     let avatarUpload = null;
     if (localFilePath) {
-      avatarUpload = await uploadPhoto(localFilePath);
+      const folderName = "Users";
+      avatarUpload = await uploadPhoto(localFilePath, folderName);
     }
     user.avtar = avatarUpload?.secure_url;
     await user.save();
@@ -230,9 +235,13 @@ const updateAvtar = async (req, res) => {
       let publicId = user.avtar
         ? user.avtar.split("/").pop().split(".")[0]
         : undefined;
-
+      const folderName = "Users";
       // Call updatePhoto() with publicId (if exists) and new file path
-      const uploadResponse = await updatePhoto(publicId, req.file.path);
+      const uploadResponse = await updatePhoto(
+        publicId,
+        req.file.path,
+        folderName
+      );
       avtar = uploadResponse.secure_url;
     }
     const updatedUserData = await User.findByIdAndUpdate(
@@ -273,7 +282,7 @@ const deleteUser = async (req, res) => {
     let publicId;
     if (user.avtar) {
       publicId = user.avtar.split("/").pop().split(".")[0];
-      await cloudinary.uploader.destroy(`photos/${publicId}`);
+      await cloudinary.uploader.destroy(`users/${publicId}`);
     }
 
     await User.findByIdAndDelete(req.params.id);

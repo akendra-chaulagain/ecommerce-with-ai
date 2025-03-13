@@ -13,7 +13,7 @@ const productScheme = new mongoose.Schema(
       required: true,
     },
     images: [{ type: String, default: false }], // Array of image URLs
-    reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
+    // reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
   },
   [{ timestamps: true }]
 );

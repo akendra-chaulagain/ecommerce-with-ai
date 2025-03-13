@@ -63,7 +63,8 @@ const editCategory = async (req, res) => {
 
       let categoryImageUpload = null;
       if (localImage) {
-        categoryImageUpload = await uploadPhoto(localImage);
+        const folderName = "category"
+        categoryImageUpload = await uploadPhoto(localImage, folderName);
       }
       category.categoryImage = categoryImageUpload?.secure_url;
       await category.save({ validateBeforeSave: false });
@@ -127,7 +128,6 @@ const deleteCategory = async (req, res) => {
     if (category.categoryImage) {
       const publicId = category.categoryImage.split("/").pop().split(".")[0];
       await cloudinary.uploader.destroy(`category/${publicId}`);
-      
     }
     await Category.findByIdAndDelete(id);
     return res.status(200).json({
