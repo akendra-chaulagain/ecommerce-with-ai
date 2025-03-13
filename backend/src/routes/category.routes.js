@@ -34,7 +34,7 @@ router.route("/edit-category/:id").patch(
   editCategory
 );
 
-// edit category route
+// get all category route
 router.route("/").get(
   // verify token
   verifyJwt,
@@ -54,7 +54,7 @@ router.route("/category_details/:id").get(
   // get  individual category details
   categoryDetails
 );
-// category details route
+// category delete route
 router.route("/delete_category/:id").delete(
   // verify token
   verifyJwt,

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Product } from "../models/product.models.js";
+import { v2 as cloudinary } from "cloudinary";
 import {
   updatePhoto,
   uploadMultipleImagesToCloudinary,
@@ -140,12 +141,13 @@ const editProductImage = async (req, res) => {
       img.includes(imagePublicId)
     );
 
-     if (imageIndex === -1) {
-       return res.status(404).json({
-         success: false,
-         message: "Image not found in product",
-       });
-     }
+    if (imageIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        message: "Image not found in product",
+      });
+    }
+
     // Replace the specific image in the array
     product.images[imageIndex] = uploadResponse.secure_url;
 
@@ -169,4 +171,67 @@ const editProductImage = async (req, res) => {
   }
 };
 
-export { createProduct, editProduct, editProductImage };
+// delete product
+const deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await Product.findById(id);
+
+    if (product.images && product.images.length > 0) {
+      for (const image of product.images) {
+        const publicId = image.split("/").pop().split(".")[0]; // Extract publicId
+        await cloudinary.uploader.destroy(`products/${publicId}`);
+      }
+    }
+    const deletedproduct = await Product.findByIdAndDelete(id);
+    return res.status(200).json({ message: "product deleted", deletedproduct });
+  } catch (error) {
+    return res.status(401).json({
+      message: "server error while deleting product",
+      message: error.message,
+    });
+  }
+};
+
+// get all products
+const getAllproducts = async (req, res) => {
+  try {
+    const allproducts = await Product.find();
+    return res.status(401).json({
+      message: "all products",
+
+      data: allproducts,
+    });
+  } catch (error) {
+    return res.status(401).json({
+      message: "server error while fetching product",
+      message: error.message,
+    });
+  }
+};
+
+// get product details
+const productDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const details = await Product.findById(id);
+    return res.status(401).json({
+      message: "product detail",
+      data: details,
+    });
+  } catch (error) {
+    return res.status(401).json({
+      message: "server error while fetching product",
+      message: error.message,
+    });
+  }
+};
+
+export {
+  createProduct,
+  editProduct,
+  editProductImage,
+  deleteProduct,
+  getAllproducts,
+  productDetails,
+};
