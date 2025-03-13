@@ -66,10 +66,59 @@ const getAllReviewAccordingToProduct = async (req, res) => {
     });
   } catch (error) {
     return res.status(401).json({
-      message: "server error while fetching product",
+      message: "server error ",
+      message: error.message,
+    });
+  }
+};
+// edit review
+const editReview = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { rating, comment } = req.body;
+    const updatedReview = await Review.findByIdAndUpdate(
+      id,
+      {
+        rating,
+        comment,
+      },
+      { new: true, runValidators: true }
+    );
+    if (!updatedReview) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+    return res
+      .status(201)
+      .json({ message: "Updated Successfully", date: updatedReview });
+  } catch (error) {
+    return res.status(401).json({
+      message: "server error ",
       message: error.message,
     });
   }
 };
 
-export { createReview, getAllReviewAccordingToProduct };
+// delete review
+const deleteReview = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedReview = await Review.findByIdAndDelete(id);
+    if (!deletedReview) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+    return res.status(200).json({ message: "Review deleted", deletedReview });
+  } catch (error) {
+    return res.status(401).json({
+      message: "server error while deleting review",
+      message: error.message,
+    });
+  }
+};
+
+export {
+  createReview,
+  getAllReviewAccordingToProduct,
+  editReview,
+  deleteReview,
+};

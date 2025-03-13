@@ -9,11 +9,9 @@ const reviewScheme = new mongoose.Schema(
       required: true,
     },
     rating: { type: Number, required: true, min: 1, max: 5 },
-    comment: String,
+    comment: { type: String, required: true },
   },
   { timestamps: true }
 );
-
-
 
 export const Review = mongoose.model("Review", reviewScheme);
