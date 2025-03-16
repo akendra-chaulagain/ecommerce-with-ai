@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const shippingSchema = new mongoose.Schema(
   {
-    user: {
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
@@ -14,11 +14,12 @@ const shippingSchema = new mongoose.Schema(
       zip: String,
       country: String,
     },
-    trackingNumber: String,
-    status: {
+    fullname: {
       type: String,
-      enum: ["pending", "shipped", "delivered"],
-      default: "pending",
+      required: true,
+    },
+    contact: {
+      type: Number,
     },
   },
   { timestamps: true }
