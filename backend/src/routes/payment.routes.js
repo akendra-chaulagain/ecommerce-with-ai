@@ -19,7 +19,7 @@ router.route("/create-order").post(
   createPaypalOrder
 );
 
-router.route("/capture-order/:id").get(
+router.route("/success").get(
   // verify token
   verifyJwt,
 
@@ -30,3 +30,5 @@ router.route("/capture-order/:id").get(
 );
 
 export default router;
+
+
