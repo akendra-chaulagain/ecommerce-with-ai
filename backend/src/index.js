@@ -4,12 +4,15 @@ import connectDb from "./database/database.js";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 dotenv.config();
-
+import cors from "cors"
 // middleware
 
 // for cookies
 app.use(cookieParser());
 app.use(express.json());
+
+app.use(cors()); // Allow frontend access
+app.use(express.json()); // Enable JSON body parsing
 
 // database connected
 connectDb()

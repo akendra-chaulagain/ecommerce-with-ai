@@ -1,6 +1,7 @@
 import { Category } from "../models/category.models.js";
 import { updatePhoto, uploadPhoto } from "../utils/cloudinary.js";
 import { v2 as cloudinary } from "cloudinary";
+import { PaginationParameters } from "mongoose-paginate-v2";
 
 // create catehory
 const creatCategory = async (req, res) => {
@@ -63,7 +64,7 @@ const editCategory = async (req, res) => {
 
       let categoryImageUpload = null;
       if (localImage) {
-        const folderName = "category"
+        const folderName = "category";
         categoryImageUpload = await uploadPhoto(localImage, folderName);
       }
       category.categoryImage = categoryImageUpload?.secure_url;
@@ -161,6 +162,23 @@ const getAllCategories = async (req, res) => {
   }
 };
 
+const getFiveDataForHomeScreen = async (req, res) => {
+  try {
+    const categories = await Category.find().limit(6); // Mongoose method
+    return res.status(200).json({
+      success: true,
+      message: "All categories",
+      data: categories,
+    });
+  } catch (error) {
+    return res.status(501).json({
+      success: false,
+      message: "Something went wrong! try again later",
+      error: error.message,
+    });
+  }
+};
+
 // get a category details
 const categoryDetails = async (req, res) => {
   try {
@@ -191,4 +209,5 @@ export {
   getAllCategories,
   categoryDetails,
   deleteCategory,
+  getFiveDataForHomeScreen,
 };

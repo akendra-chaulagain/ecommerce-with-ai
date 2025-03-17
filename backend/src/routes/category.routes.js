@@ -6,6 +6,7 @@ import {
   deleteCategory,
   editCategory,
   getAllCategories,
+  getFiveDataForHomeScreen,
 } from "../controllers/category.controllers.js";
 import { authorize, verifyJwt } from "../middleware/auth.middleware.js";
 import { upload } from "../middleware/multer.middleware.js";
@@ -37,12 +38,17 @@ router.route("/edit-category/:id").patch(
 // get all category route
 router.route("/").get(
   // verify token
-  verifyJwt,
+  // verifyJwt,
   // access control
-  authorize("Admin", "User"),
+  // authorize("Admin", "User"),
 
   // get all category
   getAllCategories
+);
+// get 5 category route
+router.route("/home-category").get(
+  // get all category
+  getFiveDataForHomeScreen
 );
 
 // category details route
