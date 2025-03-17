@@ -4,7 +4,10 @@ const router = Router();
 
 import { authorize, verifyJwt } from "../middleware/auth.middleware.js";
 
-import { capturePaypalOrder, createPaypalOrder } from "../controllers/payment.controllers.js";
+import {
+  capturePaypalOrder,
+  createPaypalOrder,
+} from "../controllers/payment.controllers.js";
 
 router.route("/create-order").post(
   // verify token
@@ -16,7 +19,6 @@ router.route("/create-order").post(
   createPaypalOrder
 );
 
-
 router.route("/capture-order/:id").get(
   // verify token
   verifyJwt,
@@ -26,6 +28,5 @@ router.route("/capture-order/:id").get(
   // create paypalorder
   capturePaypalOrder
 );
-
 
 export default router;

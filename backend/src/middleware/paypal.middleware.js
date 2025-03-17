@@ -13,7 +13,6 @@ export const paypalAccesssToken = async () => {
       "base64"
     );
 
-    
     const response = await axios.post(
       `${PAYPAL_BASE_URL}/v1/oauth2/token`,
       "grant_type=client_credentials",
