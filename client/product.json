@@ -1,0 +1,44 @@
+[
+  {
+    "id": "1",
+    "photo": "/images/slider/s1.webp",
+    "name": "SHIRTS",
+    "price": "39.99",
+    "p": "Lorem ipsum dolor sit amet consectetur, adipisicing , debitis..."
+  },
+  {
+    "id": "2",
+    "photo": "/images/slider/s2.webp",
+    "name": "PANTS",
+    "price": "89.99",
+    "p": "Lorem ipsum dolor sit amet consectetur, adipisicing , debitis..."
+  },
+  {
+    "id": "3",
+    "photo": "/images/slider/s3.webp",
+    "name": "SWEATERS",
+    "price": "67.99",
+    "p": "Lorem ipsum dolor sit amet consectetur, adipisicing , debitis..."
+  },
+  {
+    "id": "4",
+    "photo": "/images/slider/s4.webp",
+    "name": "JEANS",
+    "price": "22.99",
+    "p": "Lorem ipsum dolor sit amet consectetur, adipisicing , debitis..."
+  },
+  {
+    "id": "5",
+    "photo": "/images/slider/s5.webp",
+    "name": "TEES & KNITS",
+    "price": "109.99",
+    "p": "Lorem ipsum dolor sit amet consectetur, adipisicing , debitis..."
+  },
+  {
+    "id": "6",
+    "photo": "/images/slider/s6.webp",
+    "name": "DRESSES",
+    "price": "89.99",
+    "p": "Lorem ipsum dolor sit amet consectetur, adipisicing , debitis..."
+  }
+]
