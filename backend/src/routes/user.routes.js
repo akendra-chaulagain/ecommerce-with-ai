@@ -15,7 +15,9 @@ import { verifyJwt } from "../middleware/auth.middleware.js";
 import { attemptLimit } from "../middleware/rateLimit.middleware.js";
 
 // register user
-router.route("/register-user").post(upload.single("avtar"), registerUser);
+router
+  .route("/register-user")
+  .post(upload.single("avtar"), registerUser);
 // secure routes
 router.route("/login-user").post(attemptLimit, loginUser); // login routes
 router.route("/logout-user").post(verifyJwt, logOutUser); // logout routes

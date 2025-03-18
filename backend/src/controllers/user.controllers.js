@@ -11,7 +11,7 @@ const registerUser = async (req, res) => {
   try {
     const { name, email, password, role, contact } = req.body;
     if (!name || !email || !password || contact === undefined) {
-      return res.status(400).json({ message: "Enter all the data" });
+      return res.status(400).json({ message: "Enter all the datas" });
     }
 
     const uerExist = await User.findOne({ email });
@@ -47,7 +47,7 @@ const registerUser = async (req, res) => {
     });
 
     const userData = await User.findById(user._id).select("-password");
-    return res.status(401).json({ message: "User Created", userData });
+    return res.status(200).json({ message: "User Created", userData });
   } catch (error) {
     return res
       .status(401)
