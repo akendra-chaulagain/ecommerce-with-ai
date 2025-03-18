@@ -21,6 +21,8 @@ const Semi_cat = () => {
         const response = await axiosInstence.get<{ data: ICategory[] }>(
           "/category/home-categorys"
         );
+        console.log(response);
+        
         if (Array.isArray(response.data.data)) {
           setCategory(response.data.data);
         } else {
