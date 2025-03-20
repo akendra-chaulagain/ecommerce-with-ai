@@ -19,7 +19,7 @@ const Semi_cat = () => {
     (async () => {
       try {
         const response = await axiosInstence.get<{ data: ICategory[] }>(
-          "/category/home-categorys"
+          "http://localhost:5001/api/v1/category/home-category"
         );
         console.log(response);
         
