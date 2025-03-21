@@ -34,7 +34,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ToastContainer
+
+
+
+        {/* <ToastContainer
           position="top-center"
           autoClose={5000}
           hideProgressBar
@@ -46,7 +49,7 @@ export default function RootLayout({
           pauseOnHover
           theme="colored"
           transition={Zoom}
-        />
+        /> */}
         <Topbar />
         <Logobar />
         <Navbar />
