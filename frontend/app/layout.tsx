@@ -36,8 +36,8 @@ export default function RootLayout({
       >
 
 
-
-        {/* <ToastContainer
+        
+        <ToastContainer
           position="top-center"
           autoClose={5000}
           hideProgressBar
@@ -49,7 +49,7 @@ export default function RootLayout({
           pauseOnHover
           theme="colored"
           transition={Zoom}
-        /> */}
+        />
         <Topbar />
         <Logobar />
         <Navbar />
