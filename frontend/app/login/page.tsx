@@ -1,11 +1,11 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { axiosInstence } from "@/hooks/axiosInstence";
+import { useNotificationToast } from "@/hooks/toast";
 import axios from "axios";
 import Link from "next/link";
 
 import React, { useState } from "react";
-import { toast } from "react-toastify";
 
 interface LoginResponse {
   message: string;
@@ -17,6 +17,7 @@ const Page = () => {
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const showToast = useNotificationToast(); // Use the custom hook
 
   const LoginUser = async () => {
     setLoading(true);
@@ -32,16 +33,21 @@ const Page = () => {
           withCredentials: true,
         }
       );
-      toast.success(response.data.message, {});
+
+      const message = response.data.message;
+      showToast(message);
       setTimeout(() => {
         window.location.href = "/login/verifyotp";
       }, 2000);
     } catch (error: unknown) {
       console.log(error);
       if (axios.isAxiosError(error)) {
-        setError(
-          error.response?.data || "An unknown error occurred. try again"
-        );
+        const errorMessage =
+          typeof error.response?.data === "object"
+            ? error.response?.data?.message ||
+              "An unknown error occurred. Try again"
+            : error.response?.data;
+        setError(errorMessage);
       } else {
         setError("Network error or server not reachable.");
       }
@@ -67,6 +73,7 @@ const Page = () => {
               name="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
             />
             <br />
             <input
@@ -76,6 +83,7 @@ const Page = () => {
               name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
             />
             {/* Show error message if there is an error */}
             {error && <p className="text-red-600 mt-2">{error}</p>}

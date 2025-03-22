@@ -2,17 +2,17 @@
 import { Button } from "@/components/ui/button";
 import React, { FormEvent, useState } from "react";
 import { AxiosError } from "axios"; // Import AxiosError from axios
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
 import Link from "next/link";
 import { axiosInstence } from "@/hooks/axiosInstence";
+import { useNotificationToast } from "@/hooks/toast";
 
 interface ErrorResponse {
   message: string;
 }
 
 const Page = () => {
+  const showToast = useNotificationToast(); // Use the custom hook
+
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -36,11 +36,11 @@ const Page = () => {
       const response = await axiosInstence.post(
         "/users/register-user",
         userData
-        
       );
 
       // window.location.href = "/login"; // This will redirect the user to the login page
-      toast.success(response.data.message, {});
+      const message = response.data.message;
+      showToast(message);
 
       // router.push("/logins");
     } catch (err) {

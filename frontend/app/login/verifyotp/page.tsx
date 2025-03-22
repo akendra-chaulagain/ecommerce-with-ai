@@ -1,17 +1,19 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { axiosInstence } from "@/hooks/axiosInstence";
+import { useNotificationToast } from "@/hooks/toast";
 import axios from "axios";
 import Link from "next/link";
 
 import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 
 interface LoginResponse {
   message: string;
 }
 
 const Page = () => {
+  const showToast = useNotificationToast(); // Use the custom hook
+
   // expire timer
   const [timeLeft, setTimeLeft] = useState(60);
   useEffect(() => {
@@ -40,7 +42,8 @@ const Page = () => {
           withCredentials: true,
         }
       );
-      toast.success(response.data.message, {});
+      const message = response.data.message;
+      showToast(message);
       setTimeout(() => {
         window.location.href = "/";
       }, 2000);

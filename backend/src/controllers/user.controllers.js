@@ -94,63 +94,6 @@ const loginUser = async (req, res, opt) => {
   }
 };
 
-// verify otp for login
-const verifyUserOtp = async (req, res) => {
-  try {
-    const { otp } = req.body;
-
-    const checkOTP = await Otp.findOne({ otp });
-
-    if (!checkOTP) {
-      return res.status(401).json({ message: "Invalid OTP" });
-    }
-    const email = checkOTP.email;
-
-    const user = await User.findOne({ email });
-    // creating an accesstoken anf refreshtoken
-    const accessToken = await jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.ACCESS_JSONTOKEN,
-      {
-        expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
-      }
-    );
-
-    // creating an refreshToken
-    const refreshToken = await jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.REFRESH_JSONTOKEN,
-      {
-        expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
-      }
-    );
-    // save refreshToken in the database
-    user.refreshToken = refreshToken;
-    user.save({ validateBeforeSave: false });
-
-    // Remove OTP after successful verification
-    await Otp.findByIdAndDelete(checkOTP._id);
-
-    const loggedInUser = await User.findById(user._id).select("-password");
-    const options = {
-      httpOnly: true, // Prevent XSS attacks
-      secure: true, // Send only over HTTPS
-    };
-    return res
-      .status(200)
-      .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", refreshToken, options)
-      .json({
-        message: "OTP verified successfully",
-        loggedInUser,
-      });
-  } catch (error) {
-    return res
-      .status(400)
-      .json({ message: "Server error", error: error.message });
-  }
-};
-
 // logout user
 const logOutUser = async (req, res) => {
   try {
@@ -336,6 +279,120 @@ const deleteUser = async (req, res) => {
   }
 };
 
+// verify otp for login
+const verifyUserOtp = async (req, res) => {
+  try {
+    const { otp } = req.body;
+
+    const checkOTP = await Otp.findOne({ otp });
+
+    if (!checkOTP) {
+      return res.status(401).json({ message: "Invalid OTP" });
+    }
+    const email = checkOTP.email;
+
+    const user = await User.findOne({ email });
+    // creating an accesstoken anf refreshtoken
+    const accessToken = await jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.ACCESS_JSONTOKEN,
+      {
+        expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+      }
+    );
+
+    // creating an refreshToken
+    const refreshToken = await jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.REFRESH_JSONTOKEN,
+      {
+        expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+      }
+    );
+    // save refreshToken in the database
+    user.refreshToken = refreshToken;
+    user.save({ validateBeforeSave: false });
+
+    // Remove OTP after successful verification
+    await Otp.findByIdAndDelete(checkOTP._id);
+
+    const loggedInUser = await User.findById(user._id).select("-password");
+    const options = {
+      httpOnly: true, // Prevent XSS attacks
+      secure: true, // Send only over HTTPS
+    };
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json({
+        message: "OTP verified successfully",
+        loggedInUser,
+      });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ message: "Server error", error: error.message });
+  }
+};
+
+// resent otp
+
+const resentOtpAgain = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const checkOTP = await Otp.findOne({ email });
+    console.log(checkOTP);
+
+    if (!checkOTP) {
+      return res.status(401).json({ message: "Invalid user for resent otp" });
+    }
+    const user = await User.findOne({ email });
+    // creating an accesstoken anf refreshtoken
+    const accessToken = await jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.ACCESS_JSONTOKEN,
+      {
+        expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+      }
+    );
+
+    // creating an refreshToken
+    const refreshToken = await jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.REFRESH_JSONTOKEN,
+      {
+        expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+      }
+    );
+    // save refreshToken in the database
+    user.refreshToken = refreshToken;
+    user.save({ validateBeforeSave: false });
+
+    // Remove OTP after successful verification
+    await Otp.findByIdAndDelete(checkOTP._id);
+
+    const loggedInUser = await User.findById(user._id).select("-password");
+    const options = {
+      httpOnly: true, // Prevent XSS attacks
+      secure: true, // Send only over HTTPS
+    };
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json({
+        message: "OTP verified successfully",
+        loggedInUser,
+      });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ message: "Server error", error: error.message });
+  }
+};
+
 export {
   registerUser,
   loginUser,
@@ -346,4 +403,5 @@ export {
   getUser,
   deleteUser,
   verifyUserOtp,
+  resentOtpAgain,
 };

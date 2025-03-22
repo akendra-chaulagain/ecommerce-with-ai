@@ -5,6 +5,7 @@ import {
   loginUser,
   logOutUser,
   registerUser,
+  resentOtpAgain,
   updateAvtar,
   updatePassword,
   updateUser,
@@ -29,6 +30,8 @@ router
 router.route("/user-details/:id").get(verifyJwt, getUser);
 router.route("/delete-user/:id").delete(verifyJwt, deleteUser);
 router.route("/login/verify-user").post( verifyUserOtp); // verify otp
+router.route("/login/resent-otp").post(resentOtpAgain); // verify otp
+// resentOtpAgain;
 
 //  authorize("admin");
 // router.route("/update-user").post(verifyJwt, authorize("Admin"), updateUser); // reset or update user routes

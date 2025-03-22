@@ -7,7 +7,7 @@ import Navbar from "@/components/Navbar";
 
 import Logobar from "@/components/Logobar";
 import Topbar from "@/components/Topbar";
-import { ToastContainer, Zoom } from "react-toastify";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,26 +34,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-
-
-        
-        <ToastContainer
-          position="bottom-right"
-          autoClose={5000}
-          hideProgressBar
-          newestOnTop
-          closeOnClick={false}
-          rtl
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-          transition={Zoom}
-        />
         <Topbar />
         <Logobar />
         <Navbar />
         {children}
+        <Toaster />
       </body>
     </html>
   );
