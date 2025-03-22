@@ -11,7 +11,6 @@ interface ICategory {
 }
 
 const Semi_cat = () => {
-  // <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
   const [category, setCategory] = useState<ICategory[] | null>([]);
   const [error, setError] = useState<boolean>(false);
 
