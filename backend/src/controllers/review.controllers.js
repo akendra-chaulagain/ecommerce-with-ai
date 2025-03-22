@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { Review } from "../models/review.models.js";
-import sendEmail from "../utils/sendEmail.js";
+import { sendreviewEmail } from "../utils/sendEmail.js";
 import { User } from "../models/user.models.js";
 
 // create review
@@ -24,7 +24,7 @@ const createReview = async (req, res) => {
     const emailSubject = "Thank You for Your Review!";
     const emailText = `Hi ${userData.name},\n\nThank you for reviewing review. Your feedback helps us improve!\n\nReview: ${comment}\nRating: ${rating}/5\n\nBest regards,\nYour E-Commerce Team`;
 
-    await sendEmail(userData.email, emailSubject, emailText);
+    await sendreviewEmail(userData.email, emailSubject, emailText);
 
     return res.status(201).json({
       message: "Review added & email sent successfully",

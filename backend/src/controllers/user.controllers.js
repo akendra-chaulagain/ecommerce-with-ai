@@ -3,7 +3,10 @@ import { User } from "../models/user.models.js";
 import bcrypt from "bcrypt";
 import { updatePhoto, uploadPhoto } from "../utils/cloudinary.js";
 import dotenv from "dotenv";
+
 import { v2 as cloudinary } from "cloudinary";
+import { SentOtpWhileLogin } from "../utils/sendEmail.js";
+import { Otp } from "../models/otp.modules.js";
 dotenv.config();
 
 // register
@@ -25,13 +28,10 @@ const registerUser = async (req, res) => {
     const hashPassword = bcrypt.hashSync(password, 10);
 
     const localFilePath = req.file?.path;
-   
 
     let avatarUpload = null;
     const folderName = "Users";
     if (localFilePath) {
-      
-
       avatarUpload = await uploadPhoto(localFilePath, folderName);
     }
 
@@ -56,13 +56,14 @@ const registerUser = async (req, res) => {
 };
 
 // login
-const loginUser = async (req, res) => {
+const loginUser = async (req, res, opt) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
       throw new Error("Enter all the fields");
     }
     const user = await User.findOne({ email });
+
     if (!user) {
       return res.status(401).json("User doesnot exist");
     }
@@ -71,7 +72,40 @@ const loginUser = async (req, res) => {
     if (!comparePassword) {
       return res.status(401).json("Wrong Password");
     }
-    // creating an accesstoken
+
+    // generate opt if the user and password is correct
+
+    // Generate OTP if credentials are correct
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Save OTP to database (auto-delete after 1 mins)
+    await Otp.create({ email, otp });
+
+    // Send OTP via email/SMS
+    await SentOtpWhileLogin(email, otp);
+    res
+      .status(200)
+
+      .json({
+        message: "OTP sent to your email. Please verify.",
+      });
+  } catch (error) {
+    res.status(400).json({ message: "Server error", error: error.message });
+  }
+};
+
+// verify otp for login
+const verifyUserOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(401).json({ message: "Invalid OTP" });
+    }
+
+    // creating an accesstoken anf refreshtoken
     const accessToken = await jwt.sign(
       { id: user._id, role: user.role },
       process.env.ACCESS_JSONTOKEN,
@@ -101,9 +135,12 @@ const loginUser = async (req, res) => {
       .cookie("accessToken", accessToken, options)
       .cookie("refreshToken", refreshToken, options)
       .json({
-        message: "login successfully",
+        message: "OTP verified successfully",
         loggedInUser,
       });
+
+    // Remove OTP after successful verification
+    await Otp.deleteOne({ email, otp });
   } catch (error) {
     res.status(400).json({ message: "Server error", error: error.message });
   }
@@ -303,4 +340,5 @@ export {
   updateAvtar,
   getUser,
   deleteUser,
+  verifyUserOtp,
 };
