@@ -19,10 +19,9 @@ const Semi_cat = () => {
     (async () => {
       try {
         const response = await axiosInstence.get<{ data: ICategory[] }>(
-          "http://localhost:5001/api/v1/category/home-category"
+          "/category/home-category"
         );
-        console.log(response);
-        
+
         if (Array.isArray(response.data.data)) {
           setCategory(response.data.data);
         } else {
@@ -37,9 +36,8 @@ const Semi_cat = () => {
 
   return (
     <>
+      {/* Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat, pariatur? */}
 
-{/* Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat, pariatur? */}
-    
       {category?.length === 0 ? (
         ""
       ) : (

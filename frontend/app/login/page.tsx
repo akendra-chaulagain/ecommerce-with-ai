@@ -3,8 +3,11 @@ import { Button } from "@/components/ui/button";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import axios from "axios";
 import Link from "next/link";
+
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+
+
 
 interface LoginResponse {
   message: string;
@@ -15,6 +18,7 @@ const Page = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
+  
 
   const LoginUser = async () => {
     const userData = {
@@ -30,6 +34,10 @@ const Page = () => {
         }
       );
       toast.success(response.data.message, {});
+      setTimeout(() => {
+         window.location.href = "/";
+      }, 2000);
+
     } catch (error: unknown) {
       console.log(error);
       if (axios.isAxiosError(error)) {
