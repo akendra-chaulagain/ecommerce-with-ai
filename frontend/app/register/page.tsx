@@ -4,13 +4,7 @@ import React, { FormEvent, useState } from "react";
 import { AxiosError } from "axios"; // Import AxiosError from axios
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-// import {
-//   Select,
-//   SelectContent,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-// } from "@/components/ui/select";
+
 import Link from "next/link";
 import { axiosInstence } from "@/hooks/axiosInstence";
 
@@ -42,6 +36,7 @@ const Page = () => {
       const response = await axiosInstence.post(
         "/users/register-user",
         userData
+        
       );
 
       // window.location.href = "/login"; // This will redirect the user to the login page

@@ -17,6 +17,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: "http://localhost:3000", // Allow only requests from this origin
+    credentials: true, // Allow cookies
   })
 );
 app.use(express.json()); // Enable JSON body parsing
