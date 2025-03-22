@@ -87,7 +87,7 @@ const loginUser = async (req, res, opt) => {
       .status(200)
 
       .json({
-        message: "OTP sent to your email. Please verify.",
+        message: "OTP sent to your email.",
       });
   } catch (error) {
     res.status(400).json({ message: "Server error", error: error.message });
@@ -97,14 +97,16 @@ const loginUser = async (req, res, opt) => {
 // verify otp for login
 const verifyUserOtp = async (req, res) => {
   try {
-    const { email, otp } = req.body;
+    const { otp } = req.body;
 
-    const user = await User.findOne({ email });
+    const checkOTP = await Otp.findOne({ otp });
 
-    if (!user) {
+    if (!checkOTP) {
       return res.status(401).json({ message: "Invalid OTP" });
     }
+    const email = checkOTP.email;
 
+    const user = await User.findOne({ email });
     // creating an accesstoken anf refreshtoken
     const accessToken = await jwt.sign(
       { id: user._id, role: user.role },
@@ -125,12 +127,16 @@ const verifyUserOtp = async (req, res) => {
     // save refreshToken in the database
     user.refreshToken = refreshToken;
     user.save({ validateBeforeSave: false });
+
+    // Remove OTP after successful verification
+    await Otp.findByIdAndDelete(checkOTP._id);
+
     const loggedInUser = await User.findById(user._id).select("-password");
     const options = {
       httpOnly: true, // Prevent XSS attacks
       secure: true, // Send only over HTTPS
     };
-    res
+    return res
       .status(200)
       .cookie("accessToken", accessToken, options)
       .cookie("refreshToken", refreshToken, options)
@@ -138,11 +144,10 @@ const verifyUserOtp = async (req, res) => {
         message: "OTP verified successfully",
         loggedInUser,
       });
-
-    // Remove OTP after successful verification
-    await Otp.deleteOne({ email, otp });
   } catch (error) {
-    res.status(400).json({ message: "Server error", error: error.message });
+    return res
+      .status(400)
+      .json({ message: "Server error", error: error.message });
   }
 };
 

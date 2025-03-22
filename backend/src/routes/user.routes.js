@@ -28,7 +28,7 @@ router
   .patch(verifyJwt, upload.single("avtar"), updateAvtar); // reset or update password routes
 router.route("/user-details/:id").get(verifyJwt, getUser);
 router.route("/delete-user/:id").delete(verifyJwt, deleteUser);
-router.route("/verify-user").post( verifyUserOtp); // verify otp
+router.route("/login/verify-user").post( verifyUserOtp); // verify otp
 
 //  authorize("admin");
 // router.route("/update-user").post(verifyJwt, authorize("Admin"), updateUser); // reset or update user routes

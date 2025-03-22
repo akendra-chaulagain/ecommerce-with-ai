@@ -4,37 +4,45 @@ import { axiosInstence } from "@/hooks/axiosInstence";
 import axios from "axios";
 import Link from "next/link";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 interface LoginResponse {
   message: string;
-  token?: string;
 }
 
 const Page = () => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  // expire timer
+  const [timeLeft, setTimeLeft] = useState(60);
+  useEffect(() => {
+    if (timeLeft === 0) return;
+    const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
+    return () => clearInterval(timer);
+  }, [timeLeft]);
+
+  const seconds = timeLeft % 60;
+
+  // verify otp
+  const [otp, setOtp] = useState<number>();
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState(false);
-
-  const LoginUser = async () => {
+  const verifyOTP = async () => {
     setLoading(true);
-    const userData = {
-      email,
-      password,
+    const otpData = {
+      otp,
     };
+
     try {
       const response = await axiosInstence.post<LoginResponse>(
-        "/users/login-user",
-        userData,
+        "/users/login/verify-user",
+        otpData,
         {
           withCredentials: true,
         }
       );
       toast.success(response.data.message, {});
       setTimeout(() => {
-        window.location.href = "/login/verifyotp";
+        window.location.href = "/";
       }, 2000);
     } catch (error: unknown) {
       console.log(error);
@@ -56,43 +64,44 @@ const Page = () => {
     <>
       <div className="flex items-center justify-center h-screen ">
         <div className="border-2 px-[30px] py-[50px]">
-          <h1 className="text-[20px]  font-semibold mb-[13px] text-red-600">
-            Login Page{" "}
-          </h1>
+          <div className=" flex text-[20px]  font-semibold mb-[13px] text-red-600">
+            Please Enter OTP
+            <span className="flex justify-center ml-[10px] mt-[4px] text-red-600 text-[15px] font-semibold">{`(Expires in: ${String(
+              seconds
+            ).padStart(2, "0")}s)`}</span>
+          </div>
+          <p className="text-[14px] mb-[20px] font-semibold">
+            Your One Time Password(OTP) has been sent to via email <br /> to
+            your registered email.
+          </p>
           <div className="">
             <input
-              type="text"
-              className="border-2 h-[50px] w-[400px] px-[10px] focus:border-red-600 focus:ring-1 outline-none rounded-lg"
-              placeholder="Email"
-              name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <br />
-            <input
-              type="password"
-              className="border-2 mt-[20px] h-[50px] w-[400px] px-[10px] focus:border-red-600 focus:ring-1 outline-none rounded-lg"
-              placeholder="Password"
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              type="tel"
+              className="border-2 h-[50px] w-full px-[10px] focus:border-red-600 focus:ring-1 outline-none rounded-lg"
+              name="otp"
+              placeholder="Enter a 6 digit code"
+              maxLength={6}
+              pattern="[0-9]{6}"
+              value={otp}
+              onChange={(e) => setOtp(Number(e.target.value))}
+              required
             />
             {/* Show error message if there is an error */}
-            {error && <p className="text-red-600 mt-2">{error}</p>}
-            <div className="mt-[20px] ">
+            {/* {error && <p className="text-red-600 mt-2">{error}</p>} */}
+            <div className="mt-[10px]">
               <Button
-                onClick={LoginUser}
+                onClick={verifyOTP}
                 className="bg-red-600 text-white border-2 w-[400px] hover:text-black hover:bg-white px-[40px] py-[25px]"
               >
-                {/* LOGIN */}
-                {loading ? "Loading..." : "LOGIN"}
+                {/* Verify */}
+                {loading ? "Loading..." : "Verify"}
               </Button>
             </div>
-            {}
+            {error && <p className="text-red-600 mt-2">{error}</p>}
           </div>
-          <span className="flex justify-center my-[8px] text-gray-500 cursor-pointer hover:text-red-600">
+          {/* <span className="flex justify-center my-[8px] text-gray-500 cursor-pointer hover:text-red-600">
             Forget Password ?
-          </span>
+          </span> */}
           <hr />
 
           <div className="mt-[20px]">
