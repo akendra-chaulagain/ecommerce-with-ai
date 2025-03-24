@@ -1,13 +1,71 @@
-"use state";
+"use client";
 import { ChevronRight, ShoppingCart, Star } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import Category from "@/category.json";
-// import Link from "next/link";
+// import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
+import { axiosInstence } from "@/hooks/axiosInstence";
+import Autoplay from "embla-carousel-autoplay";
 
-const page = () => {
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+
+interface iProduct {
+  _id: string;
+  categoryId: string;
+  name: string;
+  price: number;
+  description: string;
+  images: string[];
+}
+
+interface apiResponse {
+  message: string;
+  data: iProduct;
+}
+
+const Page = () => {
+  // const router = useRouter()
+  // const {productId} = router.query
+  // console.log(productId);
+
+  const pathname = usePathname();
+  const parts = pathname.split("/");
+  // Get the last part (product ID)
+  const lastId = parts[parts.length - 1].replace("product-details-", "");
+
+  const [product, setproduct] = useState<iProduct | null>(null);
+  const [error, setError] = useState<boolean>(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await axiosInstence.get<apiResponse>(
+          `product/product-details/${lastId}`
+        );
+        setproduct(response.data.data);
+      } catch (error) {
+        setError(true);
+        console.log(error);
+      }
+    })();
+  }, [lastId]);
+
+  console.log(product);
+
+  // for images
+  const plugin = React.useRef(
+    Autoplay({ delay: 1500, stopOnInteraction: true })
+  );
+
   return (
     <>
       <div className="mt-[30px]">
@@ -23,23 +81,41 @@ const page = () => {
 
         <div className="mt-[25px]">
           <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2">
-            <div className="flex justify-center">
-              <Image
-                src="/pd.webp"
-                alt="logo"
-                width={400}
-                height={100}
-                className=" h-[70vh] cursor-pointer"
-              />
-            </div>
+            <Carousel
+              plugins={[plugin.current]}
+              onMouseEnter={plugin.current.stop}
+              onMouseLeave={plugin.current.reset}
+              // opts={{ dots: true }}
+              className="relative w-[80%] h-[70vh]"
+            >
+              <CarouselContent>
+                {product?.images.map((data, index) => (
+                  <CarouselItem key={index} className="flex justify-center">
+                    <div className="relative w-full h-[70vh]">
+                      {" "}
+                      <Image
+                        src={data}
+                        alt="logo"
+                        layout="fill"
+                        // width={400}
+                        // height={100}
+                        // className=" h-[70vh] cursor-pointer"
+                        objectFit="cover"
+                        className="cursor-pointer"
+                      />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious />
+              <CarouselNext />
+            </Carousel>
 
             {/* product Details */}
 
             <div>
               <h1 className="text-[25px] font-bold flex justify-center mb-[18px]    ">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Laborum
-                sit similique corrupti eius soluta sunt optio repudiandae
-                repellat quisquam alias? Sed officia nemo perferendis.
+                {product?.name}
               </h1>
               <div className="flex justify-between my-[20px]">
                 <span>Style # P251121032</span>
@@ -107,21 +183,7 @@ const page = () => {
               {/* description
                */}
               <div className="mt-[20px]">
-                <p className="text-[16px]">
-                  Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                  Quaerat enim cum aperiam eaque. Iste optio maxime obcaecati
-                  nemo at, amet veniam nisi nihil quia. Quisquam incidunt magni
-                  quae inventore quidem sed neque debitis molestiae optio
-                  excepturi dolorum explicabo voluptas ullam quaerat aliquid
-                  consequuntur vero nesciunt, cumque officia, dolor aperiam
-                  sapiente deleniti? Deleniti corporis ipsam omnis voluptates,
-                  rerum reiciendis mollitia culpa autem blanditiis assumenda,
-                  qui porro dolorem, in exercitationem fuga quae id cumque
-                  beatae? Ducimus quas provident, modi facilis corporis tempore
-                  est exercitationem sint esse repellendus incidunt, perferendis
-                  unde. Reiciendis nisi, excepturi ratione reprehenderit
-                  pariatur at corporis voluptates cupiditate sunt accusantium.
-                </p>
+                <p className="text-[16px]">{product?.description}</p>
               </div>
             </div>
           </div>
@@ -176,4 +238,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

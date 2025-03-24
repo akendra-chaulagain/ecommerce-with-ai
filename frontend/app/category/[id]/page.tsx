@@ -13,12 +13,12 @@ interface iProduct {
   name: string;
   price: number;
   description: string;
-  image: string[];
+  images: string[];
 }
 
 interface iCategoryResponse {
   _id: string;
-  images: string;
+  categoryImage: string;
   name: string;
   description: string;
   products: iProduct[];
@@ -49,15 +49,15 @@ const Page = () => {
     })();
   }, [id]);
 
-  console.log(category);
+
 
   return (
     <>
       <div className="mt-[45px] px-[30px]">
         {/* category name */}
-        <p className="flex justify-center text-gray-500">Clothing /</p>
+        <p className="flex justify-center text-gray-500">{category?.name} /</p>
         <h1 className="flex justify-center text-[30px] font-semibold mt-[4px]">
-          CLOTHING
+          {category?.name}
         </h1>
         {/* filter section */}
 
@@ -69,7 +69,11 @@ const Page = () => {
           <div className="flex  sm:hidden  md:hidden lg:block hidden">
             <div className="flex justify-end">
               <p className="flex items-center mr-[10px]">
-                Showing <span className="font-bold mx-[5px]"> 2,682 </span>{" "}
+                Showing{" "}
+                <span className="font-bold mx-[5px]">
+                  {" "}
+                  {category?.products.length}{" "}
+                </span>{" "}
                 items
               </p>
             </div>
@@ -81,10 +85,8 @@ const Page = () => {
         {/* <div className="grid sm:grid-cols-2 md:grid-cols-5 gap-4"> */}
         <div className="grid sm:grid-cols-1 md:grid-cols-1  grid-cols-1 lg:grid-cols-5">
           {/* filter components  */}
-
           <Filter />
-
-          <Items />
+          <Items category={category}/>
         </div>
       </div>
     </>

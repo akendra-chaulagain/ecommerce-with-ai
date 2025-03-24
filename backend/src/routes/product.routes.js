@@ -71,9 +71,7 @@ router.route("/").get(
 // productDetails
 router.route("/product-details/:id").get(
   // verify token
-  verifyJwt,
-  // access control
-  authorize("Admin", "User"),
+
   // create Product
   productDetails
 );
