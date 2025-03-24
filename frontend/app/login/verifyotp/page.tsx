@@ -49,10 +49,13 @@ const Page = () => {
       }, 2000);
     } catch (error: unknown) {
       console.log(error);
-      if (axios.isAxiosError(error)) {
-        setError(
-          error.response?.data || "An unknown error occurred. try again"
-        );
+     if (axios.isAxiosError(error)) {
+        const errorMessage =
+          typeof error.response?.data === "object"
+            ? error.response?.data?.message ||
+              "An unknown error occurred. Try again"
+            : error.response?.data;
+        setError(errorMessage);
       } else {
         setError("Network error or server not reachable.");
       }

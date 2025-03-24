@@ -56,7 +56,7 @@ const registerUser = async (req, res) => {
 };
 
 // login
-const loginUser = async (req, res, opt) => {
+const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -348,6 +348,30 @@ const resentOtpAgain = async (req, res) => {
     if (!checkOTP) {
       return res.status(401).json({ message: "Invalid user for resent otp" });
     }
+
+    // resent otp again
+    // Generate OTP if credentials are correct
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Save OTP to database (auto-delete after 1 mins)
+    await Otp.findByIdAndUpdate(
+      checkOTP._id,
+      {
+        otp,
+      },
+      { new: true },
+      { runValidators: true }
+    );
+
+    // Send OTP via email/SMS
+    await SentOtpWhileLogin(email, otp);
+    // res
+    //   .status(200)
+
+    //   .json({
+    //     message: "OTP sent to your email.",
+    //   });
+
     const user = await User.findOne({ email });
     // creating an accesstoken anf refreshtoken
     const accessToken = await jwt.sign(
@@ -368,7 +392,7 @@ const resentOtpAgain = async (req, res) => {
     );
     // save refreshToken in the database
     user.refreshToken = refreshToken;
-    user.save({ validateBeforeSave: false });
+    await user.save({ validateBeforeSave: false });
 
     // Remove OTP after successful verification
     await Otp.findByIdAndDelete(checkOTP._id);
