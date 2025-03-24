@@ -40,7 +40,7 @@ const Page = () => {
         window.location.href = "/login/verifyotp";
       }, 2000);
     } catch (error: unknown) {
-      console.log(error);
+      
       if (axios.isAxiosError(error)) {
         const errorMessage =
           typeof error.response?.data === "object"

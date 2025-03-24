@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { axiosInstence } from "@/hooks/axiosInstence";
 
 interface ICategory {
+  _id: number;
   name: string;
   categoryImage: string;
   description?: string;
@@ -47,7 +48,7 @@ const Semi_cat = () => {
           <div className="grid grid-cols-2 mt-[25px] gap-4   sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
             {category?.map((item: ICategory, index) => (
               <div key={index} className="sm:mb-[20px] md:mb-[20px] mb-[20px]">
-                <Link href={"/category"}>
+                <Link href={`/category/${item._id}`}>
                   <Image
                     src={item.categoryImage}
                     alt="logo"

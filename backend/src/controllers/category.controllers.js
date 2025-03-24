@@ -216,10 +216,10 @@ const getProductsAcoordingToCategory = async (req, res) => {
       return res.status(404).json({ message: "Category doesnot exist" });
     }
 
-    const products = await Product.aggregate([
+    const products = await Category.aggregate([
       {
         $match: {
-          categoryId: new mongoose.Types.ObjectId(id),
+          _id: new mongoose.Types.ObjectId(id),
           // $match: { product: new mongoose.Types.ObjectId(id) }, // Match reviews based on product ID
         },
       },
@@ -234,6 +234,8 @@ const getProductsAcoordingToCategory = async (req, res) => {
       },
       
     ]);
+
+    
 
     console.log(products);
     return res
