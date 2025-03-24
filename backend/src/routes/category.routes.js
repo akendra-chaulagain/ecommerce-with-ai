@@ -7,6 +7,7 @@ import {
   editCategory,
   getAllCategories,
   getFiveDataForHomeScreen,
+  getProductsAcoordingToCategory,
 } from "../controllers/category.controllers.js";
 import { authorize, verifyJwt } from "../middleware/auth.middleware.js";
 import { upload } from "../middleware/multer.middleware.js";
@@ -53,10 +54,6 @@ router.route("/home-category").get(
 
 // category details route
 router.route("/category_details/:id").get(
-  // verify token
-  verifyJwt,
-  // access control
-  authorize("Admin", "User"),
   // get  individual category details
   categoryDetails
 );
@@ -70,6 +67,10 @@ router.route("/delete_category/:id").delete(
   deleteCategory
 );
 
-// delete category route
+// get products according to ths categoryId
+router.route("/:id").get(getProductsAcoordingToCategory);
 
 export default router;
+
+
+

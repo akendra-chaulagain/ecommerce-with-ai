@@ -1,4 +1,6 @@
+import mongoose from "mongoose";
 import { Category } from "../models/category.models.js";
+import { Product } from "../models/product.models.js";
 import { updatePhoto, uploadPhoto } from "../utils/cloudinary.js";
 import { v2 as cloudinary } from "cloudinary";
 import { PaginationParameters } from "mongoose-paginate-v2";
@@ -203,6 +205,48 @@ const categoryDetails = async (req, res) => {
   }
 };
 
+// get products according to the category
+const getProductsAcoordingToCategory = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const checkCategory = await Category.findById(id);
+
+    if (!checkCategory) {
+      return res.status(404).json({ message: "Category doesnot exist" });
+    }
+
+    const products = await Product.aggregate([
+      {
+        $match: {
+          categoryId: new mongoose.Types.ObjectId(id),
+          // $match: { product: new mongoose.Types.ObjectId(id) }, // Match reviews based on product ID
+        },
+      },
+
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "categoryId",
+          as: "products",
+        },
+      },
+      
+    ]);
+
+    console.log(products);
+    return res
+      .status(200)
+      .json({ message: "products according to category", products });
+  } catch (error) {
+    return res.status(401).json({
+      message: "Something went wrong! try again later",
+      error: error.message,
+    });
+  }
+};
+
 export {
   creatCategory,
   editCategory,
@@ -210,4 +254,5 @@ export {
   categoryDetails,
   deleteCategory,
   getFiveDataForHomeScreen,
+  getProductsAcoordingToCategory,
 };

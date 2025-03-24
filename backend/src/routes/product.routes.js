@@ -25,7 +25,6 @@ router.route("/create-product").post(
 );
 
 // edit product route
-
 router.route("/update-product/:id").patch(
   // verify token
   verifyJwt,
@@ -78,6 +77,5 @@ router.route("/product-details/:id").get(
   // create Product
   productDetails
 );
-
 
 export default router;
