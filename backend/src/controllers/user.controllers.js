@@ -73,15 +73,121 @@ const loginUser = async (req, res) => {
       return res.status(401).json("Wrong Password");
     }
 
-    // generate opt if the user and password is correct
-
     // Generate OTP if credentials are correct
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
     // Save OTP to database (auto-delete after 1 mins)
     await Otp.create({ email, otp });
 
+    // generate otemporary token for resend code
+    const temporaryAccessToken = await jwt.sign(
+      { email: user.email, role: user.role },
+      process.env.TEMPORARY_ACCESS_JSONTOKEN,
+      {
+        expiresIn: "5m",
+      }
+    );
+
     // Send OTP via email/SMS
+    await SentOtpWhileLogin(email, otp);
+    res
+      .status(200)
+      .cookie("tempToken", temporaryAccessToken, {
+        httpOnly: true,
+        secure: true,
+      })
+      .json({
+        message: "OTP sent to your email.",
+      });
+  } catch (error) {
+    res.status(400).json({ message: "Server error", error: error.message });
+  }
+};
+
+// verify otp for login
+const verifyUserOtp = async (req, res) => {
+  try {
+    const { otp } = req.body;
+
+    const checkOTP = await Otp.findOne({ otp });
+
+    if (!checkOTP) {
+      return res.status(401).json({ message: "Invalid OTP" });
+    }
+    const email = checkOTP.email;
+
+    const user = await User.findOne({ email });
+    // creating an accesstoken anf refreshtoken
+    const accessToken = await jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.ACCESS_JSONTOKEN,
+      {
+        expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+      }
+    );
+
+    // creating an refreshToken
+    const refreshToken = await jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.REFRESH_JSONTOKEN,
+      {
+        expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+      }
+    );
+    // save refreshToken in the database
+    user.refreshToken = refreshToken;
+    user.save({ validateBeforeSave: false });
+
+    // Remove OTP after successful verification
+    await Otp.findByIdAndDelete(checkOTP._id);
+
+    const loggedInUser = await User.findById(user._id).select("-password");
+    const options = {
+      httpOnly: true, // Prevent XSS attacks
+      secure: true, // Send only over HTTPS
+    };
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json({
+        message: "OTP verified successfully",
+        loggedInUser,
+      });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ message: "Server error", error: error.message });
+  }
+};
+
+// resent otp
+
+const resentOtpAgain = async (req, res) => {
+  try {
+    const temporaryAccessToken = req.cookies.tempToken;
+
+    if (!temporaryAccessToken) {
+      return res.status(401).json({ message: "Invalid User" });
+    }
+    // decoded token from the cookies for the resenf token
+    const decodToken = jwt.verify(
+      temporaryAccessToken,
+      process.env.TEMPORARY_ACCESS_JSONTOKEN
+    );
+
+    const email = decodToken.email;
+
+    const checkOTP = await User.findOne({ email });
+
+    if (!checkOTP) {
+      return res.status(401).json({ message: "Invalid user for resent otp" });
+    }
+
+    // Generate OTP if credentials are correct
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    // Save OTP to database (auto-delete after 1 mins)
+    await Otp.create({ email, otp });
+    // Send OTP via email
     await SentOtpWhileLogin(email, otp);
     res
       .status(200)
@@ -90,7 +196,9 @@ const loginUser = async (req, res) => {
         message: "OTP sent to your email.",
       });
   } catch (error) {
-    res.status(400).json({ message: "Server error", error: error.message });
+    return res
+      .status(400)
+      .json({ message: "Server error", error: error.message });
   }
 };
 
@@ -275,144 +383,6 @@ const deleteUser = async (req, res) => {
   } catch (error) {
     return res
       .status(500)
-      .json({ message: "Server error", error: error.message });
-  }
-};
-
-// verify otp for login
-const verifyUserOtp = async (req, res) => {
-  try {
-    const { otp } = req.body;
-
-    const checkOTP = await Otp.findOne({ otp });
-
-    if (!checkOTP) {
-      return res.status(401).json({ message: "Invalid OTP" });
-    }
-    const email = checkOTP.email;
-
-    const user = await User.findOne({ email });
-    // creating an accesstoken anf refreshtoken
-    const accessToken = await jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.ACCESS_JSONTOKEN,
-      {
-        expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
-      }
-    );
-
-    // creating an refreshToken
-    const refreshToken = await jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.REFRESH_JSONTOKEN,
-      {
-        expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
-      }
-    );
-    // save refreshToken in the database
-    user.refreshToken = refreshToken;
-    user.save({ validateBeforeSave: false });
-
-    // Remove OTP after successful verification
-    await Otp.findByIdAndDelete(checkOTP._id);
-
-    const loggedInUser = await User.findById(user._id).select("-password");
-    const options = {
-      httpOnly: true, // Prevent XSS attacks
-      secure: true, // Send only over HTTPS
-    };
-    return res
-      .status(200)
-      .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", refreshToken, options)
-      .json({
-        message: "OTP verified successfully",
-        loggedInUser,
-      });
-  } catch (error) {
-    return res
-      .status(400)
-      .json({ message: "Server error", error: error.message });
-  }
-};
-
-// resent otp
-
-const resentOtpAgain = async (req, res) => {
-  try {
-    const { email } = req.body;
-
-    const checkOTP = await Otp.findOne({ email });
-    console.log(checkOTP);
-
-    if (!checkOTP) {
-      return res.status(401).json({ message: "Invalid user for resent otp" });
-    }
-
-    // resent otp again
-    // Generate OTP if credentials are correct
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-    // Save OTP to database (auto-delete after 1 mins)
-    await Otp.findByIdAndUpdate(
-      checkOTP._id,
-      {
-        otp,
-      },
-      { new: true },
-      { runValidators: true }
-    );
-
-    // Send OTP via email/SMS
-    await SentOtpWhileLogin(email, otp);
-    // res
-    //   .status(200)
-
-    //   .json({
-    //     message: "OTP sent to your email.",
-    //   });
-
-    const user = await User.findOne({ email });
-    // creating an accesstoken anf refreshtoken
-    const accessToken = await jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.ACCESS_JSONTOKEN,
-      {
-        expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
-      }
-    );
-
-    // creating an refreshToken
-    const refreshToken = await jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.REFRESH_JSONTOKEN,
-      {
-        expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
-      }
-    );
-    // save refreshToken in the database
-    user.refreshToken = refreshToken;
-    await user.save({ validateBeforeSave: false });
-
-    // Remove OTP after successful verification
-    await Otp.findByIdAndDelete(checkOTP._id);
-
-    const loggedInUser = await User.findById(user._id).select("-password");
-    const options = {
-      httpOnly: true, // Prevent XSS attacks
-      secure: true, // Send only over HTTPS
-    };
-    return res
-      .status(200)
-      .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", refreshToken, options)
-      .json({
-        message: "OTP verified successfully",
-        loggedInUser,
-      });
-  } catch (error) {
-    return res
-      .status(400)
       .json({ message: "Server error", error: error.message });
   }
 };

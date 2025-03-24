@@ -14,7 +14,10 @@ import {
 const router = Router();
 import { upload } from "../middleware/multer.middleware.js";
 import { verifyJwt } from "../middleware/auth.middleware.js";
-import { attemptLimit } from "../middleware/rateLimit.middleware.js";
+import {
+  attemptLimit,
+  verifyCodeRateLimit,
+} from "../middleware/rateLimit.middleware.js";
 
 // register user
 router.route("/register-user").post(upload.single("avtar"), registerUser);
@@ -30,7 +33,7 @@ router
 router.route("/user-details/:id").get(verifyJwt, getUser);
 router.route("/delete-user/:id").delete(verifyJwt, deleteUser);
 router.route("/login/verify-user").post( verifyUserOtp); // verify otp
-router.route("/login/resent-otp").post(resentOtpAgain); // verify otp
+router.route("/login/resent-otp").post( resentOtpAgain); // verify otp
 // resentOtpAgain;
 
 //  authorize("admin");

@@ -6,4 +6,13 @@ const attemptLimit = rateLimit({
   message: "You have exceeded the 3 login attempts ! Please try again later.",
 });
 
-export { attemptLimit };
+
+
+
+const verifyCodeRateLimit = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 1,
+  message: "You have exceeded the  attempts ! Please try again later.",
+});
+
+export { attemptLimit, verifyCodeRateLimit };
