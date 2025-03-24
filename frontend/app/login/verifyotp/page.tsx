@@ -12,7 +12,6 @@ interface LoginResponse {
 
 const Page = () => {
   const showToast = useNotificationToast(); // Use the custom hook
-
   // expire timer
   const [timeLeft, setTimeLeft] = useState(60);
   useEffect(() => {
@@ -27,6 +26,7 @@ const Page = () => {
   const [otp, setOtp] = useState<number>();
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [resendDisabled, setResendDisabled] = useState(false);
 
   const verifyOTP = async () => {
     setLoading(true);
@@ -70,6 +70,8 @@ const Page = () => {
   const handleResendCode = async () => {
     if (timeLeft > 0) return;
     setLoading(true);
+    setResendDisabled(true); // Disable resend button
+    setTimeLeft(60); // Restart timer
     const otpData = {
       otp,
     };
@@ -140,7 +142,9 @@ const Page = () => {
               <Button
                 onClick={verifyOTP}
                 disabled={timeLeft === 0}
-                className="bg-red-600 text-white border-2 w-[400px] hover:text-black hover:bg-white px-[40px] py-[25px]"
+                className={`bg-red-600 text-white border-2 w-[400px] hover:text-black hover:bg-white px-[40px] py-[25px] ${
+                  timeLeft === 0 ? "cursor-not-allowed" : ""
+                }`}
               >
                 {/* Verify */}
                 {loading ? "Loading..." : "Verify"}
@@ -155,12 +159,13 @@ const Page = () => {
 
             <button
               className="  text-gray-500 cursor-pointer"
-              disabled={timeLeft > 0}
+              disabled={resendDisabled}
             >
               Didn&apos;t receive code ?{" "}
-              <span onClick={handleResendCode}
+              <span
+                onClick={handleResendCode}
                 className={`text-red-600 underline hover:text-red-800 ${
-                  timeLeft > 0 ? "cursor-not-allowed opacity-50" : ""
+                  resendDisabled ? "cursor-not-allowed opacity-50" : ""
                 }`}
               >
                 Resend
