@@ -5,23 +5,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 // import Link from "next/link";
-
-interface iProduct {
-  _id: string;
-  categoryId: string;
-  name: string;
-  price: number;
-  description: string;
-  images: string[];
-}
-
-interface iCategoryResponse {
-  _id: string;
-  categoryImage: string;
-  name: string;
-  description: string;
-  products: iProduct[];
-}
+import { iProduct, iCategoryResponse } from "@/types/types";
 
 interface ItemsProps {
   category: iCategoryResponse | null;

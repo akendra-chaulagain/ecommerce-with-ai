@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   deleteUser,
+  getLoginUser,
   getUser,
   loginUser,
   logOutUser,
@@ -23,6 +24,9 @@ import {
 router.route("/register-user").post(upload.single("avtar"), registerUser);
 // secure routes
 router.route("/login-user").post(attemptLimit, loginUser); // login routes
+// get login user
+router.route("/login-user/profile").get(verifyJwt, getLoginUser); // login routes
+
 router.route("/logout-user").post(verifyJwt, logOutUser); // logout routes
 router.route("/reset-password").patch(attemptLimit, verifyJwt, updatePassword); // reset or update password routes
 // router.route("/update-user").post(verifyJwt, updateUser); // reset or update password routes
@@ -32,8 +36,8 @@ router
   .patch(verifyJwt, upload.single("avtar"), updateAvtar); // reset or update password routes
 router.route("/user-details/:id").get(verifyJwt, getUser);
 router.route("/delete-user/:id").delete(verifyJwt, deleteUser);
-router.route("/login/verify-user").post( verifyUserOtp); // verify otp
-router.route("/login/resent-otp").post( resentOtpAgain); // verify otp
+router.route("/login/verify-user").post(verifyUserOtp); // verify otp
+router.route("/login/resent-otp").post(resentOtpAgain); // resent otp
 // resentOtpAgain;
 
 //  authorize("admin");

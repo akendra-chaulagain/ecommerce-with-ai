@@ -3,13 +3,11 @@ import { ChevronRight, ShoppingCart, Star } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import React, { useEffect, useState } from "react";
-
-import Category from "@/category.json";
 // import { useRouter } from "next/router";
 import { usePathname } from "next/navigation";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import Autoplay from "embla-carousel-autoplay";
-
+import Link from "next/link";
 import {
   Carousel,
   CarouselContent,
@@ -17,20 +15,12 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-
-interface iProduct {
-  _id: string;
-  categoryId: string;
-  name: string;
-  price: number;
-  description: string;
-  images: string[];
-}
-
-interface apiResponse {
-  message: string;
-  data: iProduct;
-}
+import {
+  iProduct,
+  apiResponse,
+  iCategoryResponse,
+  ApiResponse,
+} from "@/types/types";
 
 const Page = () => {
   // const router = useRouter()
@@ -39,12 +29,14 @@ const Page = () => {
 
   const pathname = usePathname();
   const parts = pathname.split("/");
+
   // Get the last part (product ID)
   const lastId = parts[parts.length - 1].replace("product-details-", "");
-
   const [product, setproduct] = useState<iProduct | null>(null);
   const [error, setError] = useState<boolean>(false);
+  console.log(error);
 
+  // for product details
   useEffect(() => {
     (async () => {
       try {
@@ -59,7 +51,24 @@ const Page = () => {
     })();
   }, [lastId]);
 
-  console.log(product);
+  // for suggestion
+  // get tge category id
+  const categoryId = parts[parts.length - 2];
+  const [category, setCategory] = useState<iCategoryResponse | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await axiosInstence.get<ApiResponse>(
+          `/category/${categoryId}`
+        );
+        setCategory(response.data.products[0]);
+      } catch (error) {
+        setError(true);
+        console.log(error);
+      }
+    })();
+  }, [categoryId]);
 
   // for images
   const plugin = React.useRef(
@@ -197,7 +206,7 @@ const Page = () => {
         </h1>
 
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
-          {Category.map((data) => (
+          {/* {Category.map((data) => (
             <div
               key={data.id}
               className="cursor-pointer border-2 border-[#f2f2f2] p-4 rounded "
@@ -223,6 +232,46 @@ const Page = () => {
                 </span>
                 <span className="ml-[5px]">23</span>
               </div>
+
+              <Button
+                variant="outline"
+                className="bg-red-600 text-white text-[15px] mt-[10px]"
+              >
+                Add to Cart <ShoppingCart size={16} />
+              </Button>
+            </div>
+          ))} */}
+
+          {category?.products?.map((data: iProduct, index) => (
+            <div
+              key={index}
+              className="cursor-pointer border-2 border-[#f2f2f2] p-4 rounded "
+            >
+              <Link
+                href={`/category/${category._id}/product-details-${data._id}`}
+              >
+                <Image
+                  src={data.images[0]}
+                  alt="logo"
+                  width={300}
+                  height={100}
+                  className=" object-fill cursor-pointer ml-[6px]"
+                />
+                <h3 className="font-semibold text-[21px] text-red-600 ml-[6px]">
+                  ${data.price}
+                </h3>
+                <p className="text-[16px] ml-[6px]">{data.description}</p>
+                <div className="flex ml-[6px]">
+                  <span className="flex mt-[6px] mb-[10px]">
+                    <Star size={15} color="red" />
+                    <Star size={15} color="red" />
+                    <Star size={15} color="red" />
+                    <Star size={15} color="red" />
+                    <Star size={15} color="red" />
+                  </span>
+                  <span className="ml-[5px]">23</span>
+                </div>
+              </Link>
 
               <Button
                 variant="outline"

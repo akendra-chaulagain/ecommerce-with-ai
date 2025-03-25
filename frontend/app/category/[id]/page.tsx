@@ -5,29 +5,7 @@ import Items from "../components/Items";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { useParams } from "next/navigation";
 // import Link from "next/link";
-
-// Define your interfaces for products and category
-interface iProduct {
-  _id: string;
-  categoryId: string;
-  name: string;
-  price: number;
-  description: string;
-  images: string[];
-}
-
-interface iCategoryResponse {
-  _id: string;
-  categoryImage: string;
-  name: string;
-  description: string;
-  products: iProduct[];
-}
-
-interface ApiResponse {
-  message: string;
-  products: iCategoryResponse[]; // This is an array of CategoryResponse
-}
+import { iCategoryResponse, ApiResponse } from "@/types/types";
 
 const Page = () => {
   // const router = useRouter();
@@ -48,8 +26,7 @@ const Page = () => {
       }
     })();
   }, [id]);
-
-
+  console.log(error);
 
   return (
     <>
@@ -86,7 +63,7 @@ const Page = () => {
         <div className="grid sm:grid-cols-1 md:grid-cols-1  grid-cols-1 lg:grid-cols-5">
           {/* filter components  */}
           <Filter />
-          <Items category={category}/>
+          <Items category={category} />
         </div>
       </div>
     </>
