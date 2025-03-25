@@ -6,11 +6,10 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 
 const Logobar = () => {
-  const  user  = useAuth();
-  console.log(user)
-  console.log("cha");
+  const user = useAuth();
+  console.log(user.user);
   
-  
+
   return (
     <>
       <div className=" h-auto mt-[25px] px-[10px]  hidden  sm:hidden lg:block">
@@ -65,17 +64,16 @@ const Logobar = () => {
                 <Search />
               </span>
             </div>
-            {user ? (
-              <Link href="/logout" className="flex cursor-pointer">
-                <span>Log out</span>
-              </Link>
-            ) : (
-              <Link href="/register" className="flex cursor-pointer">
+
+            {user.user===null ? (
+             <Link href="/register" className="flex cursor-pointer">
                 <span>
                   <User />
                 </span>
                 <span className="ml-[7px] hover:underline">Sign in</span>
               </Link>
+            ) : (
+             ""
             )}
 
             <Link href="/cart" className="flex cursor-pointer">

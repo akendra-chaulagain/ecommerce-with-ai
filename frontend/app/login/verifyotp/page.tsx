@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { useNotificationToast } from "@/hooks/toast";
 import axios from "axios";
-
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 
 interface LoginResponse {
@@ -11,12 +12,9 @@ interface LoginResponse {
 }
 
 const Page = () => {
-
-  
-
-
-
+  const router = useRouter();
   const showToast = useNotificationToast(); // Use the custom hook
+
   // expire timer
   const [timeLeft, setTimeLeft] = useState(60);
   useEffect(() => {
@@ -24,15 +22,25 @@ const Page = () => {
     const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
     return () => clearInterval(timer);
   }, [timeLeft]);
-
   const seconds = timeLeft % 60;
 
   // verify otp
   const [otp, setOtp] = useState<number>();
   const [error, setError] = useState<string>("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [resendDisabled, setResendDisabled] = useState(false);
 
+  useEffect(() => {
+    const tempToken = Cookies.get("tempToken");
+    console.log(tempToken);
+
+    if (!tempToken) {
+      // If tempToken is not present, redirect to the login page
+      // router.push("/login");
+    }
+  }, [router]);
+
+  // verify otp
   const verifyOTP = async () => {
     setLoading(true);
     const otpData = {
@@ -49,9 +57,6 @@ const Page = () => {
       );
       const message = response.data.message;
       showToast(message);
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 2000);
     } catch (error: unknown) {
       console.log(error);
       if (axios.isAxiosError(error)) {

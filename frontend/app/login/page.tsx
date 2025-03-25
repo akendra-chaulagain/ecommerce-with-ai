@@ -4,8 +4,9 @@ import { axiosInstence } from "@/hooks/axiosInstence";
 import { useNotificationToast } from "@/hooks/toast";
 import axios from "axios";
 import Link from "next/link";
-
-import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+// import Cookies from "js-cookie";
+import React, {  useState } from "react";
 
 interface LoginResponse {
   message: string;
@@ -13,6 +14,7 @@ interface LoginResponse {
 }
 
 const Page = () => {
+  const router = useRouter();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
@@ -34,13 +36,17 @@ const Page = () => {
         }
       );
 
+      
       const message = response.data.message;
+      console.log(response);
+      
       showToast(message);
       setTimeout(() => {
         window.location.href = "/login/verifyotp";
       }, 2000);
+
+    
     } catch (error: unknown) {
-      
       if (axios.isAxiosError(error)) {
         const errorMessage =
           typeof error.response?.data === "object"
@@ -57,6 +63,7 @@ const Page = () => {
       setLoading(false);
     }
   };
+
 
   return (
     <>
