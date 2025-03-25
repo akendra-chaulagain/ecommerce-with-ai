@@ -14,10 +14,11 @@ import {
 } from "../controllers/user.controllers.js";
 const router = Router();
 import { upload } from "../middleware/multer.middleware.js";
-import { verifyJwt } from "../middleware/auth.middleware.js";
 import {
-  attemptLimit,
-} from "../middleware/rateLimit.middleware.js";
+  verifyJwt,
+  verifyTemporaryToken,
+} from "../middleware/auth.middleware.js";
+import { attemptLimit } from "../middleware/rateLimit.middleware.js";
 
 // register user
 router.route("/register-user").post(upload.single("avtar"), registerUser);

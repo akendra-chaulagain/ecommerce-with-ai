@@ -83,21 +83,34 @@ const loginUser = async (req, res) => {
       { email: user.email, role: user.role },
       process.env.TEMPORARY_ACCESS_JSONTOKEN,
       {
-        expiresIn: "5m",
+        expiresIn: "2m",
       }
     );
 
     // Send OTP via email/SMS
+    // await SentOtpWhileLogin(email, otp);
+    // res
+    //   .status(200)
+    //   .cookie("tempToken", temporaryAccessToken, {
+    //     httpOnly: true,
+    //     secure: true,
+    //     sameSite: "Strict",
+    //   })
+    //   .json({
+    //     message: "OTP sent to your email.",
+    //   });
+
+    // Set the temporary token as a cookie
     await SentOtpWhileLogin(email, otp);
-    res
-      .status(200)
-      .cookie("tempToken", temporaryAccessToken, {
-        httpOnly: true,
-        secure: true,
-      })
-      .json({
-        message: "OTP sent to your email.",
-      });
+    res.cookie("tempToken", temporaryAccessToken, {
+      httpOnly: true, // Prevent client-side JS from accessing
+      secure: true, // Use HTTPS in production
+      maxAge: 2 * 60 * 1000, // 2 minutes expiry
+      sameSite: "Strict", // Prevent cross-site request forgery
+    });
+
+    // Send a response to indicate success
+    res.status(200).json({ message: "OTP sent to your email" });
   } catch (error) {
     res.status(400).json({ message: "Server error", error: error.message });
   }
@@ -139,6 +152,7 @@ const verifyUserOtp = async (req, res) => {
 
     // Remove OTP after successful verification
     await Otp.findByIdAndDelete(checkOTP._id);
+    res.clearCookie("tempToken"); // Remove temp token
 
     const loggedInUser = await User.findById(user._id).select("-password");
     const options = {
@@ -202,12 +216,11 @@ const resentOtpAgain = async (req, res) => {
   }
 };
 
-
 // user profile
-const getLoginUser = async (req,res) => {
+const getLoginUser = async (req, res) => {
   try {
-    console.log('ak');
-    
+    console.log("ak");
+
     const user = await User.findById(req.user.id).select("-password"); // Exclude password
     if (!user) return res.status(404).json({ message: "User not found" });
 
@@ -215,9 +228,7 @@ const getLoginUser = async (req,res) => {
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
-
-}
-
+};
 
 // logout user
 const logOutUser = async (req, res) => {
