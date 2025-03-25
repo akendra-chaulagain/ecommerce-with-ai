@@ -1,3 +1,12 @@
+export interface User {
+  _id: string;
+  name: string;
+  email: string;
+  avatar?: string; // Optional field for avatar, adjust based on actual API response
+  contact?: number;
+  role?: string;
+}
+
 export interface iProduct {
   _id: string;
   categoryId: string;
@@ -9,7 +18,7 @@ export interface iProduct {
 
 export interface apiResponse {
   message: string;
-  data:iProduct ;
+  data: iProduct;
 }
 
 // Define your export interfaces for products and category

@@ -1,9 +1,16 @@
+"use client";
 import React from "react";
 import { CreditCard, MapPin, Search, ShoppingCart, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 
 const Logobar = () => {
+  const  user  = useAuth();
+  console.log(user)
+  console.log("cha");
+  
+  
   return (
     <>
       <div className=" h-auto mt-[25px] px-[10px]  hidden  sm:hidden lg:block">
@@ -58,12 +65,19 @@ const Logobar = () => {
                 <Search />
               </span>
             </div>
-            <Link href="/register" className="flex cursor-pointer">
-              <span>
-                <User />
-              </span>
-              <span className="ml-[7px] hover:underline">Sign in</span>
-            </Link>
+            {user ? (
+              <Link href="/logout" className="flex cursor-pointer">
+                <span>Log out</span>
+              </Link>
+            ) : (
+              <Link href="/register" className="flex cursor-pointer">
+                <span>
+                  <User />
+                </span>
+                <span className="ml-[7px] hover:underline">Sign in</span>
+              </Link>
+            )}
+
             <Link href="/cart" className="flex cursor-pointer">
               <span>
                 <ShoppingCart />

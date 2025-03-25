@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 import Logobar from "@/components/Logobar";
 import Topbar from "@/components/Topbar";
 import { Toaster } from "@/components/ui/toaster";
+import { AuthProvider } from "@/context/AuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,7 +38,7 @@ export default function RootLayout({
         <Topbar />
         <Logobar />
         <Navbar />
-        {children}
+        <AuthProvider>{children}</AuthProvider>
         <Toaster />
       </body>
     </html>

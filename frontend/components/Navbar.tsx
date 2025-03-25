@@ -1,7 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import React from "react";
 
 const Navbar = () => {
+
+
+
+ 
   return (
     <>
       {/* <div className="mt-[25px] px-[20px] text-[14px] font-bold hidden md:block"> */}

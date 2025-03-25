@@ -17,7 +17,6 @@ import { upload } from "../middleware/multer.middleware.js";
 import { verifyJwt } from "../middleware/auth.middleware.js";
 import {
   attemptLimit,
-  verifyCodeRateLimit,
 } from "../middleware/rateLimit.middleware.js";
 
 // register user
