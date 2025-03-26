@@ -42,10 +42,7 @@ const Page = () => {
       }
     })();
   }, [lastId]);
-  const reviews:iReview[] = product?.reviews ?? [];
-  
-  
-  
+  const reviews: iReview[] = product?.reviews ?? [];
 
   // for suggestion
 

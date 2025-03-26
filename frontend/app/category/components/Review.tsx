@@ -7,10 +7,17 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { iReview } from "@/types/types";
 
 interface ReviewProps {
-  reviews: iReview[]; // Expecting an array of iReview
+  reviews: iReview[];
 }
 
+const calculateAverageRating = (reviews: { rating: number }[]) => {
+  if (reviews.length === 0) return "0.0"; // Avoid division by zero
+  const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+  return (totalRating / reviews.length).toFixed(1); // Round to 1 decimal place
+};
+
 const Review: React.FC<ReviewProps> = ({ reviews }) => {
+  const averateRating = calculateAverageRating(reviews);
   return (
     <>
       <div className="mt-[45px] mb-[40px]">
@@ -28,13 +35,22 @@ const Review: React.FC<ReviewProps> = ({ reviews }) => {
           <h1 className="text-[25px] font-semibold">Customer reviews</h1>
           <div className="flex ml-[6px]">
             <span className="flex mt-[6px] mb-[10px]">
-              <Star size={20} color="red" />
-              <Star size={20} color="red" />
-              <Star size={20} color="red" />
-              <Star size={20} color="red" />
+              {Array.from({ length: 5 }).map((_, index) => (
+                <Star
+                  key={index}
+                  size={20}
+                  color={
+                    index < Math.round(parseFloat(averateRating))
+                      ? "red "
+                      : "gray"
+                  }
+                />
+              ))}
               {/* <Star size={20} color="red" /> */}
             </span>
-            <span className="ml-[5px] text-[20px]">4 out of 5</span>
+            <span className="ml-[5px] text-[20px]">
+              {averateRating} out of 5
+            </span>
             <br />
           </div>
           <p className="text-[14px] mb-[14px]">
@@ -71,10 +87,15 @@ const Review: React.FC<ReviewProps> = ({ reviews }) => {
 
               <div className="ml-[6px]">
                 <span className="flex mt-[6px] mb-[10px]">
-                  <Star size={20} color="red" />
-                  <Star size={20} color="red" />
-                  <Star size={20} color="red" />
-                  <Star size={20} color="red" />
+                  <span className="flex mt-[6px] mb-[10px]">
+                    {Array.from({ length: 5 }).map((_, starIndex) => (
+                      <Star
+                        key={starIndex}
+                        size={20}
+                        color={starIndex < data.rating ? "red" : "gray"}
+                      />
+                    ))}
+                  </span>
                   {/* <Star size={20} color="red" /> */}
                 </span>
                 <p>{data.comment}</p>
