@@ -237,7 +237,6 @@ const getProductsAcoordingToCategory = async (req, res) => {
 
     
 
-    console.log(products);
     return res
       .status(200)
       .json({ message: "products according to category", products });

@@ -394,6 +394,7 @@ const getUser = async (req, res) => {
 // delete user
 const deleteUser = async (req, res) => {
   try {
+     console.log(`Delete request received for user ID: ${req.params.id}`);
     const user = await User.findById(req.params.id).select("-password");
 
     if (!user) {

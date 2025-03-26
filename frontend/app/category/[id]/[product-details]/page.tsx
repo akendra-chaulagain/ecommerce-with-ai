@@ -21,6 +21,7 @@ import {
   iCategoryResponse,
   ApiResponse,
 } from "@/types/types";
+import Review from "../../components/Review";
 
 const Page = () => {
   // const router = useRouter()
@@ -283,6 +284,9 @@ const Page = () => {
           ))}
         </div>
       </div>
+
+      {/* Review */}
+      <Review />
     </>
   );
 };
