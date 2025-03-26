@@ -3,8 +3,16 @@ import { Star } from "lucide-react";
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
 import { iReview } from "@/types/types";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface ReviewProps {
   reviews: iReview[];
@@ -62,12 +70,68 @@ const Review: React.FC<ReviewProps> = ({ reviews }) => {
             <p className="text-[18px] font-semibold">
               Share your thoughts with other customers
             </p>
-            <Button
-              variant="outline"
-              className="bg-red-600 text-white text-[15px] mt-[10px]"
-            >
-              Write a customer review
-            </Button>
+
+            {/*  */}
+
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="bg-red-600 text-white text-[15px] mt-[10px]"
+                >
+                  Write a customer review
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[900px]">
+                <DialogHeader>
+                  <DialogTitle className="text-[25px] mb[20px]">
+                    Add Review
+                  </DialogTitle>
+                  <DialogDescription>
+                    <textarea className="w-full h-[30vh] border border-gray-700 p-2 rounded-md text-[17px] text-black"></textarea>
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <span className="flex mt-[6px] mb-[10px]">
+                    <Star
+                      className="cursor-pointer transition-all"
+                      size={25}
+                      color="red"
+                    />
+                    <Star
+                      className="cursor-pointer transition-all"
+                      size={25}
+                      color="red"
+                    />
+                    <Star
+                      className="cursor-pointer transition-all"
+                      size={25}
+                      color="red"
+                    />
+                    <Star
+                      className="cursor-pointer transition-all"
+                      size={25}
+                      color="red"
+                    />
+                    <Star
+                      className="cursor-pointer hover:bg-red-500 hover:text-white p-1 rounded-full transition-all"
+                      size={40}
+                      color="black"
+                    />
+
+                    {/* <Star size={20} color="red" /> */}
+                  </span>
+                </div>
+                <DialogFooter>
+                  <Button
+                    type="submit"
+                    className="bg-red-600 text-white text-[15px] mt-[10px] hover:bg-slate-100 hover:text-black"
+                  >
+                    Save changes
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
         {/* {reviews.map((data,index))} */}
