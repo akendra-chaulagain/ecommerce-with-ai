@@ -42,15 +42,29 @@ const Page = () => {
     (async () => {
       try {
         const response = await axiosInstence.get<apiResponse>(
-          `product/product-details/${lastId}`
+          `review/review_according-to-product/${lastId}`
         );
-        setproduct(response.data.data);
+        setproduct(response.data.data[0]);
+
+        // if (response.data.data && response.data.data.length > 0) {
+        //   const productDetails = response.data.data[0].productDetails;
+
+        //   if (productDetails) {
+        //     // Directly access the productDetails object
+        //     setproduct(productDetails);
+        //   } else {
+        //     setError(true); // Handle case when productDetails is not available
+        //   }
+        // }
       } catch (error) {
         setError(true);
         console.log(error);
       }
     })();
   }, [lastId]);
+
+  const productDetails = product?.productDetails[0];
+  const review = product?.reviews;
 
   // for suggestion
   // get tge category id
@@ -99,7 +113,7 @@ const Page = () => {
               className="relative w-[80%] h-[70vh]"
             >
               <CarouselContent>
-                {product?.images.map((data, index) => (
+                {productDetails?.images.map((data, index) => (
                   <CarouselItem key={index} className="flex justify-center">
                     <div className="relative w-full h-[70vh]">
                       {" "}
@@ -286,7 +300,7 @@ const Page = () => {
       </div>
 
       {/* Review */}
-      <Review />
+      <Review review={review} />
     </>
   );
 };

@@ -14,11 +14,22 @@ export interface iProduct {
   price: number;
   description: string;
   images: string[];
+  // iProductDetails?:iProduct;
+  productDetails?: iProductDetails;
 }
 
 export interface apiResponse {
   message: string;
-  data: iProduct;
+  data: iProduct[];
+}
+
+export interface iProductDetails {
+  _id: string;
+  categoryId: string;
+  description: string;
+  images: string[];
+  name: string;
+  price: number;
 }
 
 // Define your export interfaces for products and category
@@ -34,3 +45,6 @@ export interface ApiResponse {
   message: string;
   products: iCategoryResponse[]; // This is an array of CategoryResponse
 }
+
+
+

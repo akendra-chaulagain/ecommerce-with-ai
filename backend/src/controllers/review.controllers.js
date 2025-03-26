@@ -42,33 +42,76 @@ const createReview = async (req, res) => {
 const getAllReviewAccordingToProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const allproducts = await Review.aggregate([
-      {
-        $match: { product: new mongoose.Types.ObjectId(id) }, // Match reviews based on product ID
-      },
+    const allproducts = await Review.aggregate(
+      //   [
+      //   {
+      //     $match: { product: new mongoose.Types.ObjectId(id) }, // Match reviews based on product ID
+      //   },
 
-      {
-        $lookup: {
-          from: "users",
-          localField: "user",
-          foreignField: "_id",
-          as: "userDetails",
-        },
-      },
-      {
-        $unwind: "$userDetails",
-      },
+      //   {
+      //     $lookup: {
+      //       from: "users",
+      //       localField: "user",
+      //       foreignField: "_id",
+      //       as: "userDetails",
+      //     },
+      //   },
+      //   {
+      //     $unwind: "$userDetails",
+      //   },
 
-      {
-        $project: {
-          "userDetails.password": 0,
-          "userDetails.refreshToken": 0,
-          "userDetails.role": 0,
-          "userDetails.email": 0,
-          "userDetails.contact": 0,
+      //   {
+      //     $project: {
+      //       "userDetails.password": 0,
+      //       "userDetails.refreshToken": 0,
+      //       "userDetails.role": 0,
+      //       "userDetails.email": 0,
+      //       "userDetails.contact": 0,
+      //     },
+      //   },
+      // ]
+
+      [
+        {
+          $match: { product: new mongoose.Types.ObjectId(id) },
         },
-      },
-    ]);
+        {
+          $lookup: {
+            from: "users",
+            localField: "user",
+            foreignField: "_id",
+            as: "userDetails",
+          },
+        },
+
+        {
+          $unwind: "$userDetails",
+        },
+        {
+          $project: {
+            "userDetails.password": 0,
+            "userDetails.refreshToken": 0,
+            "userDetails.role": 0,
+            "userDetails.email": 0,
+            "userDetails.contact": 0,
+          },
+        },
+        {
+          $group: {
+            _id: "$product", // Group by product ID
+            reviews: { $push: "$$ROOT" }, // Store all reviews in an array
+          },
+        },
+        {
+          $lookup: {
+            from: "products",
+            let: { productId: "$_id" },
+            pipeline: [{ $match: { $expr: { $eq: ["$_id", "$$productId"] } } }],
+            as: "productDetails",
+          },
+        },
+      ]
+    );
     return res.status(200).json({
       message: "Product review",
 
