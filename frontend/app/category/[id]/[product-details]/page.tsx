@@ -24,10 +24,6 @@ import {
 import Review from "../../components/Review";
 
 const Page = () => {
-  // const router = useRouter()
-  // const {productId} = router.query
-  // console.log(productId);
-
   const pathname = usePathname();
   const parts = pathname.split("/");
 
@@ -63,7 +59,7 @@ const Page = () => {
     })();
   }, [lastId]);
 
-  const productDetails = product?.productDetails[0];
+  const productDetails = product?.productDetails?.[0];
   const review = product?.reviews;
 
   // for suggestion
@@ -152,7 +148,7 @@ const Page = () => {
                     <Star size={14} color="red" />
                   </span>
                   <span className="ml-[5px] text-[14px]">
-                    5.0(3) write a review
+                    5.0 ( {review?.length} ) write a review
                   </span>
                 </div>
               </div>

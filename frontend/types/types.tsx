@@ -15,7 +15,8 @@ export interface iProduct {
   description: string;
   images: string[];
   // iProductDetails?:iProduct;
-  productDetails?: iProductDetails;
+  productDetails?: iProductDetails[];
+  reviews: iReview
 }
 
 export interface apiResponse {
@@ -30,6 +31,16 @@ export interface iProductDetails {
   images: string[];
   name: string;
   price: number;
+}
+
+export interface iReview {
+  _id: string;
+  user: string;
+  product: string;
+  comment: string;
+  rating: number;
+  length:number;
+  userDetails:User
 }
 
 // Define your export interfaces for products and category
