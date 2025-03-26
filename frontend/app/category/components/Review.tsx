@@ -1,10 +1,16 @@
-"use client";
+// "use client";
 import { Star } from "lucide-react";
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-const Review = ({ review }) => {
+import { iReview } from "@/types/types";
+
+interface ReviewProps {
+  reviews: iReview[]; // Expecting an array of iReview
+}
+
+const Review: React.FC<ReviewProps> = ({ reviews }) => {
   return (
     <>
       <div className="mt-[45px] mb-[40px]">
@@ -31,7 +37,9 @@ const Review = ({ review }) => {
             <span className="ml-[5px] text-[20px]">4 out of 5</span>
             <br />
           </div>
-          <p className="text-[14px] mb-[14px]">{review?.length} global rating</p>
+          <p className="text-[14px] mb-[14px]">
+            {reviews.length} global rating
+          </p>
           <hr />
           <div className="mt-[14px] leading-[2.3]">
             <h1 className="text-[25px] font-semibold">Review this product</h1>
@@ -46,18 +54,18 @@ const Review = ({ review }) => {
             </Button>
           </div>
         </div>
-        {/* {review.map((index,))} */}
+        {/* {reviews.map((data,index))} */}
         <div className="col-span-2">
           <h1 className="text-[25px] font-semibold mb-[20px]">Customers say</h1>
-          {review?.map((data, index) => (
-            <div key={index} className="mt-[20px]">
+          {reviews?.map((data, index) => (
+            <div className="mt-[20px]" key={index}>
               <div className="flex  mb-[10px] ">
                 <Avatar>
-                  <AvatarImage src={data.userDetails.avtar} alt="@shadcn" />
-                  <AvatarFallback>{data.userDetails.rating}</AvatarFallback>
+                  <AvatarImage src={data.userDetails?.avtar} alt="@shadcn" />
+                  <AvatarFallback>{data.userDetails?.rating}</AvatarFallback>
                 </Avatar>
                 <p className=" ml-[10px] font-semibold ">
-                  {data.userDetails.name}
+                  {data.userDetails?.name}
                 </p>
               </div>
 

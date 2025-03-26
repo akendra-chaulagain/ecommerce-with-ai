@@ -42,81 +42,69 @@ const createReview = async (req, res) => {
 const getAllReviewAccordingToProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const allproducts = await Review.aggregate(
-      //   [
-      //   {
-      //     $match: { product: new mongoose.Types.ObjectId(id) }, // Match reviews based on product ID
-      //   },
-
-      //   {
-      //     $lookup: {
-      //       from: "users",
-      //       localField: "user",
-      //       foreignField: "_id",
-      //       as: "userDetails",
-      //     },
-      //   },
-      //   {
-      //     $unwind: "$userDetails",
-      //   },
-
-      //   {
-      //     $project: {
-      //       "userDetails.password": 0,
-      //       "userDetails.refreshToken": 0,
-      //       "userDetails.role": 0,
-      //       "userDetails.email": 0,
-      //       "userDetails.contact": 0,
-      //     },
-      //   },
-      // ]
-
-      [
-        {
-          $match: { product: new mongoose.Types.ObjectId(id) },
+    const allproducts = await Review.aggregate([
+      {
+        $match: { product: new mongoose.Types.ObjectId(id) },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "userDetails",
         },
-        {
-          $lookup: {
-            from: "users",
-            localField: "user",
-            foreignField: "_id",
-            as: "userDetails",
-          },
+      },
+      {
+        $unwind: { path: "$userDetails", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $project: {
+          "userDetails.password": 0,
+          "userDetails.refreshToken": 0,
+          "userDetails.role": 0,
+          "userDetails.email": 0,
+          "userDetails.contact": 0,
         },
-
-        {
-          $unwind: "$userDetails",
+      },
+      {
+        $group: {
+          _id: "$product", // Group by product ID
+          reviews: { $push: "$$ROOT" }, // Store all reviews in an array
         },
-        {
-          $project: {
-            "userDetails.password": 0,
-            "userDetails.refreshToken": 0,
-            "userDetails.role": 0,
-            "userDetails.email": 0,
-            "userDetails.contact": 0,
-          },
+      },
+      {
+        $lookup: {
+          from: "products",
+          let: { productId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ["$_id", "$$productId"] },
+              },
+            },
+            {
+              $project: {
+                // Optionally include only the fields you want
+                name: 1,
+                price: 1,
+                description: 1,
+                images: 1,
+                // add other product fields as necessary
+              },
+            },
+          ],
+          as: "details",
         },
-        {
-          $group: {
-            _id: "$product", // Group by product ID
-            reviews: { $push: "$$ROOT" }, // Store all reviews in an array
-          },
+      },
+      {
+        $project: {
+          _id: 1,
+          reviews: 1,
+          details: { $arrayElemAt: ["$details", 0] }, // Get the first product details if available
         },
-        {
-          $lookup: {
-            from: "products",
-            let: { productId: "$_id" },
-            pipeline: [{ $match: { $expr: { $eq: ["$_id", "$$productId"] } } }],
-            as: "productDetails",
-          },
-        },
-      ]
-    );
-    return res.status(200).json({
-      message: "Product review",
-
-      data: allproducts,
-    });
+      },
+    ]);
+    return res.status(200).json(allproducts[0]);
   } catch (error) {
     return res.status(401).json({
       message: "server error ",

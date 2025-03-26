@@ -15,12 +15,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import {
-  iProduct,
-  apiResponse,
-  iCategoryResponse,
-  ApiResponse,
-} from "@/types/types";
+import { iProduct, iReview } from "@/types/types";
 import Review from "../../components/Review";
 
 const Page = () => {
@@ -29,7 +24,7 @@ const Page = () => {
 
   // Get the last part (product ID)
   const lastId = parts[parts.length - 1].replace("product-details-", "");
-  const [product, setproduct] = useState<iProduct | null>(null);
+  const [product, setProduct] = useState<iProduct | null>(null);
   const [error, setError] = useState<boolean>(false);
   console.log(error);
 
@@ -37,54 +32,46 @@ const Page = () => {
   useEffect(() => {
     (async () => {
       try {
-        const response = await axiosInstence.get<apiResponse>(
+        const response = await axiosInstence.get<iProduct>(
           `review/review_according-to-product/${lastId}`
         );
-        setproduct(response.data.data[0]);
-
-        // if (response.data.data && response.data.data.length > 0) {
-        //   const productDetails = response.data.data[0].productDetails;
-
-        //   if (productDetails) {
-        //     // Directly access the productDetails object
-        //     setproduct(productDetails);
-        //   } else {
-        //     setError(true); // Handle case when productDetails is not available
-        //   }
-        // }
+        setProduct(response.data);
       } catch (error) {
         setError(true);
         console.log(error);
       }
     })();
   }, [lastId]);
-
-  const productDetails = product?.productDetails?.[0];
-  const review = product?.reviews;
+  const reviews:iReview[] = product?.reviews ?? [];
+  
+  
+  
 
   // for suggestion
+
   // get tge category id
-  const categoryId = parts[parts.length - 2];
-  const [category, setCategory] = useState<iCategoryResponse | null>(null);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const response = await axiosInstence.get<ApiResponse>(
-          `/category/${categoryId}`
-        );
-        setCategory(response.data.products[0]);
-      } catch (error) {
-        setError(true);
-        console.log(error);
-      }
-    })();
-  }, [categoryId]);
-
-  // for images
+  // const categoryId = parts[parts.length - 2];
+  // const [category, setCategory] = useState<iCategoryResponse | null>(null);
+  // useEffect(() => {
+  //   (async () => {
+  //     try {
+  //       const response = await axiosInstence.get<{ data: iCategoryResponse }>(
+  //         `/category/${categoryId}`
+  //       );
+  //       setCategory(response.data.data);
+  //     } catch (error) {
+  //       setError(true);
+  //       console.log(error);
+  //     }
+  //   })();
+  // }, [categoryId]);
+  // for product images slider
   const plugin = React.useRef(
     Autoplay({ delay: 1500, stopOnInteraction: true })
   );
+
+  // console.log(product?.details);
+  // console.log(category);
 
   return (
     <>
@@ -109,7 +96,7 @@ const Page = () => {
               className="relative w-[80%] h-[70vh]"
             >
               <CarouselContent>
-                {productDetails?.images.map((data, index) => (
+                {product?.details?.images?.map((data, index) => (
                   <CarouselItem key={index} className="flex justify-center">
                     <div className="relative w-full h-[70vh]">
                       {" "}
@@ -135,7 +122,7 @@ const Page = () => {
 
             <div>
               <h1 className="text-[25px] font-bold flex justify-center mb-[18px]    ">
-                {product?.name}
+                {product?.details?.name}
               </h1>
               <div className="flex justify-between my-[20px]">
                 <span>Style # P251121032</span>
@@ -148,7 +135,7 @@ const Page = () => {
                     <Star size={14} color="red" />
                   </span>
                   <span className="ml-[5px] text-[14px]">
-                    5.0 ( {review?.length} ) write a review
+                    5.0 ( 0 ) write a review
                   </span>
                 </div>
               </div>
@@ -203,7 +190,7 @@ const Page = () => {
               {/* description
                */}
               <div className="mt-[20px]">
-                <p className="text-[16px]">{product?.description}</p>
+                <p className="text-[16px]">{product?.details?.description}</p>
               </div>
             </div>
           </div>
@@ -211,49 +198,13 @@ const Page = () => {
       </div>
 
       {/*  suggestion*/}
-      <div className="mt-[40px]">
+      {/* <div className="mt-[40px]">
         <h1 className="flex justify-center font-semibold text-[30px] mb-[20px] tracking-wide text-[#848383]">
           #You Might Also Like
         </h1>
 
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
-          {/* {Category.map((data) => (
-            <div
-              key={data.id}
-              className="cursor-pointer border-2 border-[#f2f2f2] p-4 rounded "
-            >
-              <Image
-                src={data.photo}
-                alt="logo"
-                width={700}
-                height={100}
-                className=" flex justify-center object-fill cursor-pointer "
-              />
-              <h3 className="font-semibold text-[21px] text-red-600 ml-[6px]">
-                ${data.price}
-              </h3>
-              <p className="text-[16px] ml-[6px]">{data.p}</p>
-              <div className="flex ml-[6px]">
-                <span className="flex mt-[6px] mb-[10px]">
-                  <Star size={15} color="red" />
-                  <Star size={15} color="red" />
-                  <Star size={15} color="red" />
-                  <Star size={15} color="red" />
-                  <Star size={15} color="red" />
-                </span>
-                <span className="ml-[5px]">23</span>
-              </div>
-
-              <Button
-                variant="outline"
-                className="bg-red-600 text-white text-[15px] mt-[10px]"
-              >
-                Add to Cart <ShoppingCart size={16} />
-              </Button>
-            </div>
-          ))} */}
-
-          {category?.products?.map((data: iProduct, index) => (
+          {category?.products?.map((data, index) => (
             <div
               key={index}
               className="cursor-pointer border-2 border-[#f2f2f2] p-4 rounded "
@@ -262,16 +213,18 @@ const Page = () => {
                 href={`/category/${category._id}/product-details-${data._id}`}
               >
                 <Image
-                  src={data.images[0]}
+                  src={data.details.images[0]}
                   alt="logo"
                   width={300}
                   height={100}
                   className=" object-fill cursor-pointer ml-[6px]"
                 />
                 <h3 className="font-semibold text-[21px] text-red-600 ml-[6px]">
-                  ${data.price}
+                  ${data.details.price}
                 </h3>
-                <p className="text-[16px] ml-[6px]">{data.description}</p>
+                <p className="text-[16px] ml-[6px]">
+                  {data.details.description}
+                </p>
                 <div className="flex ml-[6px]">
                   <span className="flex mt-[6px] mb-[10px]">
                     <Star size={15} color="red" />
@@ -293,10 +246,11 @@ const Page = () => {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/* Review */}
-      <Review review={review} />
+
+      <Review reviews={reviews} />
     </>
   );
 };
