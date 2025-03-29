@@ -1,6 +1,6 @@
 // "use client";
 import { Star } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { iReview } from "@/types/types";
@@ -13,9 +13,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useAuth } from "@/context/AuthContext";
+import { axiosInstence } from "@/hooks/axiosInstence";
 
 interface ReviewProps {
   reviews: iReview[];
+  lastId: number;
 }
 
 const calculateAverageRating = (reviews: { rating: number }[]) => {
@@ -24,8 +27,57 @@ const calculateAverageRating = (reviews: { rating: number }[]) => {
   return (totalRating / reviews.length).toFixed(1); // Round to 1 decimal place
 };
 
-const Review: React.FC<ReviewProps> = ({ reviews }) => {
+const Review: React.FC<ReviewProps> = ({ reviews, lastId }) => {
+  console.log(lastId);
+  
   const averateRating = calculateAverageRating(reviews);
+
+  // for rating
+  const [rating, setRating] = useState(0);
+  const [isStarred, setIsStarred] = useState([
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
+  const clickStaredButton = (index: number) => {
+    const newStars = [...isStarred];
+    newStars[index] = !newStars[index];
+    setIsStarred(newStars);
+    setRating(index + 1);
+  };
+  console.log(rating);
+
+  // log add review
+  const user = useAuth();
+  const [ratingNum, setRatingNum] = useState(0);
+  const [comment, setComment] = useState("");
+  const [error, setError] = useState(false);
+  const userId = user?.user?._id;
+
+  const handleAddReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const reviewData = {
+      user: userId,
+      product: lastId,
+      rating: ratingNum,
+      comment,
+    };
+
+    try {
+      const addReview = await axiosInstence.post(
+        "/review/add-review",
+        reviewData
+      );
+      console.log(addReview);
+
+      console.log(addReview);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <div className="mt-[45px] mb-[40px]">
@@ -73,6 +125,8 @@ const Review: React.FC<ReviewProps> = ({ reviews }) => {
 
             {/*  */}
 
+            {/* add review dialog */}
+
             <Dialog>
               <DialogTrigger asChild>
                 <Button
@@ -88,36 +142,28 @@ const Review: React.FC<ReviewProps> = ({ reviews }) => {
                     Add Review
                   </DialogTitle>
                   <DialogDescription>
-                    <textarea className="w-full h-[30vh] border border-gray-700 p-2 rounded-md text-[17px] text-black"></textarea>
+                    <textarea
+                      onChange={(e) => setComment(e.target.value)}
+                      name="comment"
+                      className="w-full h-[30vh] border border-gray-700 p-2 rounded-md text-[17px] text-black"
+                    ></textarea>
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                   <span className="flex mt-[6px] mb-[10px]">
-                    <Star
-                      className="cursor-pointer transition-all"
-                      size={25}
-                      color="red"
-                    />
-                    <Star
-                      className="cursor-pointer transition-all"
-                      size={25}
-                      color="red"
-                    />
-                    <Star
-                      className="cursor-pointer transition-all"
-                      size={25}
-                      color="red"
-                    />
-                    <Star
-                      className="cursor-pointer transition-all"
-                      size={25}
-                      color="red"
-                    />
-                    <Star
-                      className="cursor-pointer hover:bg-red-500 hover:text-white p-1 rounded-full transition-all"
-                      size={40}
-                      color="black"
-                    />
+                    {isStarred.map((isStarred, index) => (
+                      <Star
+                        key={index}
+                        name="rating"
+                        className="cursor-pointer transition-all"
+                        size={25}
+                        color={isStarred ? "black" : "red"}
+                        onClick={() => {
+                          clickStaredButton(index);
+                          setRatingNum(index + 1);
+                        }}
+                      />
+                    ))}
 
                     {/* <Star size={20} color="red" /> */}
                   </span>
@@ -125,16 +171,20 @@ const Review: React.FC<ReviewProps> = ({ reviews }) => {
                 <DialogFooter>
                   <Button
                     type="submit"
+                    onClick={handleAddReview}
                     className="bg-red-600 text-white text-[15px] mt-[10px] hover:bg-slate-100 hover:text-black"
                   >
-                    Save changes
+                    Add Review
                   </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
+
+            {/* end add review  */}
           </div>
         </div>
         {/* {reviews.map((data,index))} */}
+
         <div className="col-span-2">
           <h1 className="text-[25px] font-semibold mb-[20px]">Customers say</h1>
           {reviews?.map((data, index) => (

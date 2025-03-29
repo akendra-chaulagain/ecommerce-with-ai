@@ -247,7 +247,7 @@ const Page = () => {
 
       {/* Review */}
 
-      <Review reviews={reviews} />
+      <Review reviews={reviews} lastId={lastId} />
     </>
   );
 };

@@ -64,17 +64,6 @@ const Page = () => {
       setTimeout(() => {
         window.location.href = "/";
       }, 2000);
-
-      // // After successful login, check if tempToken is set in cookies
-      // const tempToken = Cookies.get("tempToken");
-      // console.log(tempToken);
-
-      // if (tempToken) {
-      //   // If tempToken exists, redirect to the OTP verification page
-      //   router.push("/login/verifyotp");
-      // } else {
-      //   setError("Authentication failed. Please try again.");
-      // }
     } catch (error: unknown) {
       console.log(error);
       if (axios.isAxiosError(error)) {

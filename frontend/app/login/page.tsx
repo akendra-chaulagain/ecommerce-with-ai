@@ -37,7 +37,7 @@ const Page = () => {
       );
 
       const message = response.data.message;
-      console.log(response);
+    
 
       showToast(message);
       setTimeout(() => {
