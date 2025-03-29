@@ -7,7 +7,7 @@ import { User } from "../models/user.models.js";
 const createReview = async (req, res) => {
   try {
     const { user, product, rating, comment } = req.body;
-    if (!rating || !comment === undefined) {
+    if (!rating || !comment ) {
       return res
         .status(401)
         .json({ message: false, message: "Enter all the fields" });
@@ -27,7 +27,7 @@ const createReview = async (req, res) => {
     await sendreviewEmail(userData.email, emailSubject, emailText);
 
     return res.status(201).json({
-      message: "Review added & email sent successfully",
+      message: "Review added",
       data: addReview,
     });
   } catch (error) {

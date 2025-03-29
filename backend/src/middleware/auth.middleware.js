@@ -6,7 +6,6 @@ const verifyJwt = async (req, res, next) => {
   //   const token = req.cookies?.accessToken;
   try {
     const token = req.cookies.accessToken;
-    console.log(token);
     
     if (!token) {
       return res.status(401).json("No token provided");

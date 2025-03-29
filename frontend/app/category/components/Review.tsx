@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { useAuth } from "@/context/AuthContext";
 import { axiosInstence } from "@/hooks/axiosInstence";
+import { useNotificationToast } from "@/hooks/toast";
 
 interface ReviewProps {
   reviews: iReview[];
@@ -28,12 +29,10 @@ const calculateAverageRating = (reviews: { rating: number }[]) => {
 };
 
 const Review: React.FC<ReviewProps> = ({ reviews, lastId }) => {
-  console.log(lastId);
-  
+  const showToast = useNotificationToast(); // Use the custom hook
   const averateRating = calculateAverageRating(reviews);
-
   // for rating
-  const [rating, setRating] = useState(0);
+
   const [isStarred, setIsStarred] = useState([
     false,
     false,
@@ -41,23 +40,19 @@ const Review: React.FC<ReviewProps> = ({ reviews, lastId }) => {
     false,
     false,
   ]);
-  const clickStaredButton = (index: number) => {
-    const newStars = [...isStarred];
-    newStars[index] = !newStars[index];
-    setIsStarred(newStars);
-    setRating(index + 1);
-  };
-  console.log(rating);
 
   // log add review
   const user = useAuth();
   const [ratingNum, setRatingNum] = useState(0);
   const [comment, setComment] = useState("");
   const [error, setError] = useState(false);
+  const [loading, setloading] = useState(false);
   const userId = user?.user?._id;
 
   const handleAddReview = async (e: React.FormEvent) => {
     e.preventDefault();
+    setloading(true);
+
     const reviewData = {
       user: userId,
       product: lastId,
@@ -68,14 +63,27 @@ const Review: React.FC<ReviewProps> = ({ reviews, lastId }) => {
     try {
       const addReview = await axiosInstence.post(
         "/review/add-review",
-        reviewData
+        reviewData,
+        {
+          withCredentials: true,
+        }
       );
-      console.log(addReview);
-
-      console.log(addReview);
+      showToast(addReview.data.message);
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } catch (error) {
-      console.log(error);
+      setError(error.response.data.message);
+    } finally {
+      setloading(false);
     }
+  };
+
+  const clickStaredButton = (index: number) => {
+    setRatingNum(index + 1); // Update the rating
+    const updatedStars = isStarred.map((_, i) => i <= index); // All stars before and including the clicked one should be true
+    setIsStarred(updatedStars); // Update star states
+    setRatingNum(index + 1); // Update ratingNum based on star clicked
   };
 
   return (
@@ -147,6 +155,9 @@ const Review: React.FC<ReviewProps> = ({ reviews, lastId }) => {
                       name="comment"
                       className="w-full h-[30vh] border border-gray-700 p-2 rounded-md text-[17px] text-black"
                     ></textarea>
+                    {error && (
+                      <p className="text-red-600 mt-2 text-[15px]">{error}</p>
+                    )}
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
@@ -174,7 +185,8 @@ const Review: React.FC<ReviewProps> = ({ reviews, lastId }) => {
                     onClick={handleAddReview}
                     className="bg-red-600 text-white text-[15px] mt-[10px] hover:bg-slate-100 hover:text-black"
                   >
-                    Add Review
+                    {/* Add Review */}
+                    {loading ? "Loading..." : "Review Added"}
                   </Button>
                 </DialogFooter>
               </DialogContent>
