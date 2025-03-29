@@ -2,17 +2,32 @@ import mongoose from "mongoose";
 import { Review } from "../models/review.models.js";
 import { sendreviewEmail } from "../utils/sendEmail.js";
 import { User } from "../models/user.models.js";
+import { Product } from "../models/product.models.js";
+const { ObjectId } = mongoose.Types;
 
 // create review
 const createReview = async (req, res) => {
   try {
     const { user, product, rating, comment } = req.body;
-    if (!rating || !comment ) {
+    if (!rating || !comment) {
       return res
         .status(401)
         .json({ message: false, message: "Enter all the fields" });
     }
+    // find it the user already review the product or not
     const userData = await User.findById(user);
+    const productId = await Product.findById(product);
+    const findUserInreview = await Review.find({
+      user: userData._id,
+      product: productId,
+    });
+
+    if (findUserInreview.length > 0) {
+      return res
+        .status(400)
+        .json({ message: "You have already reviewed this product." });
+    }
+
     const addReview = await Review.create({
       user,
       product,
@@ -42,10 +57,16 @@ const createReview = async (req, res) => {
 const getAllReviewAccordingToProduct = async (req, res) => {
   try {
     const { id } = req.params;
+    const { userId } = req.body;
+
     const allproducts = await Review.aggregate([
       {
         $match: { product: new mongoose.Types.ObjectId(id) },
       },
+
+      // {
+      //   $match: { product: new ObjectId("67e80ecdf580ce7c0e5367aa") }, // Match the product ID
+      // },
       {
         $lookup: {
           from: "users",
@@ -67,6 +88,20 @@ const getAllReviewAccordingToProduct = async (req, res) => {
         },
       },
       {
+        $addFields: {
+          isCurrentUser: {
+            $cond: {
+              if: { $eq: ["$user", new ObjectId(userId)] }, // Compare review's user ID with the logged-in user ID
+              then: 1,
+              else: 0,
+            },
+          },
+        },
+      },
+      {
+        $sort: { isCurrentUser: -1, createdAt: -1 }, // Sort by isCurrentUser to place the current user's review at the top, and then by creation date if needed
+      },
+      {
         $group: {
           _id: "$product", // Group by product ID
           reviews: { $push: "$$ROOT" }, // Store all reviews in an array
@@ -84,12 +119,10 @@ const getAllReviewAccordingToProduct = async (req, res) => {
             },
             {
               $project: {
-                // Optionally include only the fields you want
                 name: 1,
                 price: 1,
                 description: 1,
                 images: 1,
-                // add other product fields as necessary
               },
             },
           ],
@@ -100,10 +133,11 @@ const getAllReviewAccordingToProduct = async (req, res) => {
         $project: {
           _id: 1,
           reviews: 1,
-          details: { $arrayElemAt: ["$details", 0] }, // Get the first product details if available
+          details: { $arrayElemAt: ["$details", 0] },
         },
       },
     ]);
+
     return res.status(200).json(allproducts[0]);
   } catch (error) {
     return res.status(401).json({
@@ -142,17 +176,31 @@ const editReview = async (req, res) => {
 // delete review
 const deleteReview = async (req, res) => {
   try {
-    const { id } = req.params;
+    const reviewId = req.params.id;
+    
 
-    const deletedReview = await Review.findByIdAndDelete(id);
-    if (!deletedReview) {
+    const { userId } = req.body; // The logged-in user's ID
+
+    // Find the review by its ID
+    const review = await Review.findById(reviewId);
+
+    // Check if the review exists and if the logged-in user is the author
+    if (!review) {
       return res.status(404).json({ message: "Review not found" });
     }
-    return res.status(200).json({ message: "Review deleted", deletedReview });
+
+    if (review.user.toString() !== userId) {
+      return res.status(403).json({ message: "You cannot delete this review" });
+    }
+
+    // Delete the review
+    await Review.findByIdAndDelete(reviewId);
+
+    return res.status(200).json({ message: "Review deleted successfully" });
   } catch (error) {
-    return res.status(401).json({
-      message: "server error while deleting review",
-      message: error.message,
+    return res.status(500).json({
+      message: "Something went wrong!",
+      error: error.message,
     });
   }
 };

@@ -32,7 +32,6 @@ const Review: React.FC<ReviewProps> = ({ reviews, lastId }) => {
   const showToast = useNotificationToast(); // Use the custom hook
   const averateRating = calculateAverageRating(reviews);
   // for rating
-
   const [isStarred, setIsStarred] = useState([
     false,
     false,
@@ -42,24 +41,24 @@ const Review: React.FC<ReviewProps> = ({ reviews, lastId }) => {
   ]);
 
   // log add review
-  const user = useAuth();
   const [ratingNum, setRatingNum] = useState(0);
   const [comment, setComment] = useState("");
   const [error, setError] = useState(false);
   const [loading, setloading] = useState(false);
+  const user = useAuth();
   const userId = user?.user?._id;
+  // console.log(userId);
 
+  // add review
   const handleAddReview = async (e: React.FormEvent) => {
     e.preventDefault();
     setloading(true);
-
     const reviewData = {
       user: userId,
       product: lastId,
       rating: ratingNum,
       comment,
     };
-
     try {
       const addReview = await axiosInstence.post(
         "/review/add-review",
@@ -78,12 +77,36 @@ const Review: React.FC<ReviewProps> = ({ reviews, lastId }) => {
       setloading(false);
     }
   };
-
+  // for review
   const clickStaredButton = (index: number) => {
     setRatingNum(index + 1); // Update the rating
     const updatedStars = isStarred.map((_, i) => i <= index); // All stars before and including the clicked one should be true
     setIsStarred(updatedStars); // Update star states
     setRatingNum(index + 1); // Update ratingNum based on star clicked
+  };
+
+  // delete review
+  const handleDeleteReview = async (reviewId: string) => {
+    console.log(reviewId);
+
+    try {
+      const response = await axiosInstence.delete(
+        `/review/delete-review/${reviewId}`,
+        {
+          data: { userId }, // Send the logged-in user's ID
+          withCredentials: true,
+        }
+      );
+      showToast(response.data.message);
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+
+      // Optionally, remove the review from the state after deletion
+      // For example, filter the reviews out based on the deleted review's ID
+    } catch (error) {
+      showToast(error.response?.data?.message || "Something went wrong!");
+    }
   };
 
   return (
@@ -160,6 +183,7 @@ const Review: React.FC<ReviewProps> = ({ reviews, lastId }) => {
                     )}
                   </DialogDescription>
                 </DialogHeader>
+
                 <div className="grid gap-4 py-4">
                   <span className="flex mt-[6px] mb-[10px]">
                     {isStarred.map((isStarred, index) => (
@@ -224,7 +248,34 @@ const Review: React.FC<ReviewProps> = ({ reviews, lastId }) => {
                   </span>
                   {/* <Star size={20} color="red" /> */}
                 </span>
-                <p>{data.comment}</p>
+                <p className="mb-[6px]">{data.comment}</p>
+                {data.userDetails?._id === userId && (
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <span className="text-[12px] bg-white text-red-600 underline cursor-pointer ">
+                        {" "}
+                        Delete Your Review
+                      </span>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>
+                          {" "}
+                          Are you sure you want to delete your review.
+                        </DialogTitle>
+                      </DialogHeader>
+
+                      <DialogFooter>
+                        <Button className="text-white text-[12px] bg-red-600 cursor-pointer hover:bg-white hover:text-black  mt-[20px]">
+                          {" "}
+                          <span onClick={() => handleDeleteReview(data._id)}>
+                            Delete Your Review
+                          </span>
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                )}
               </div>
             </div>
           ))}
@@ -235,3 +286,31 @@ const Review: React.FC<ReviewProps> = ({ reviews, lastId }) => {
 };
 
 export default Review;
+
+//  <Dialog>
+//    <DialogTrigger asChild>
+//      <span className="text-[12px] bg-white text-red-600 underline cursor-pointer ">
+//        {" "}
+//        Delete Your Review
+//      </span>
+//    </DialogTrigger>
+//    <DialogContent className="sm:max-w-[425px]">
+//      <DialogHeader>
+//        <DialogTitle>
+//          {" "}
+//          Are you sure you want to delete your review.
+//        </DialogTitle>
+//      </DialogHeader>
+
+//      <DialogFooter>
+//        <Button className="text-white text-[12px] bg-red-600 cursor-pointer hover:bg-white hover:text-black  mt-[20px]">
+//          {" "}
+//          {data.userDetails?._id === userId && (
+//            <span onClick={() => handleDeleteReview(data._id)}>
+//              Delete Your Review
+//            </span>
+//          )}
+//        </Button>
+//      </DialogFooter>
+//    </DialogContent>
+//  </Dialog>;

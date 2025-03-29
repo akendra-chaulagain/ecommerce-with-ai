@@ -20,6 +20,7 @@ router.route("/add-review").post(
 
 router
   .route("/review_according-to-product/:id")
+
   .get(getAllReviewAccordingToProduct);
 
 // edit route

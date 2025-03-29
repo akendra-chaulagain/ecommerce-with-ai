@@ -1,5 +1,5 @@
 "use client";
-import { ChevronRight, ShoppingCart, Star } from "lucide-react";
+import { ChevronRight, Star } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import React, { useEffect, useState } from "react";
@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import Autoplay from "embla-carousel-autoplay";
-import Link from "next/link";
+
 import {
   Carousel,
   CarouselContent,
@@ -26,7 +26,6 @@ const Page = () => {
   const lastId = parts[parts.length - 1].replace("product-details-", "");
   const [product, setProduct] = useState<iProduct | null>(null);
   const [error, setError] = useState<boolean>(false);
-  console.log(error);
 
   // for product details
   useEffect(() => {
@@ -131,8 +130,8 @@ const Page = () => {
                     <Star size={14} color="red" />
                     <Star size={14} color="red" />
                   </span>
-                  <span className="ml-[5px] text-[14px]">
-                    5.0 ( 0 ) write a review
+                  <span className="ml-[5px] text-[14px] font-semibold">
+                    ( {reviews?.length} ) Reviews
                   </span>
                 </div>
               </div>
