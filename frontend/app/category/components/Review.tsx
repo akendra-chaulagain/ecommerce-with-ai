@@ -62,7 +62,7 @@ const Review: React.FC<ReviewProps> = ({ reviews, lastId }) => {
     };
     try {
       const addReview = await axiosInstence.post(
-        "/review/add-reviews",
+        "/review/add-review",
         reviewData,
         {
           withCredentials: true,
@@ -71,7 +71,7 @@ const Review: React.FC<ReviewProps> = ({ reviews, lastId }) => {
       showToast(addReview.data.message);
       setTimeout(() => {
         window.location.reload();
-      }, 2000);
+      }, 1500);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const errorMessage =
@@ -112,7 +112,7 @@ const Review: React.FC<ReviewProps> = ({ reviews, lastId }) => {
       showToast(response.data.message);
       setTimeout(() => {
         window.location.reload();
-      }, 2000);
+      }, 1500);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const errorMessage =

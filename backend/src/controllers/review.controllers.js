@@ -57,7 +57,9 @@ const createReview = async (req, res) => {
 const getAllReviewAccordingToProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { userId } = req.body;
+    const  {userId} = req.query;
+ const userObjectId = new mongoose.Types.ObjectId(userId);
+    
 
     const allproducts = await Review.aggregate([
       {
@@ -87,11 +89,12 @@ const getAllReviewAccordingToProduct = async (req, res) => {
           "userDetails.contact": 0,
         },
       },
+
       {
         $addFields: {
           isCurrentUser: {
             $cond: {
-              if: { $eq: ["$user", new ObjectId(userId)] }, // Compare review's user ID with the logged-in user ID
+              if: { $eq: ["$user",userObjectId] }, // Compare review's user ID with the logged-in user ID
               then: 1,
               else: 0,
             },
@@ -177,7 +180,6 @@ const editReview = async (req, res) => {
 const deleteReview = async (req, res) => {
   try {
     const reviewId = req.params.id;
-    
 
     const { userId } = req.body; // The logged-in user's ID
 

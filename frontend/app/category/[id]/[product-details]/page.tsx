@@ -17,8 +17,11 @@ import {
 } from "@/components/ui/carousel";
 import { iProduct, iReview } from "@/types/types";
 import Review from "../../components/Review";
+import { useAuth } from "@/context/AuthContext";
 
 const Page = () => {
+  const user = useAuth();
+  const userId = user?.user?._id;
   const pathname = usePathname();
   const parts = pathname.split("/");
 
@@ -27,14 +30,15 @@ const Page = () => {
   const [product, setProduct] = useState<iProduct | null>(null);
   const [error, setError] = useState<boolean>(false);
   console.log(error);
-  
 
   // for product details
   useEffect(() => {
     (async () => {
       try {
         const response = await axiosInstence.get<iProduct>(
-          `review/review_according-to-product/${lastId}`
+          `review/review_according-to-product/${lastId}${
+            userId ? `?userId=${userId}` : " "
+          }`
         );
         setProduct(response.data);
       } catch (error) {
@@ -42,7 +46,7 @@ const Page = () => {
         console.log(error);
       }
     })();
-  }, [lastId]);
+  }, [lastId, userId]);
   const reviews: iReview[] = product?.reviews ?? [];
 
   // for suggestion
