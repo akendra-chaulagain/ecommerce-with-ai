@@ -26,6 +26,8 @@ const Page = () => {
   const lastId = parts[parts.length - 1].replace("product-details-", "");
   const [product, setProduct] = useState<iProduct | null>(null);
   const [error, setError] = useState<boolean>(false);
+  console.log(error);
+  
 
   // for product details
   useEffect(() => {

@@ -16,10 +16,11 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { useNotificationToast } from "@/hooks/toast";
+import axios from "axios";
 
 interface ReviewProps {
   reviews: iReview[];
-  lastId: number;
+  lastId: string;
 }
 
 const calculateAverageRating = (reviews: { rating: number }[]) => {
@@ -61,7 +62,7 @@ const Review: React.FC<ReviewProps> = ({ reviews, lastId }) => {
     };
     try {
       const addReview = await axiosInstence.post(
-        "/review/add-review",
+        "/review/add-reviews",
         reviewData,
         {
           withCredentials: true,
@@ -71,8 +72,19 @@ const Review: React.FC<ReviewProps> = ({ reviews, lastId }) => {
       setTimeout(() => {
         window.location.reload();
       }, 2000);
-    } catch (error) {
-      setError(error.response.data.message);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        const errorMessage =
+          typeof error.response?.data === "object"
+            ? error.response?.data?.message ||
+              "An unknown error occurred. Try again"
+            : error.response?.data;
+        setError(errorMessage);
+      } else {
+        setError(true);
+      }
+
+      // console.log(error.response.data);
     } finally {
       setloading(false);
     }
@@ -101,11 +113,15 @@ const Review: React.FC<ReviewProps> = ({ reviews, lastId }) => {
       setTimeout(() => {
         window.location.reload();
       }, 2000);
-
-      // Optionally, remove the review from the state after deletion
-      // For example, filter the reviews out based on the deleted review's ID
-    } catch (error) {
-      showToast(error.response?.data?.message || "Something went wrong!");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        const errorMessage =
+          typeof error.response?.data === "object"
+            ? error.response?.data?.message ||
+              "An unknown error occurred. Try again"
+            : error.response?.data;
+        showToast(errorMessage || "Something went wrong!");
+      }
     }
   };
 
@@ -286,31 +302,3 @@ const Review: React.FC<ReviewProps> = ({ reviews, lastId }) => {
 };
 
 export default Review;
-
-//  <Dialog>
-//    <DialogTrigger asChild>
-//      <span className="text-[12px] bg-white text-red-600 underline cursor-pointer ">
-//        {" "}
-//        Delete Your Review
-//      </span>
-//    </DialogTrigger>
-//    <DialogContent className="sm:max-w-[425px]">
-//      <DialogHeader>
-//        <DialogTitle>
-//          {" "}
-//          Are you sure you want to delete your review.
-//        </DialogTitle>
-//      </DialogHeader>
-
-//      <DialogFooter>
-//        <Button className="text-white text-[12px] bg-red-600 cursor-pointer hover:bg-white hover:text-black  mt-[20px]">
-//          {" "}
-//          {data.userDetails?._id === userId && (
-//            <span onClick={() => handleDeleteReview(data._id)}>
-//              Delete Your Review
-//            </span>
-//          )}
-//        </Button>
-//      </DialogFooter>
-//    </DialogContent>
-//  </Dialog>;
