@@ -3,12 +3,16 @@ import { User } from "../models/user.models.js";
 import { Product } from "../models/product.models.js";
 import mongoose from "mongoose";
 
+// Helper function to calculate total price
+const calculateTotalPrice = (items) => {
+  return items.reduce((total, item) => total + item.quantity * item.price, 0);
+};
+
 // get all product in the cart section of the user
 const addToCart = async (req, res) => {
   try {
     const { productId, quantity } = req.body;
-    console.log(productId);
-    
+
     const user = await User.findById(req.user.id).select("-password"); // Exclude
     const userId = user._id;
 
@@ -83,6 +87,79 @@ const addToCart = async (req, res) => {
   }
 };
 
-// delete from cart items
+// delete whole items from cart cart
+const deleteFromcart = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const userId = req.user.id;
 
-export { addToCart };
+    const cart = await Cart.findOne({ userId });
+
+    if (!cart) return res.status(404).json({ message: "Cart not found" });
+
+    cart.items = cart.items.filter(
+      (item) => item.productId.toString() !== productId
+    );
+
+    cart.totalPrice = calculateTotalPrice(cart.items);
+
+    await cart.save();
+    res.status(200).json({ message: "Item removed", cart });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// update cart items
+const updateCartItems = async (req, res) => {
+  try {
+    const { productId, quantity } = req.body;
+
+    const userId = req.user.id;
+    const cart = await Cart.findOne({ userId });
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+    // find items from the arry
+    const itemIndex = cart.items.findIndex(
+      (item) => item.productId.toString() === productId
+    );
+
+    // check item availabe or not
+    if (itemIndex === -1) {
+      return res.status(404).json({ message: "Item doesnot exist" });
+    }
+    // recalculate price
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: "Product doesnot exist" });
+    }
+
+    // If quantity is 0, remove the item
+    if (quantity == 0) {
+      cart.items.splice(itemIndex, 1);
+    } else {
+      // Update quantity if not 0
+      cart.items[itemIndex].quantity = parseInt(quantity, 10);
+    }
+    // Update quantity and recalculate total price
+    cart.totalPrice = cart.items.reduce(
+      (total, item) => total + item.quantity * product.price,
+      0
+    );
+    // If cart is empty after update, delete it
+    if (cart.items.length === 0) {
+      const deleteCart = await Cart.findOneAndDelete({ userId });
+
+      return res.status(200).json({ message: "Cart is now empty" });
+    }
+    // save to database
+    await cart.save();
+    res.status(200).json({ message: "Cart updated", cart });
+    //
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export { addToCart, deleteFromcart, updateCartItems };

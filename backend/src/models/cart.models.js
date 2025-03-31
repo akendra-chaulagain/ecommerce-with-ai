@@ -15,7 +15,7 @@ const cartSchema = new mongoose.Schema(
           ref: "Product",
           required: true,
         }, // Reference to Product
-        quantity: { type: Number, required: true, min: 1 }, // Must be at least 1
+        quantity: { type: Number, required: true, min: 0 }, // Must be at least 1
       },
     ],
 
