@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 
 import { axiosInstence } from "@/hooks/axiosInstence";
+
 import { iCartResponse } from "@/types/types";
 import { Trash2 } from "lucide-react";
 import Image from "next/image";
@@ -9,22 +10,93 @@ import React, { useEffect, useState } from "react";
 
 const Page = () => {
   const [cart, setCart] = useState<iCartResponse | null | undefined>(null);
+  const [loading, setLoading] = useState(false);
 
   // get login user cart details
+  const getCartdetails = async () => {
+    try {
+      const response = await axiosInstence.get<iCartResponse>("/cart", {
+        withCredentials: true,
+      });
+      setCart(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
-    const getCartdetails = async () => {
-      try {
-        const response = await axiosInstence.get<iCartResponse>("/cart", {
-          withCredentials: true,
-        });
-        setCart(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
     getCartdetails();
   }, []);
+
+  // update cart quantity
+  const handleUpdateCart = async (productId: string, quantity: number) => {
+    console.log(quantity);
+
+    try {
+      setLoading(true);
+      const response = await axiosInstence.put(
+        "/cart/update-item-from-cart",
+        {
+          productId,
+          quantity,
+        },
+        { withCredentials: true }
+      );
+
+      // Update state with new cart data
+      setCart((prevCart) => {
+        if (!prevCart || !prevCart.cart) return prevCart;
+
+        const updatedItems = prevCart.cart.items.map((item) =>
+          item.productId === productId ? { ...item, quantity } : item
+        );
+
+        return {
+          ...prevCart,
+          cart: {
+            ...prevCart.cart,
+            items: updatedItems,
+            totalPrice: response.data.cart.totalPrice, // Update totalPrice here
+          },
+        };
+      });
+      getCartdetails();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // delete product from cart
+  const handleDelete = async (productId: string) => {
+    try {
+      await axiosInstence.delete(`/cart/delete-item-from-cart/${productId}`, {
+        withCredentials: true,
+      });
+
+      // Update the state to reflect the deleted item
+      setCart((prevCart) => {
+        if (!prevCart || !prevCart.cart) return prevCart;
+
+        // Filter out the deleted item
+        const updatedItems = prevCart.cart.items.filter(
+          (item) => item.productId !== productId
+        );
+
+        return {
+          ...prevCart,
+          cart: { ...prevCart.cart, items: updatedItems },
+        };
+      });
+
+      // Re-fetch the updated cart data from the backend
+      window.location.reload();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -41,9 +113,10 @@ const Page = () => {
             className="col-span-3  gap-2  bg-[#f7f7f7] 
  "
           >
-            {/* <div className="grid sm:grid-cols-5 lg:grid-cols-5  grid-cols-1 mb-[20px]  "> */}
-            {cart?.cart?.items && cart.cart.items.length > 0 ? (
-              cart?.cart?.items.map((item, index) => (
+            {loading ? (
+              <h1>Loading ....</h1>
+            ) : cart?.cart?.items && cart.cart.items.length > 0 ? (
+              cart.cart.items.map((item, index) => (
                 <div
                   className="grid sm:grid-cols-5 lg:grid-cols-5 grid-cols-2 mb-5 p-4 border rounded-lg bg-white shadow-sm"
                   key={index}
@@ -67,15 +140,32 @@ const Page = () => {
 
                     {/* Quantity Counter */}
                     <div className="flex items-center gap-4 mt-3">
-                      <button className="border px-3 py-1 text-lg">-</button>
+                      <button
+                        className="border px-3 py-1 text-lg"
+                        disabled={item.quantity <= 1}
+                        onClick={() =>
+                          handleUpdateCart(item.productId, item.quantity - 1)
+                        }
+                      >
+                        -
+                      </button>
                       <p className="text-lg font-semibold">{item.quantity}</p>
-                      <button className="border px-3 py-1 text-lg">+</button>
+                      <button
+                        disabled={loading}
+                        className="border px-3 py-1 text-lg"
+                        onClick={() =>
+                          handleUpdateCart(item.productId, item.quantity + 1)
+                        }
+                      >
+                        +
+                      </button>
                       <span className="cursor-pointer hover:text-red-600">
-                        <Trash2 size={"19px"} />
+                        <Trash2
+                          size={"19px"}
+                          onClick={() => handleDelete(item.productId)}
+                        />
                       </span>
                     </div>
-
-                    <p className="text-lg mt-3 font-semibold">${item.price}</p>
                   </div>
 
                   {/* Price Display */}
@@ -85,7 +175,7 @@ const Page = () => {
                 </div>
               ))
             ) : (
-              <p className="text-center text-gray-600 text-lg">
+              <p className="text-center text-gray-600 text-lg mt-[40px] font-bold">
                 Your cart is empty.
               </p>
             )}
@@ -108,16 +198,13 @@ const Page = () => {
             <hr />
             <div className="flex justify-between mt-[10px] text-[17px]">
               <div>
-                <h3>Items ({cart?.cart?.items?.length}):</h3>
-                <h3>Shipping:</h3>
-                <h3>GST/HST:</h3>
                 <h3 className="font-semibold">Total:</h3>
               </div>
               <div>
-                <h3>$378.00</h3>
-                <h3>$48.59</h3>
-                <h3>$78.06</h3>
-                <h3 className="font-semibold">$541.88</h3>
+                <h3 className="font-semibold">
+                  {" "}
+                  ${cart?.cart?.totalPrice ?? 0}
+                </h3>
               </div>
             </div>
 

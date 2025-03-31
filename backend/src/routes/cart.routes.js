@@ -22,7 +22,7 @@ router.route("/delete-item-from-cart/:id").delete(
   deleteFromcart
 );
 // update cart items
-router.route("/update-item-from-cart").patch(
+router.route("/update-item-from-cart").put(
   // verify token
   verifyJwt,
   // access control

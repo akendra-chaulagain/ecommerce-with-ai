@@ -68,7 +68,7 @@ export interface ApiResponse {
 export interface iCartResponse {
   userId: string;
   _id: string;
-  cart: { items: CartItem[]; totalPrice: number };
+  cart: { items: CartItem[]; totalPrice: number; userId: string; _id: string };
 }
 
 export interface CartItem {
