@@ -21,7 +21,7 @@ export interface iReview {
 
 export interface iProduct {
   _id: string;
-  details: iProductDetails;
+  details?: iProductDetails;
   reviews: iReview[];
 }
 
@@ -37,6 +37,7 @@ export interface iProductDetails {
   images: string[];
   name: string;
   price: number;
+  rating:number
 }
 
 export interface iReview {
@@ -56,6 +57,7 @@ export interface iCategoryResponse {
   name: string;
   description: string;
   products: iProduct[];
+  details:iProductDetails
 }
 
 export interface ApiResponse {

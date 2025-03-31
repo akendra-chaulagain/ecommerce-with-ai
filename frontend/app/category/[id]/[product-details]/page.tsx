@@ -27,11 +27,14 @@ const Page = () => {
 
   // Get the last part (product ID)
   const lastId = parts[parts.length - 1].replace("product-details-", "");
+  console.log(lastId);
+  
   const [product, setProduct] = useState<iProduct | null>(null);
   const [error, setError] = useState<boolean>(false);
+  const [rating, setRating] = useState(0);
   console.log(error);
 
-  // for product details
+  // get product details
   useEffect(() => {
     (async () => {
       try {
@@ -40,6 +43,8 @@ const Page = () => {
             userId ? `?userId=${userId}` : " "
           }`
         );
+       
+        
         setProduct(response.data);
       } catch (error) {
         setError(true);
@@ -48,32 +53,18 @@ const Page = () => {
     })();
   }, [lastId, userId]);
   const reviews: iReview[] = product?.reviews ?? [];
+  console.log(product);
+  
 
-  // for suggestion
-
-  // get tge category id
-  // const categoryId = parts[parts.length - 2];
-  // const [category, setCategory] = useState<iCategoryResponse | null>(null);
-  // useEffect(() => {
-  //   (async () => {
-  //     try {
-  //       const response = await axiosInstence.get<{ data: iCategoryResponse }>(
-  //         `/category/${categoryId}`
-  //       );
-  //       setCategory(response.data.data);
-  //     } catch (error) {
-  //       setError(true);
-  //       console.log(error);
-  //     }
-  //   })();
-  // }, [categoryId]);
   // for product images slider
   const plugin = React.useRef(
     Autoplay({ delay: 1500, stopOnInteraction: true })
   );
-
-  // console.log(product?.details);
-  // console.log(category);
+  // get reting from the child component
+  const handleRatingUpdate = (rating: number) => {
+    setRating(rating);
+  };
+  // add to cart
 
   return (
     <>
@@ -129,16 +120,25 @@ const Page = () => {
               <div className="flex justify-between my-[20px]">
                 <span>Style # P251121032</span>
                 <div className="flex ml-[6px]">
-                  <span className="flex mt-[6px] mb-[10px]">
-                    <Star size={14} color="red" />
-                    <Star size={14} color="red" />
-                    <Star size={14} color="red" />
-                    <Star size={14} color="red" />
-                    <Star size={14} color="red" />
+                  <span className="flex ">
+                    {Array.from({ length: 5 }).map((_, index) => (
+                      <Star
+                        key={index}
+                        size={20}
+                        color={
+                          index < Math.round(parseFloat(rating.toString()))
+                            ? "red "
+                            : "gray"
+                        }
+                      />
+                    ))}
                   </span>
-                  <span className="ml-[5px] text-[14px] font-semibold">
+                  {/* <span className="ml-[5px] text-[15px] font-bold">
+                    {rating}
+                  </span> */}
+                  <p className="ml-[5px] text-[14px] font-semibold">
                     ( {reviews?.length} ) Reviews
-                  </span>
+                  </p>
                 </div>
               </div>
               <hr />
@@ -252,7 +252,11 @@ const Page = () => {
 
       {/* Review */}
 
-      <Review reviews={reviews} lastId={lastId} />
+      <Review
+        reviews={reviews}
+        lastId={lastId}
+        sendRatingToParent={handleRatingUpdate}
+      />
     </>
   );
 };

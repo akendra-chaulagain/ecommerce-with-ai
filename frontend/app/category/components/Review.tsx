@@ -1,6 +1,6 @@
 // "use client";
 import { Star } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { iReview } from "@/types/types";
@@ -21,6 +21,7 @@ import axios from "axios";
 interface ReviewProps {
   reviews: iReview[];
   lastId: string;
+  sendRatingToParent:(rating:number)=>void
 }
 
 const calculateAverageRating = (reviews: { rating: number }[]) => {
@@ -29,9 +30,18 @@ const calculateAverageRating = (reviews: { rating: number }[]) => {
   return (totalRating / reviews.length).toFixed(1); // Round to 1 decimal place
 };
 
-const Review: React.FC<ReviewProps> = ({ reviews, lastId }) => {
+const Review: React.FC<ReviewProps> = ({ reviews, lastId ,sendRatingToParent }) => {
   const showToast = useNotificationToast(); // Use the custom hook
   const averateRating = calculateAverageRating(reviews);
+
+  // sent rating to the parents
+  useEffect(() => {
+    if (reviews.length > 0) {
+      const avg = parseFloat(averateRating); // Parse the rating to a float
+      sendRatingToParent(avg); // Send the average rating to the parent
+    }
+  }, [reviews, sendRatingToParent, averateRating]);
+
   // for rating
   const [isStarred, setIsStarred] = useState([
     false,

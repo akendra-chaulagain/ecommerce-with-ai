@@ -57,21 +57,21 @@ const createReview = async (req, res) => {
 const getAllReviewAccordingToProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const  {userId} = req.query;
- const userObjectId = new mongoose.Types.ObjectId(userId);
-    
+    const { userId } = req.query;
+    let userObjectId;
+
+    // If userId is provided, create ObjectId
+    if (userId) {
+      userObjectId = new mongoose.Types.ObjectId(userId);
+    }
 
     const allproducts = await Review.aggregate([
       {
-        $match: { product: new mongoose.Types.ObjectId(id) },
+        $match: { product: new mongoose.Types.ObjectId(id) }, // Match reviews for the specific product
       },
-
-      // {
-      //   $match: { product: new ObjectId("67e80ecdf580ce7c0e5367aa") }, // Match the product ID
-      // },
       {
         $lookup: {
-          from: "users",
+          from: "users", // Lookup user details
           localField: "user",
           foreignField: "_id",
           as: "userDetails",
@@ -90,20 +90,26 @@ const getAllReviewAccordingToProduct = async (req, res) => {
         },
       },
 
-      {
-        $addFields: {
-          isCurrentUser: {
-            $cond: {
-              if: { $eq: ["$user",userObjectId] }, // Compare review's user ID with the logged-in user ID
-              then: 1,
-              else: 0,
+      // If userId is provided, add isCurrentUser field for sorting
+      ...(userId
+        ? [
+            {
+              $addFields: {
+                isCurrentUser: {
+                  $cond: {
+                    if: { $eq: ["$user", userObjectId] }, // Compare review's user ID with the logged-in user ID
+                    then: 1,
+                    else: 0,
+                  },
+                },
+              },
             },
-          },
-        },
-      },
-      {
-        $sort: { isCurrentUser: -1, createdAt: -1 }, // Sort by isCurrentUser to place the current user's review at the top, and then by creation date if needed
-      },
+            {
+              $sort: { isCurrentUser: -1, createdAt: -1 }, // Sort by isCurrentUser to place the current user's review at the top, and then by creation date
+            },
+          ]
+        : []), // No userId, skip these fields
+
       {
         $group: {
           _id: "$product", // Group by product ID
@@ -112,7 +118,7 @@ const getAllReviewAccordingToProduct = async (req, res) => {
       },
       {
         $lookup: {
-          from: "products",
+          from: "products", // Lookup product details
           let: { productId: "$_id" },
           pipeline: [
             {
@@ -141,14 +147,25 @@ const getAllReviewAccordingToProduct = async (req, res) => {
       },
     ]);
 
+    // Check if there are no reviews
+    if (!allproducts[0] || allproducts[0].reviews.length === 0) {
+      // Return only product details if no reviews exist
+      const details = await Product.findById(id)
+      return res.status(200).json({
+        message: "Product found with no reviews",
+        details,
+      });
+    }
+
     return res.status(200).json(allproducts[0]);
   } catch (error) {
-    return res.status(401).json({
-      message: "server error ",
-      message: error.message,
+    return res.status(500).json({
+      message: "Server error",
+      error: error.message,
     });
   }
 };
+
 // edit review
 const editReview = async (req, res) => {
   try {

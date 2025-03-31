@@ -6,12 +6,11 @@ import mongoose from "mongoose";
 // get all product in the cart section of the user
 const addToCart = async (req, res) => {
   try {
-    const { userId, productId, quantity } = req.body;
-
-    // Validate inputs
-    if (!userId) {
-      return res.status(400).json({ message: "User ID is required" });
-    }
+    const { productId, quantity } = req.body;
+    console.log(productId);
+    
+    const user = await User.findById(req.user.id).select("-password"); // Exclude
+    const userId = user._id;
 
     if (!productId) {
       return res.status(400).json({ message: "Product ID is required" });
@@ -85,8 +84,5 @@ const addToCart = async (req, res) => {
 };
 
 // delete from cart items
-
-
-
 
 export { addToCart };
