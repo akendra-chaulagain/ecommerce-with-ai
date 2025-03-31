@@ -18,20 +18,20 @@ import {
 import { iProduct, iReview } from "@/types/types";
 import Review from "../../components/Review";
 import { useAuth } from "@/context/AuthContext";
+import { useNotificationToast } from "@/hooks/toast";
 
 const Page = () => {
   const user = useAuth();
   const userId = user?.user?._id;
   const pathname = usePathname();
   const parts = pathname.split("/");
-
   // Get the last part (product ID)
   const lastId = parts[parts.length - 1].replace("product-details-", "");
-  console.log(lastId);
-  
   const [product, setProduct] = useState<iProduct | null>(null);
   const [error, setError] = useState<boolean>(false);
   const [rating, setRating] = useState(0);
+  const [quantity, setQuantity] = useState<number>(1);
+  const showToast = useNotificationToast(); // Use the custom hook
   console.log(error);
 
   // get product details
@@ -43,8 +43,7 @@ const Page = () => {
             userId ? `?userId=${userId}` : " "
           }`
         );
-       
-        
+
         setProduct(response.data);
       } catch (error) {
         setError(true);
@@ -53,8 +52,6 @@ const Page = () => {
     })();
   }, [lastId, userId]);
   const reviews: iReview[] = product?.reviews ?? [];
-  console.log(product);
-  
 
   // for product images slider
   const plugin = React.useRef(
@@ -64,7 +61,26 @@ const Page = () => {
   const handleRatingUpdate = (rating: number) => {
     setRating(rating);
   };
+  // handle quantiy
+  const updateCartQuantity = (change: number) => {
+    setQuantity((prev) => Math.max(1, prev + change)); // Ensures quantity doesn't go below 1
+  };
   // add to cart
+  const handleAddToCart = async () => {
+    try {
+      const response = await axiosInstence.post(
+        "/cart/add-to-cart",
+        {
+          productId: lastId,
+          quantity,
+        },
+        { withCredentials: true }
+      );
+      showToast(response.data.message);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -175,13 +191,26 @@ const Page = () => {
               {/* add to bag */}
               <div className="flex my-[20px]">
                 <div className="flex items-center gap-6 border-2 px-[16px] py-[3px]">
-                  <span className="text-[27px] cursor-pointer">-</span>
-                  <p className="text-[20px] font-semibold">1</p>{" "}
-                  <span className="text-[20px] cursor-pointer">+</span>
+                  <span
+                    className="text-[27px] cursor-pointer"
+                    onClick={() => updateCartQuantity(-1)}
+                  >
+                    -
+                  </span>
+                  <p className="text-[20px] font-semibold">{quantity}</p>{" "}
+                  <span
+                    className="text-[20px] cursor-pointer"
+                    onClick={() => updateCartQuantity(1)}
+                  >
+                    +
+                  </span>
                 </div>
 
                 <div className="ml-[20px]">
-                  <Button className="bg-red-600 text-white border-2 hover:text-black hover:bg-white px-[40px] py-[25px]">
+                  <Button
+                    onClick={handleAddToCart}
+                    className="bg-red-600 text-white border-2 hover:text-black hover:bg-white px-[40px] py-[25px]"
+                  >
                     ADD TO CART
                   </Button>
                 </div>
