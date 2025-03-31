@@ -37,7 +37,7 @@ export interface iProductDetails {
   images: string[];
   name: string;
   price: number;
-  rating:number
+  rating: number;
 }
 
 export interface iReview {
@@ -57,10 +57,24 @@ export interface iCategoryResponse {
   name: string;
   description: string;
   products: iProduct[];
-  details:iProductDetails
+  details: iProductDetails;
+  length: number | null;
 }
 
 export interface ApiResponse {
   message: string;
   products: iCategoryResponse[]; // This is an array of CategoryResponse
+}
+export interface iCartResponse {
+  userId: string;
+  _id: string;
+  cart: { items: CartItem[]; totalPrice: number };
+}
+
+export interface CartItem {
+  productId: string;
+  quantity: number;
+  name: string;
+  price: number;
+  image: string;
 }

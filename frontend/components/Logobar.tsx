@@ -7,7 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 
 const Logobar = () => {
   const user = useAuth();
-  console.log(user.user);
+  
   
 
   return (

@@ -190,18 +190,20 @@ const getCartAccordingToLoginUser = async (req, res) => {
         $group: {
           _id: "$_id",
           userId: { $first: "$userId" },
+          totalPrice: { $first: "$totalPrice" },
           items: {
             $push: {
-              productId: "$items.productId",
-              quantity: "$items.quantity",
-              productName: "$items.product.name",
+              productId: "$items.product._id",
+              name: "$items.product.name",
+              description: "$items.product.description",
+              image: { $arrayElemAt: ["$items.product.images", 0] },
               price: "$items.product.price",
+              quantity: "$items.quantity",
               totalItemPrice: {
                 $multiply: ["$items.quantity", "$items.product.price"],
               },
             },
           },
-          totalPrice: { $first: "$totalPrice" },
         },
       },
     ]);
@@ -212,7 +214,7 @@ const getCartAccordingToLoginUser = async (req, res) => {
 
     res
       .status(200)
-      .json({ message: "Cart details fetched", cart: cartDetails[0] });
+      .json({ message: "Cart details fetched", cart:cartDetails[0] });
   } catch (error) {
     console.error("Error fetching cart details:", error);
     res.status(500).json({ error: error.message });
