@@ -1,4 +1,5 @@
 "use client";
+import Paypal from "@/components/Paypal";
 import { Button } from "@/components/ui/button";
 
 import { axiosInstence } from "@/hooks/axiosInstence";
@@ -11,6 +12,7 @@ import React, { useEffect, useState } from "react";
 const Page = () => {
   const [cart, setCart] = useState<iCartResponse | null | undefined>(null);
   const [loading, setLoading] = useState(false);
+  const [showPaypal, setShowPaypal] = useState(false); // State to manage PayPal button visibility
 
   // get login user cart details
   const getCartdetails = async () => {
@@ -96,6 +98,9 @@ const Page = () => {
     } finally {
       setLoading(false);
     }
+  };
+  const handlePayment = () => {
+    setShowPaypal(true); // Show PayPal button on click
   };
 
   return (
@@ -209,12 +214,17 @@ const Page = () => {
             </div>
 
             <div className="mt-[20px]">
-              <Button className="bg-red-600 text-white border-2 w-full hover:text-black hover:bg-white px-[40px] py-[25px]">
+              <Button
+                onClick={handlePayment}
+                className="bg-red-600 text-white border-2 w-full hover:text-black hover:bg-white px-[40px] py-[25px]"
+              >
                 Proceed to Checkout
               </Button>
             </div>
           </div>
         </div>
+        {/* Conditionally render PayPal component */}
+        {showPaypal && <Paypal />}
       </div>
     </>
   );
