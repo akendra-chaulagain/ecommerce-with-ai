@@ -149,8 +149,7 @@ const updateCartItems = async (req, res) => {
     );
     // If cart is empty after update, delete it
     if (cart.items.length === 0) {
-      const deleteCart = await Cart.findOneAndDelete({ userId });
-
+      await Cart.findOneAndDelete({ userId });
       return res.status(200).json({ message: "Cart is now empty" });
     }
     // save to database
@@ -162,4 +161,67 @@ const updateCartItems = async (req, res) => {
   }
 };
 
-export { addToCart, deleteFromcart, updateCartItems };
+// get card data acoording to the login user
+const getCartAccordingToLoginUser = async (req, res) => {
+  const userId = new mongoose.Types.ObjectId(req.user.id); // Static userId
+  try {
+    const cartDetails = await Cart.aggregate([
+      // Match the cart for the specific user
+      { $match: { userId: userId } },
+
+      // Unwind the items array to process each item separately
+      { $unwind: "$items" },
+
+      // Lookup product details for each cart item
+      {
+        $lookup: {
+          from: "products", // Collection name for products
+          localField: "items.productId",
+          foreignField: "_id",
+          as: "items.product",
+        },
+      },
+
+      // Unwind the product array (because `$lookup` returns an array)
+      { $unwind: "$items.product" },
+
+      // Restructure the output format
+      {
+        $group: {
+          _id: "$_id",
+          userId: { $first: "$userId" },
+          items: {
+            $push: {
+              productId: "$items.productId",
+              quantity: "$items.quantity",
+              productName: "$items.product.name",
+              price: "$items.product.price",
+              totalItemPrice: {
+                $multiply: ["$items.quantity", "$items.product.price"],
+              },
+            },
+          },
+          totalPrice: { $first: "$totalPrice" },
+        },
+      },
+    ]);
+
+    if (!cartDetails.length) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Cart details fetched", cart: cartDetails[0] });
+  } catch (error) {
+    console.error("Error fetching cart details:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export {
+  addToCart,
+  deleteFromcart,
+  updateCartItems,
+  getCartAccordingToLoginUser,
+};
