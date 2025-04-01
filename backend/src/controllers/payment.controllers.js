@@ -11,6 +11,8 @@ const PAYPAL_BASE_URL = "https://api-m.sandbox.paypal.com";
 const createPaypalOrder = async (req, res) => {
   try {
     const accessToken = await paypalAccesssToken();
+   
+    
     const response = await axios.post(
       `${PAYPAL_BASE_URL}/v2/checkout/orders`, // PayPal endpoint for creating orders
       {
@@ -78,7 +80,7 @@ const capturePaypalOrder = async (req, res) => {
 
     const response = await axios.post(
       `${PAYPAL_BASE_URL}/v2/checkout/orders/${orderID}/capture`,
-      { responseType: "json" }, // Empty body required
+      {}, // Empty body required
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,

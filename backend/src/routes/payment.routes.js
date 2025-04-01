@@ -9,20 +9,20 @@ import {
   createPaypalOrder,
 } from "../controllers/payment.controllers.js";
 
-router.route("/create-order").post(
+router.route("/create-payment").post(
   // verify token
   verifyJwt,
-
   // access control
   authorize("Admin", "User"),
   // create paypalorder
   createPaypalOrder
 );
 
-router.route("/success").get(
+
+
+router.route("/capture-payment").get(
   // verify token
   verifyJwt,
-
   // access control
   authorize("Admin", "User"),
   // create paypalorder
@@ -30,5 +30,3 @@ router.route("/success").get(
 );
 
 export default router;
-
-

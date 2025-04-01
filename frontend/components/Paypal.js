@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import axios from "axios";
+import { axiosInstence } from "@/hooks/axiosInstence";
 
 // Sample cart data for PayPal integration
 const cartData = {
@@ -39,12 +40,18 @@ const Paypal = () => {
   // PayPal order creation - called when the PayPal button is clicked
   const createOrder = async (data, actions) => {
     setLoading(true);
+
     try {
       // Send the cart details to backend to create the PayPal order
-      const response = await axios.post("/api/create-paypal-order", {
-        amount: cartData.amount,
-        items: cartData.items,
-      });
+      const response = await axios.post(
+        "http://localhost:5001/api/v1/payment/create-payment",
+        {
+          amount: cartData.amount,
+          items: cartData.items,
+        },
+        { withCredentials: true }
+      );
+      console.log(response);
 
       // Return the order ID to PayPal
       return actions.order.create({
