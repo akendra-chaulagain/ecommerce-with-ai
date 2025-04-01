@@ -18,8 +18,6 @@ router.route("/create-payment").post(
   createPaypalOrder
 );
 
-
-
 router.route("/capture-payment").get(
   // verify token
   verifyJwt,

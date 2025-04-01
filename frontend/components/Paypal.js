@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import axios from "axios";
-import { axiosInstence } from "@/hooks/axiosInstence";
 
 // Sample cart data for PayPal integration
 const cartData = {
@@ -51,7 +50,14 @@ const Paypal = () => {
         },
         { withCredentials: true }
       );
-      console.log(response);
+      const approvalUrl = response.data.approvalUrl;
+      const orderID = response.data.orderID;
+      console.log(orderID);
+
+      if (approvalUrl) {
+        // Redirect user to PayPal approval URL
+        window.location.href = approvalUrl;
+      }
 
       // Return the order ID to PayPal
       return actions.order.create({
@@ -71,6 +77,7 @@ const Paypal = () => {
           },
         ],
       });
+      return orderID;
     } catch (error) {
       console.error("Error creating PayPal order:", error);
       setLoading(false);
@@ -80,17 +87,31 @@ const Paypal = () => {
   // Handle payment approval after PayPal user approval
   const onApprove = async (data, actions) => {
     try {
-      // Capture payment
       const orderID = data.orderID;
-      const response = await axios.post(
-        `/api/capture-paypal-order?token=${orderID}`
+      
+      console.log("Order Approved! Order ID:", orderID);
+      if (!orderID) {
+        console.error(" No order ID provided!");
+        alert(" No order ID received.");
+        return;
+      }
+
+      // Capture payment via PayPal SDK
+      const captureResponse = await actions.order.capture();
+      console.log("Capture Response:", captureResponse);
+
+      // Send token as query param for backend processing
+      await axios.get(
+        `http://localhost:5001/api/v1/payment/capture-payment?token=${token}`,
+        { withCredentials: true }
       );
 
-      // Process successful payment here (e.g., update your DB or redirect user)
       alert("Payment captured successfully!");
+
       setLoading(false);
     } catch (error) {
       console.error("Error capturing PayPal payment:", error);
+      alert("Error capturing PayPal payment. Please try again.");
       setLoading(false);
     }
   };

@@ -11,8 +11,6 @@ const PAYPAL_BASE_URL = "https://api-m.sandbox.paypal.com";
 const createPaypalOrder = async (req, res) => {
   try {
     const accessToken = await paypalAccesssToken();
-   
-    
     const response = await axios.post(
       `${PAYPAL_BASE_URL}/v2/checkout/orders`, // PayPal endpoint for creating orders
       {
@@ -37,7 +35,7 @@ const createPaypalOrder = async (req, res) => {
           },
         ],
         application_context: {
-          return_url: `http://localhost:5001/success`, // URL to redirect the user after approval
+          return_url: `http://localhost:3000/checkout/success`, // URL to redirect the user after approval
           cancel_url: `http://localhost:5001/cancel-order`, // URL to redirect if the user cancels
           user_action: "PAY_NOW", // This ensures the user is prompted to pay immediately
           brand_name: "Ak Store", // This is the brand name that will appear on the PayPal page
@@ -69,17 +67,16 @@ const createPaypalOrder = async (req, res) => {
 
 const capturePaypalOrder = async (req, res) => {
   try {
-    const orderID = req.query.token;
-    console.log(orderID);
+    const token = req.query.token;
 
-    if (!orderID) {
+    if (!token) {
       return res.status(400).json({ error: "Missing order ID" });
     }
 
     const accessToken = await paypalAccesssToken();
 
     const response = await axios.post(
-      `${PAYPAL_BASE_URL}/v2/checkout/orders/${orderID}/capture`,
+      `${PAYPAL_BASE_URL}/v2/checkout/orders/${token}/capture`,
       {}, // Empty body required
       {
         headers: {
@@ -87,15 +84,13 @@ const capturePaypalOrder = async (req, res) => {
           "Content-Type": "application/json",
         },
       }
-    );
-
+    ); // Log the response from Pay
     res.json({
       success: true,
       message: "Payment captured successfully",
       data: response,
     });
   } catch (error) {
-    console.log("ak");
     res
       .status(500)
       .json({ error: error.message, message: "error while capture data" });

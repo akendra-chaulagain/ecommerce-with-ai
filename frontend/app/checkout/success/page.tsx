@@ -1,10 +1,11 @@
+"use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useSearchParams } from "next/navigation";
 import axios from "axios";
 
-const SuccessPage = () => {
-  const router = useRouter();
-  const { token } = router.query;
+const PaymentPage = () => {
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token"); // ✅ Get token from URL
   const [message, setMessage] = useState("Processing payment...");
 
   useEffect(() => {
@@ -13,7 +14,8 @@ const SuccessPage = () => {
 
       try {
         const response = await axios.get(
-          `/api/paypal/capture-payment?token=${token}`
+          `http://localhost:5001/api/v1/payment/capture-payment?token=${token}`,
+          { withCredentials: true }
         );
         if (response.data.success) {
           setMessage("Payment successful! 🎉");
@@ -33,7 +35,7 @@ const SuccessPage = () => {
     <div className="container mx-auto p-6">
       <h1 className="text-2xl font-semibold mb-4">{message}</h1>
       <button
-        onClick={() => router.push("/")}
+        onClick={() => (window.location.href = "/")}
         className="px-4 py-2 bg-green-500 text-white rounded-md"
       >
         Go Home
@@ -42,4 +44,4 @@ const SuccessPage = () => {
   );
 };
 
-export default SuccessPage;
+export default PaymentPage;
