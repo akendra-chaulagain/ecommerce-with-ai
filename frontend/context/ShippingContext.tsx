@@ -7,19 +7,26 @@ import {
   ReactNode,
 } from "react";
 import { axiosInstence } from "@/hooks/axiosInstence";
+import { IShippingAddress } from "@/types/types";
 
 interface iChildren {
   children: ReactNode;
 }
+interface ShippingContextType {
+  shippingAddress: IShippingAddress | null; 
+}
 
-
-const ShippingContext = createContext({shippingAddress:null});
+const ShippingContext = createContext<ShippingContextType>({
+  shippingAddress: null,
+});
 
 export const ShippingProvider = ({ children }: iChildren) => {
-  const [shippingAddress, setShippingAddress] = useState(null);
+  const [shippingAddress, setShippingAddress] =
+    useState<IShippingAddress | null>(null);
+
   const getShippindDetails = async () => {
     try {
-      const res = await axiosInstence.get("/shipping", {
+      const res = await axiosInstence.get<IShippingAddress>("/shipping", {
         withCredentials: true,
       });
 

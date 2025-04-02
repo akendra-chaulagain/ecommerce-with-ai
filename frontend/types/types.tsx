@@ -68,8 +68,8 @@ export interface ApiResponse {
 export interface iCartResponse {
   userId: string;
   _id: string;
-  totalPrice:number
-  items:CartItem[]
+  totalPrice: number;
+  items: CartItem[];
 }
 
 export interface CartItem {
@@ -78,4 +78,19 @@ export interface CartItem {
   name: string;
   price: number;
   image: string;
+}
+
+export interface IShippingAddressDetails {
+  fullname: string;
+  contact: string;
+  address: {
+    country: string;
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+  };
+}
+export interface IShippingAddress {
+  data: IShippingAddressDetails;
 }
