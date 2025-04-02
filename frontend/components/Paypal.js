@@ -125,7 +125,6 @@ const Paypal = () => {
 
   return (
     <div>
-      <h2>Checkout with PayPal</h2>
       {loading ? (
         <p>Loading...</p>
       ) : (

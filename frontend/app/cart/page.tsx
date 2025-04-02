@@ -1,38 +1,27 @@
 "use client";
 import Paypal from "@/components/Paypal";
 import { Button } from "@/components/ui/button";
+import { useCart } from "@/context/CartContent";
 
 import { axiosInstence } from "@/hooks/axiosInstence";
 
-import { iCartResponse } from "@/types/types";
 import { Trash2 } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import React, {  useState } from "react";
 
 const Page = () => {
-  const [cart, setCart] = useState<iCartResponse | null | undefined>(null);
+  // const [cart, setCart] = useState<iCartResponse | null | undefined>(null);
   const [loading, setLoading] = useState(false);
   const [showPaypal, setShowPaypal] = useState(false); // State to manage PayPal button visibility
 
   // get login user cart details
-  const getCartdetails = async () => {
-    try {
-      const response = await axiosInstence.get<iCartResponse>("/cart", {
-        withCredentials: true,
-      });
-      setCart(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    getCartdetails();
-  }, []);
+    const cart = useCart();  // login user cart details
+
+    
 
   // update cart quantity
   const handleUpdateCart = async (productId: string, quantity: number) => {
-    console.log(quantity);
-
     try {
       setLoading(true);
       const response = await axiosInstence.put(
@@ -214,20 +203,26 @@ const Page = () => {
             </div>
 
             <div className="mt-[20px]">
-              <Button
-                onClick={handlePayment}
-                className="bg-red-600 text-white border-2 w-full hover:text-black hover:bg-white px-[40px] py-[25px]"
-              >
-                Proceed to Checkout
+              <Button className="bg-red-600 text-white border-2 w-full hover:text-black hover:bg-white px-[40px] py-[25px]">
+                <Link href={"/cart/checkout"}>Proceed to Checkout</Link>
               </Button>
             </div>
           </div>
         </div>
         {/* Conditionally render PayPal component */}
-        {showPaypal && <Paypal />}
       </div>
     </>
   );
 };
 
 export default Page;
+
+// <div className="mt-[20px]">
+//   <Button
+//     onClick={handlePayment}
+//     className="bg-red-600 text-white border-2 w-full hover:text-black hover:bg-white px-[40px] py-[25px]"
+//   >
+//     Proceed to Checkout
+//   </Button>
+//   {showPaypal && <Paypal />}
+// </div>;

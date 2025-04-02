@@ -7,6 +7,7 @@ const shippingSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    
     address: {
       street: String,
       city: String,

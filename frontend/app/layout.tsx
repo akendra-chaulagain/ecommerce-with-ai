@@ -9,6 +9,7 @@ import Logobar from "@/components/Logobar";
 import Topbar from "@/components/Topbar";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/context/AuthContext";
+import { CartProvider } from "@/context/CartContent";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,12 +37,14 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider>
-          <Topbar />
-          <Logobar />
-          <Navbar />
-          {/* <AuthProvider>{children}</AuthProvider> */}
-          {children}
-          <Toaster />
+          <CartProvider>
+            <Topbar />
+            <Logobar />
+            <Navbar />
+            {/* <AuthProvider>{children}</AuthProvider> */}
+            {children}
+            <Toaster />
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>
