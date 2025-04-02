@@ -1,7 +1,19 @@
 // CheckoutPage.jsx
+import { useCart } from "@/context/CartContent";
 import React from "react";
 
 const CheckoutPage = () => {
+  const cart = useCart()
+
+  
+    
+  const subtotal = cart?.cart?.totalPrice || 0;
+  const shippingCost = 5.99;
+  const tax = 0.13 * subtotal;
+  const totalPrice = subtotal + shippingCost + tax;
+
+
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">Checkout</h1>

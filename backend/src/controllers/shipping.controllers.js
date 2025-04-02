@@ -5,7 +5,7 @@ const shippingdetails = async (req, res) => {
     const userId = req.user.id;
 
     const { fullname, contact, address } = req.body;
-    if (!fullname || !contact || !contact || !address === undefined) {
+    if (!fullname || !contact || !address === undefined) {
       return res.status(400).json({
         message: "All fields are required",
       });
@@ -96,4 +96,27 @@ const deleteShippingAddress = async (req, res) => {
   }
 };
 
-export { shippingdetails, editShippingAddress, deleteShippingAddress };
+// get shipping details
+const getShippingDetails = async (req, res) => {
+  try {
+    const id = req.user.id;
+    console.log(id);
+
+    const details = await Shipping.findOne({ userId: id });
+    return res.status(200).json({
+      data: details,
+    });
+  } catch (error) {
+    return res.status(401).json({
+      message: "server error while fetching product",
+      message: error.message,
+    });
+  }
+};
+
+export {
+  shippingdetails,
+  editShippingAddress,
+  deleteShippingAddress,
+  getShippingDetails,
+};

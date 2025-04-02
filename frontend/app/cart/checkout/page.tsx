@@ -6,15 +6,22 @@ import Image from "next/image";
 import React, { useState } from "react";
 import Paypal from "@/components/Paypal";
 import { Button } from "@/components/ui/button";
+import { useShippingAddress } from "@/context/ShippingContext";
 
 const CheckoutPage = () => {
   const cart = useCart();
   const [showPaypal, setShowPaypal] = useState(false); // State to manage PayPal button visibility
+  const shippingAddress = useShippingAddress();
+  console.log(shippingAddress);
 
   const handlePayment = () => {
     setShowPaypal(true); // Show PayPal button on click
   };
 
+  const subtotal = cart?.cart?.totalPrice || 0;
+  const shippingCost = 5.99;
+  const tax = 0.13 * subtotal;
+  const totalPrice = subtotal + shippingCost + tax;
   const { countries } = useCountries();
   return (
     <div className="container mx-auto px-4 py-8">
@@ -24,88 +31,111 @@ const CheckoutPage = () => {
         {/* Left Side - Customer Information */}
         <div className="w-full md:w-2/3">
           {/* Address Section */}
-          <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-            <h2 className="text-xl font-semibold mb-4">Shipping Address</h2>
+          {shippingAddress ? (
+            <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+              <h2 className="text-xl font-semibold mb-4">Shipping Address</h2>
 
-            <form>
-              <div className="grid grid-cols-1  gap-4">
-                <div>
+              <form>
+                <div className="grid grid-cols-1  gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      value={shippingAddress?.shippingAddress?.data.fullname}
+                      className="w-full p-2 border border-gray-300 rounded"
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Full Name
+                    Phone Number
                   </label>
                   <input
-                    type="text"
+                    type="tel"
+                    value={shippingAddress?.shippingAddress?.data.contact}
                     className="w-full p-2 border border-gray-300 rounded"
                   />
                 </div>
-              </div>
-
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Phone Number
-                </label>
-                <input
-                  type="tel"
-                  className="w-full p-2 border border-gray-300 rounded"
-                />
-              </div>
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Country
-                </label>
-                <select className="w-full p-2 border border-gray-300 rounded">
-                  {countries.map((country, index) => (
-                    <option key={index}>{country}</option>
-                  ))}
-                  <option>United States</option>
-
-                  {/* Add more countries as needed */}
-                </select>
-              </div>
-
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Address
-                </label>
-                <input
-                  type="text"
-                  className="w-full p-2 border border-gray-300 rounded"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                <div>
+                <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    City
+                    Country
                   </label>
+                  {/* <select className="w-full p-2 border border-gray-300 rounded">
+                    {countries.map((country, index) => (
+                      <option key={index}>{country}</option>
+                    ))}
+                    <option>United States</option>
+
+                   
+                  </select> */}
                   <input
-                    type="text"
+                    type="tel"
+                    value={
+                      shippingAddress?.shippingAddress?.data.address.country
+                    }
                     className="w-full p-2 border border-gray-300 rounded"
                   />
                 </div>
 
-                <div>
+                <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    State/Province
+                    Address
                   </label>
                   <input
                     type="text"
+                    value={
+                      shippingAddress?.shippingAddress?.data.address.street
+                    }
                     className="w-full p-2 border border-gray-300 rounded"
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Postal Code
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full p-2 border border-gray-300 rounded"
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      City
+                    </label>
+                    <input
+                      value={
+                        shippingAddress?.shippingAddress?.data.address.city
+                      }
+                      type="text"
+                      className="w-full p-2 border border-gray-300 rounded"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      State/Province
+                    </label>
+                    <input
+                      value={
+                        shippingAddress?.shippingAddress?.data.address.state
+                      }
+                      type="text"
+                      className="w-full p-2 border border-gray-300 rounded"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Postal Code
+                    </label>
+                    <input
+                      value={shippingAddress?.shippingAddress?.data.address.zip}
+                      type="text"
+                      className="w-full p-2 border border-gray-300 rounded"
+                    />
+                  </div>
                 </div>
-              </div>
-            </form>
-          </div>
+              </form>
+            </div>
+          ) : (
+            <h1>akendra</h1>
+          )}
 
           {/* Product Details Section */}
           <div className="bg-white p-6 rounded-lg shadow-md">
@@ -147,16 +177,14 @@ const CheckoutPage = () => {
               </div>
               <div className="flex justify-between mb-2">
                 <span>Tax (13%)</span>
-                <span>
-                  ${(0.13 * (cart?.cart?.totalPrice || 0)).toFixed(2)}
-                </span>
+                <span>${tax}</span>
               </div>
               <div className="flex justify-between font-bold text-lg mt-2 pt-2 border-t">
                 <span>Total Price (including shipping)</span>
                 <span>
                   {/* $ {(0.13 * (cart?.cart?.totalPrice || 0)).toFixed(2)}
                    */}
-                  ${(cart?.cart?.totalPrice || 0 + 5.99).toFixed(2)}
+                  ${totalPrice}
                 </span>
               </div>
             </div>
@@ -168,12 +196,11 @@ const CheckoutPage = () => {
           <div className="bg-white p-6 rounded-lg shadow-md sticky top-4">
             <h2 className="text-xl font-semibold mb-4">Payment</h2>
 
-           
             <Button
               onClick={handlePayment}
               className="w-full py-3 bg-red-600 text-white font-medium rounded hover:bg-red-700 transition mb-[10px]"
             >
-              Pay ${(cart?.cart?.totalPrice || 0 + 5.99).toFixed(2)}
+              Pay ${totalPrice}
             </Button>
             {showPaypal && <Paypal />}
             <p className="text-xs text-gray-500 mt-4 text-center">

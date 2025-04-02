@@ -5,6 +5,7 @@ import { authorize, verifyJwt } from "../middleware/auth.middleware.js";
 import {
   deleteShippingAddress,
   editShippingAddress,
+  getShippingDetails,
   shippingdetails,
 } from "../controllers/shipping.controllers.js";
 
@@ -35,5 +36,16 @@ router.route("/delete-shipping-details/:id").delete(
   // create Product
   deleteShippingAddress
 );
+
+// get shipping details
+router.route("/").get(
+  // verify token
+  verifyJwt,
+  // access control
+  authorize("Admin", "User"),
+  // create Product
+  getShippingDetails
+);
+
 
 export default router;
