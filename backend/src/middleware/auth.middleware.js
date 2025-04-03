@@ -8,8 +8,9 @@ const verifyJwt = async (req, res, next) => {
     const token = req.cookies.accessToken;
   
     
+    
     if (!token) {
-      return res.status(401).json("No token provided");
+      return res.status(401).json("No token provideds");
     }
     const user = await jwt.verify(token, process.env.ACCESS_JSONTOKEN);
     if (!user) {

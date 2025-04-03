@@ -1,30 +1,22 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import axios from "axios";
+import { useAuth } from "@/context/AuthContext";
+import { useShippingAddress } from "@/context/ShippingContext";
+import { useCart } from "@/context/CartContent";
 
 // Sample cart data for PayPal integration
-const cartData = {
-  amount: 604, // Total cart amount
-  items: [
-    {
-      name: "p1223trt",
-      sku: "001",
-      price: 30277,
-      quantity: 1,
-    },
-    {
-      name: "p1223",
-      sku: "002",
-      price: 302,
-      quantity: 2,
-    },
-  ],
-};
 
 const Paypal = ({ totalPrice }) => {
-  console.log(totalPrice);
-  console.log('ak');
-  
+  const user = useAuth();
+  const userName = user?.user?.name;
+  const cart = useCart();
+  const items = cart.cart.items;
+
+  const shippingAddress = useShippingAddress();
+  const deliverdata = shippingAddress.shippingAddress.data;
+  console.log(deliverdata);
 
   const [paypalClientId, setPaypalClientId] = useState("");
   const [loading, setLoading] = useState(false);
@@ -41,50 +33,39 @@ const Paypal = ({ totalPrice }) => {
   }, []);
 
   // PayPal order creation - called when the PayPal button is clicked
-  const createOrder = async (data, actions) => {
+  const createOrder = async () => {
     setLoading(true);
+    
+   
 
     try {
+      
+
       // Send the cart details to backend to create the PayPal order
       const response = await axios.post(
         "http://localhost:5001/api/v1/payment/create-payment",
+
         {
-          amount: totalPrice,
-          items: cartData.items,
+          total: totalPrice,
+          name: userName,
+          address: deliverdata,
+          cartItems: items,
         },
         { withCredentials: true }
       );
       const approvalUrl = response.data.approvalUrl;
-      const orderID = response.data.orderID;
-      console.log(orderID);
 
       if (approvalUrl) {
         // Redirect user to PayPal approval URL
         window.location.href = approvalUrl;
+        return;
       }
 
       // Return the order ID to PayPal
-      return actions.order.create({
-        purchase_units: [
-          {
-            amount: {
-              value: cartData.amount.toString(),
-            },
-            items: cartData.items.map((item) => ({
-              name: item.name,
-              sku: item.sku,
-              unit_amount: {
-                value: item.price.toString(),
-              },
-              quantity: item.quantity,
-            })),
-          },
-        ],
-      });
-      return orderID;
     } catch (error) {
       console.error("Error creating PayPal order:", error);
       setLoading(false);
+      alert("An error occurred while creating the payment. Please try again.");
     }
   };
 
