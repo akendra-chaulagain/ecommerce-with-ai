@@ -21,7 +21,11 @@ const cartData = {
   ],
 };
 
-const Paypal = () => {
+const Paypal = ({ totalPrice }) => {
+  console.log(totalPrice);
+  console.log('ak');
+  
+
   const [paypalClientId, setPaypalClientId] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -45,7 +49,7 @@ const Paypal = () => {
       const response = await axios.post(
         "http://localhost:5001/api/v1/payment/create-payment",
         {
-          amount: cartData.amount,
+          amount: totalPrice,
           items: cartData.items,
         },
         { withCredentials: true }
@@ -88,7 +92,7 @@ const Paypal = () => {
   const onApprove = async (data, actions) => {
     try {
       const orderID = data.orderID;
-      
+
       console.log("Order Approved! Order ID:", orderID);
       if (!orderID) {
         console.error(" No order ID provided!");

@@ -16,30 +16,27 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import useCountries from "@/hooks/fetchCountry";
+
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { useNotificationToast } from "@/hooks/toast";
-import { useAuth } from "@/context/AuthContext";
+
 import axios from "axios";
 
 const CheckoutPage = () => {
-  const { countries } = useCountries();
   const toast = useNotificationToast();
-  const user = useAuth();
-  const userId = user?.user?._id;
 
   const cart = useCart();
   const [showPaypal, setShowPaypal] = useState(false); // State to manage PayPal button visibility
   const shippingAddress = useShippingAddress();
-  // console.log(shippingAddress.shippingAddress.data.id);
 
   const [error, setError] = useState("");
+  console.log(error);
 
   //  total price
   const subtotal = cart?.cart?.totalPrice || 0;
   const shippingCost = 5.99;
   const tax = 0.13 * subtotal;
-  const totalPrice = subtotal + shippingCost + tax;
+  const totalPrice = (subtotal + shippingCost + tax).toFixed(2);
 
   // for paypal handle payment
   const handlePayment = () => {
@@ -611,7 +608,7 @@ const CheckoutPage = () => {
 
               {/* Show PayPal only if shippingAddress exists */}
               {shippingAddress?.shippingAddress?.data && showPaypal && (
-                <Paypal />
+                <Paypal totalPrice={totalPrice} />
               )}
 
               <p className="text-xs text-gray-500 mt-4 text-center">

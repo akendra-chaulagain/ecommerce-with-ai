@@ -70,6 +70,8 @@ export interface iCartResponse {
   _id: string;
   totalPrice: number;
   items: CartItem[];
+  cartDetails: CartItem[];
+  productId: string;
 }
 
 export interface CartItem {
@@ -78,18 +80,19 @@ export interface CartItem {
   name: string;
   price: number;
   image: string;
+  
 }
 
 export interface IShippingAddressDetails {
   name: string;
   contact: string;
- 
-    country: string;
-    street: string;
-    city: string;
-    state: string;
-    zip: string;
-    _id:string  
+
+  country: string;
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+  _id: string;
 }
 export interface IShippingAddress {
   data: IShippingAddressDetails;

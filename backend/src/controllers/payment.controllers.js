@@ -35,8 +35,8 @@ const createPaypalOrder = async (req, res) => {
           },
         ],
         application_context: {
-          return_url: `http://localhost:3000/checkout/success`, // URL to redirect the user after approval
-          cancel_url: `http://localhost:5001/cancel-order`, // URL to redirect if the user cancels
+          return_url: `http://localhost:3000/cart/checkout/success`, // URL to redirect the user after approval
+          cancel_url: `http://localhost:5001/cart/cancel-order`, // URL to redirect if the user cancels
           user_action: "PAY_NOW", // This ensures the user is prompted to pay immediately
           brand_name: "Ak Store", // This is the brand name that will appear on the PayPal page
         },

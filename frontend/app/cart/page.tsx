@@ -1,24 +1,25 @@
 "use client";
-import Paypal from "@/components/Paypal";
+
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContent";
 
 import { axiosInstence } from "@/hooks/axiosInstence";
+import { iCartResponse } from "@/types/types";
 
 import { Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React, {  useState } from "react";
+import React, { useState } from "react";
 
 const Page = () => {
-  // const [cart, setCart] = useState<iCartResponse | null | undefined>(null);
+  const [cartDetails, setCartdetails] = useState<
+    iCartResponse | null | undefined
+  >(null);
   const [loading, setLoading] = useState(false);
-  const [showPaypal, setShowPaypal] = useState(false); // State to manage PayPal button visibility
+  // const [showPaypal, setShowPaypal] = useState(false); // State to manage PayPal button visibility
 
   // get login user cart details
-    const cart = useCart();  // login user cart details
-
-    
+  const cart = useCart(); // login user cart details
 
   // update cart quantity
   const handleUpdateCart = async (productId: string, quantity: number) => {
@@ -34,23 +35,23 @@ const Page = () => {
       );
 
       // Update state with new cart data
-      setCart((prevCart) => {
-        if (!prevCart || !prevCart.cart) return prevCart;
+      setCartdetails((prevCart) => {
+        if (!prevCart || !prevCart.cartDetails) return prevCart;
 
-        const updatedItems = prevCart.cart.items.map((item) =>
+        const updatedItems = prevCart.items.map((item) =>
           item.productId === productId ? { ...item, quantity } : item
         );
 
         return {
           ...prevCart,
           cart: {
-            ...prevCart.cart,
+            ...prevCart.cartDetails,
             items: updatedItems,
             totalPrice: response.data.cart.totalPrice, // Update totalPrice here
           },
         };
       });
-      getCartdetails();
+      window.location.reload();
     } catch (error) {
       console.log(error);
     } finally {
@@ -66,17 +67,17 @@ const Page = () => {
       });
 
       // Update the state to reflect the deleted item
-      setCart((prevCart) => {
-        if (!prevCart || !prevCart.cart) return prevCart;
+      setCartdetails((prevCart) => {
+        if (!prevCart || !prevCart.cartDetails) return prevCart;
 
         // Filter out the deleted item
-        const updatedItems = prevCart.cart.items.filter(
+        const updatedItems = prevCart.items.filter(
           (item) => item.productId !== productId
         );
 
         return {
           ...prevCart,
-          cart: { ...prevCart.cart, items: updatedItems },
+          cart: updatedItems,
         };
       });
 
@@ -87,9 +88,6 @@ const Page = () => {
     } finally {
       setLoading(false);
     }
-  };
-  const handlePayment = () => {
-    setShowPaypal(true); // Show PayPal button on click
   };
 
   return (
