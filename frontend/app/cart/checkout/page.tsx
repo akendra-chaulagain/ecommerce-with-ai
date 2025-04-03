@@ -46,17 +46,29 @@ const CheckoutPage = () => {
     setShowPaypal(true); // Show PayPal button on click
   };
 
-  const [name, setName] = useState("");
-  const [contact, setContact] = useState("");
-  const [country, setCountry] = useState("");
-  const [street, setStreet] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [zip, setZip] = useState("");
+  const [name, setName] = useState(
+    shippingAddress?.shippingAddress?.data?.name || ""
+  );
+  const [contact, setContact] = useState(
+    shippingAddress?.shippingAddress?.data?.contact || " "
+  );
+  const [country, setCountry] = useState(
+    shippingAddress?.shippingAddress?.data?.country || " "
+  );
+  const [street, setStreet] = useState(
+    shippingAddress?.shippingAddress?.data?.street || " "
+  );
+  const [city, setCity] = useState(
+    shippingAddress?.shippingAddress?.data?.city || " "
+  );
+  const [state, setState] = useState(
+    shippingAddress?.shippingAddress?.data?.state || " "
+  );
+  const [zip, setZip] = useState(
+    shippingAddress?.shippingAddress?.data?.zip || " "
+  );
 
   // add shipping address
-
-
 
   // hande edit\
   const handleUpdate = async (e: React.FormEvent) => {
@@ -90,47 +102,46 @@ const CheckoutPage = () => {
       }
     }
   };
-// add address
-    const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-      setError("");
-      // Submit the form data (for example, send it to your backend)
+  // add address
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    // Submit the form data (for example, send it to your backend)
 
-      try {
-        await axiosInstence.post(
-          "/shipping/add-shipping-details",
-          {
-            name,
-            contact,
-            country,
-            street,
-            city,
-            state,
-            zip,
-          },
+    try {
+      await axiosInstence.post(
+        "/shipping/add-shipping-details",
+        {
+          name,
+          contact,
+          country,
+          street,
+          city,
+          state,
+          zip,
+        },
 
-          { withCredentials: true }
-        );
-        toast("Shipping address saved successfully!");
-        setTimeout(() => {
-          window.location.reload();
-        }, 1300);
-      } catch (error: unknown) {
-        if (axios.isAxiosError(error)) {
-          const errorMessage =
-            typeof error.response?.data === "object"
-              ? error.response?.data?.message ||
-                "An unknown error occurred. Try again"
-              : error.response?.data;
-          setError(errorMessage);
-        } else {
-          setError("Network error or server not reachable.");
-        }
-
-        // console.log(error.response.data);
+        { withCredentials: true }
+      );
+      toast("Shipping address saved successfully!");
+      setTimeout(() => {
+        window.location.reload();
+      }, 1300);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        const errorMessage =
+          typeof error.response?.data === "object"
+            ? error.response?.data?.message ||
+              "An unknown error occurred. Try again"
+            : error.response?.data;
+        setError(errorMessage);
+      } else {
+        setError("Network error or server not reachable.");
       }
-    };
 
+      // console.log(error.response.data);
+    }
+  };
 
   return (
     <>
