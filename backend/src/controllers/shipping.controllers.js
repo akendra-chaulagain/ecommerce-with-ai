@@ -4,8 +4,10 @@ const shippingdetails = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const { fullname, contact, address } = req.body;
-    if (!fullname || !contact || !address === undefined) {
+    const { name, contact, country, street, city, state, zip } = req.body;
+
+    
+    if (!name || !contact || !street || !country) {
       return res.status(400).json({
         message: "All fields are required",
       });
@@ -14,24 +16,29 @@ const shippingdetails = async (req, res) => {
       userId,
     });
     if (user) {
-      return res.status(400).json({
-        message: "User had already registered shipping address",
-      });
+      return res.status(400).json(
+         "User had already registered shipping address",
+      );
     }
     const addAddress = await Shipping.create({
-      fullname,
+      name,
       contact,
-      address,
+      country,
+      street,
+      city,
+      state,
+      zip,
       userId: req.user.id,
     });
+
     return res.status(200).json({
       message: "Shipping address added.",
       data: addAddress,
     });
   } catch (error) {
-    return res.status(401).json({
+    return res.status(500).json({
       message: "server error! unable to add shippimg address",
-      message: error.message,
+      error: error.message,
     });
   }
 };
@@ -40,7 +47,8 @@ const shippingdetails = async (req, res) => {
 const editShippingAddress = async (req, res) => {
   try {
     const { id } = req.params;
-    const { fullname, contact, address } = req.body;
+
+    const { name, contact, country, street, city, state, zip } = req.body;
     if (!id) {
       return res.status(401).json({
         message: "server error! unable to find shipping address",
@@ -51,9 +59,13 @@ const editShippingAddress = async (req, res) => {
     const updatedAddress = await Shipping.findByIdAndUpdate(
       id,
       {
-        fullname,
+        name,
         contact,
-        address,
+        country,
+        street,
+        city,
+        state,
+        zip,
       },
       {
         new: true,
@@ -62,12 +74,12 @@ const editShippingAddress = async (req, res) => {
     );
     return res.status(200).json({
       message: "Shipping Address Updated successfully",
-      message: updatedAddress,
+      data: updatedAddress,
     });
   } catch (error) {
-    return res.status(401).json({
+    return res.status(500).json({
       message: "server error! unable to update shippimg address",
-      message: error.message,
+      error: error.message,
     });
   }
 };

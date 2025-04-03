@@ -81,15 +81,15 @@ export interface CartItem {
 }
 
 export interface IShippingAddressDetails {
-  fullname: string;
+  name: string;
   contact: string;
-  address: {
+ 
     country: string;
     street: string;
     city: string;
     state: string;
     zip: string;
-  };
+    _id:string  
 }
 export interface IShippingAddress {
   data: IShippingAddressDetails;

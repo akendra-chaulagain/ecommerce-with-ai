@@ -7,20 +7,37 @@ const shippingSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    
-    address: {
-      street: String,
-      city: String,
-      state: String,
-      zip: String,
-      country: String,
-    },
-    fullname: {
+
+    // address: {
+    //   street: String,
+    //   city: String,
+    //   state: String,
+    //   zip: String,
+    //   country: String,
+    // },
+    name: {
       type: String,
       required: true,
     },
     contact: {
-      type: Number,
+      type: String,
+    },
+    street: {
+      type: String,
+      required: true,
+    },
+    city: {
+      type: String,
+    },
+    state: {
+      type: String,
+    },
+    zip: {
+      type: String,
+    },
+    country: {
+      type: String,
+      required: true,
     },
   },
   { timestamps: true }

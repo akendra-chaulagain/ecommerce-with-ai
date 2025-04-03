@@ -17,13 +17,23 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import useCountries from "@/hooks/fetchCountry";
+import { axiosInstence } from "@/hooks/axiosInstence";
+import { useNotificationToast } from "@/hooks/toast";
+import { useAuth } from "@/context/AuthContext";
+import axios from "axios";
 
 const CheckoutPage = () => {
   const { countries } = useCountries();
+  const toast = useNotificationToast();
+  const user = useAuth();
+  const userId = user?.user?._id;
 
   const cart = useCart();
   const [showPaypal, setShowPaypal] = useState(false); // State to manage PayPal button visibility
   const shippingAddress = useShippingAddress();
+  // console.log(shippingAddress.shippingAddress.data.id);
+
+  const [error, setError] = useState("");
 
   //  total price
   const subtotal = cart?.cart?.totalPrice || 0;
@@ -36,32 +46,91 @@ const CheckoutPage = () => {
     setShowPaypal(true); // Show PayPal button on click
   };
 
-  const [formData, setFormData] = useState({
-    name: "",
-    contact: "",
-    country: "",
-    address: "",
-    city: "",
-    state: "",
-    zip: "",
-  });
+  const [name, setName] = useState("");
+  const [contact, setContact] = useState("");
+  const [country, setCountry] = useState("");
+  const [street, setStreet] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [zip, setZip] = useState("");
 
-  // Handle input changes
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value, // Dynamically update the specific field based on the input's name
-    }));
-  };
+  // add shipping address
 
-  const handleSubmit = (e: React.FormEvent) => {
+
+
+  // hande edit\
+  const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Submit the form data (for example, send it to your backend)
-    console.log("Form submitted:", formData);
+    setError("");
+    const updatedData = {
+      name,
+      contact,
+      country,
+      street,
+      city,
+      state,
+      zip,
+    };
+
+    try {
+      await axiosInstence.put(
+        `/shipping/update-shipping-details/${shippingAddress?.shippingAddress?.data?._id}`,
+        updatedData,
+        { withCredentials: true }
+      );
+      toast("Shipping address updated successfully!");
+      setTimeout(() => {
+        window.location.reload();
+      }, 1300);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        setError(error.response?.data.message || "An unknown error occurred.");
+      } else {
+        setError("Network error or server not reachable.");
+      }
+    }
   };
+// add address
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setError("");
+      // Submit the form data (for example, send it to your backend)
+
+      try {
+        await axiosInstence.post(
+          "/shipping/add-shipping-details",
+          {
+            name,
+            contact,
+            country,
+            street,
+            city,
+            state,
+            zip,
+          },
+
+          { withCredentials: true }
+        );
+        toast("Shipping address saved successfully!");
+        setTimeout(() => {
+          window.location.reload();
+        }, 1300);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          const errorMessage =
+            typeof error.response?.data === "object"
+              ? error.response?.data?.message ||
+                "An unknown error occurred. Try again"
+              : error.response?.data;
+          setError(errorMessage);
+        } else {
+          setError("Network error or server not reachable.");
+        }
+
+        // console.log(error.response.data);
+      }
+    };
+
 
   return (
     <>
@@ -77,7 +146,7 @@ const CheckoutPage = () => {
                 <h2 className=" font-semibold mb-4 font-white">
                   Shipping Address
                 </h2>
-
+                {/* shoing user address */}
                 <form>
                   <div className="grid grid-cols-1  gap-4">
                     <div>
@@ -86,7 +155,7 @@ const CheckoutPage = () => {
                       </label>
                       <input
                         type="text"
-                        value={shippingAddress?.shippingAddress?.data?.fullname}
+                        value={shippingAddress?.shippingAddress?.data?.name}
                         className="w-full p-2 border border-gray-300 rounded"
                       />
                     </div>
@@ -109,9 +178,7 @@ const CheckoutPage = () => {
 
                     <input
                       type="tel"
-                      value={
-                        shippingAddress?.shippingAddress?.data?.address?.country
-                      }
+                      value={shippingAddress?.shippingAddress?.data?.country}
                       className="w-full p-2 border border-gray-300 rounded"
                     />
                   </div>
@@ -122,9 +189,7 @@ const CheckoutPage = () => {
                     </label>
                     <input
                       type="text"
-                      value={
-                        shippingAddress?.shippingAddress?.data?.address?.street
-                      }
+                      value={shippingAddress?.shippingAddress?.data?.street}
                       className="w-full p-2 border border-gray-300 rounded"
                     />
                   </div>
@@ -135,9 +200,7 @@ const CheckoutPage = () => {
                         City
                       </label>
                       <input
-                        value={
-                          shippingAddress?.shippingAddress?.data?.address?.city
-                        }
+                        value={shippingAddress?.shippingAddress?.data?.city}
                         type="text"
                         className="w-full p-2 border border-gray-300 rounded"
                       />
@@ -148,9 +211,7 @@ const CheckoutPage = () => {
                         State/Province
                       </label>
                       <input
-                        value={
-                          shippingAddress?.shippingAddress?.data?.address?.state
-                        }
+                        value={shippingAddress?.shippingAddress?.data?.state}
                         type="text"
                         className="w-full p-2 border border-gray-300 rounded"
                       />
@@ -161,16 +222,166 @@ const CheckoutPage = () => {
                         Postal Code
                       </label>
                       <input
-                        value={
-                          shippingAddress?.shippingAddress?.data.address.zip
-                        }
+                        value={shippingAddress?.shippingAddress?.data?.zip}
                         type="text"
                         className="w-full p-2 border border-gray-300 rounded"
                       />
                     </div>
-                    <span className="underline text-[14px] text-red-600 cursor-pointer">
-                      Edit Address
-                    </span>
+
+                    {/* edit shipping address */}
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        {/* <Button variant="outline">Edit Profile</Button> */}
+
+                        <span className="underline text-[14px] text-red-600 cursor-pointer">
+                          Edit Address
+                        </span>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                          <DialogTitle> Edit Shipping Address</DialogTitle>
+                          <DialogDescription>
+                            Enter a new billing address.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="bg-white p-3 rounded-lg mb-6">
+                          <h2 className=" font-semibold mb-4 font-white">
+                            Shipping Address
+                          </h2>
+
+                          <form>
+                            <div className="grid grid-cols-1  gap-4">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Full Name
+                                </label>
+                                <input
+                                  name="name"
+                                  type="text"
+                                  value={name}
+                                  onChange={(e) => setName(e.target.value)}
+                                  // placeholder={
+                                  //   shippingAddress?.shippingAddress?.data?.name
+                                  // }
+                                  className="w-full p-2 border border-gray-300 rounded"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="mt-4">
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Phone Number
+                              </label>
+                              <input
+                                onChange={(e) => setContact(e.target.value)}
+                                name="contact"
+                                type="tel"
+                                value={contact}
+                                // placeholder={
+                                //   shippingAddress?.shippingAddress?.data
+                                //     ?.contact
+                                // }
+                                className="w-full p-2 border border-gray-300 rounded"
+                              />
+                            </div>
+                            <div className="mt-4">
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Country
+                              </label>
+
+                              <input
+                                onChange={(e) => setCountry(e.target.value)}
+                                name="country"
+                                type="tel"
+                                value={country}
+                                // placeholder={
+                                //   shippingAddress?.shippingAddress?.data
+                                //     ?.country
+                                // }
+                                className="w-full p-2 border border-gray-300 rounded"
+                              />
+                            </div>
+
+                            <div className="mt-4">
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Address
+                              </label>
+                              <input
+                                value={street}
+                                onChange={(e) => setStreet(e.target.value)}
+                                name="street"
+                                type="text"
+                                // placeholder={
+                                //   shippingAddress?.shippingAddress?.data?.street
+                                // }
+                                className="w-full p-2 border border-gray-300 rounded"
+                              />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  City
+                                </label>
+                                <input
+                                  value={city}
+                                  onChange={(e) => setCity(e.target.value)}
+                                  name="city"
+                                  // placeholder={
+                                  //   shippingAddress?.shippingAddress?.data?.city
+                                  // }
+                                  type="text"
+                                  className="w-full p-2 border border-gray-300 rounded"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  State/Province
+                                </label>
+                                <input
+                                  value={state}
+                                  onChange={(e) => setState(e.target.value)}
+                                  name="state"
+                                  // placeholder={
+                                  //   shippingAddress?.shippingAddress?.data
+                                  //     ?.state
+                                  // }
+                                  type="text"
+                                  className="w-full p-2 border border-gray-300 rounded"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Postal Code
+                                </label>
+                                <input
+                                  onChange={(e) => setZip(e.target.value)}
+                                  name="zip"
+                                  value={zip}
+                                  // placeholder={
+                                  //   shippingAddress?.shippingAddress?.data?.zip
+                                  // }
+                                  type="text"
+                                  className="w-full p-2 border border-gray-300 rounded"
+                                />
+                              </div>
+                            </div>
+                          </form>
+                        </div>
+
+                        <DialogFooter>
+                          <Button
+                            onClick={handleUpdate}
+                            type="submit"
+                            className=" bg-red-500 rounded flex items-center justify-center cursor-pointer hover:bg-white hover:text-black "
+                          >
+                            Save Changes
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 </form>
               </div>
@@ -198,18 +409,19 @@ const CheckoutPage = () => {
                         Shipping Address
                       </h2>
 
-                      <form onSubmit={handleSubmit}>
+                      <form>
                         <div className="grid grid-cols-1  gap-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Full Name
                             </label>
                             <input
+                              onChange={(e) => setName(e.target.value)}
                               type="text"
+                              value={
+                                shippingAddress?.shippingAddress?.data?.name
+                              }
                               className="w-full p-2 border border-gray-300 rounded"
-                              name="name"
-                              value={formData.name}
-                              onChange={handleInputChange}
                             />
                           </div>
                         </div>
@@ -220,30 +432,26 @@ const CheckoutPage = () => {
                           </label>
                           <input
                             type="tel"
+                            onChange={(e) => setContact(e.target.value)}
+                            value={
+                              shippingAddress?.shippingAddress?.data?.contact
+                            }
                             className="w-full p-2 border border-gray-300 rounded"
-                            name="contact"
-                            value={formData.contact}
-                            onChange={handleInputChange}
                           />
                         </div>
                         <div className="mt-4">
                           <label className="block text-sm font-medium text-gray-700 mb-1">
                             Country
                           </label>
-                          <select
+
+                          <input
+                            type="tel"
+                            onChange={(e) => setCountry(e.target.value)}
+                            value={
+                              shippingAddress?.shippingAddress?.data?.country
+                            }
                             className="w-full p-2 border border-gray-300 rounded"
-                            name="country"
-                            value={formData.country} // Bind value to formData.country
-                            onChange={handleInputChange} // Handle onChange event
-                          >
-                            {countries.map((country, index) => (
-                              <option key={index} value={country}>
-                                {country}
-                              </option>
-                            ))}
-                            {/* Option for United States, will still be dynamically handled */}
-                            <option value="United States">United States</option>
-                          </select>
+                          />
                         </div>
 
                         <div className="mt-4">
@@ -251,10 +459,11 @@ const CheckoutPage = () => {
                             Address
                           </label>
                           <input
+                            onChange={(e) => setStreet(e.target.value)}
                             type="text"
-                            name="address"
-                            value={formData.address}
-                            onChange={handleInputChange}
+                            value={
+                              shippingAddress?.shippingAddress?.data?.street
+                            }
                             className="w-full p-2 border border-gray-300 rounded"
                           />
                         </div>
@@ -265,10 +474,11 @@ const CheckoutPage = () => {
                               City
                             </label>
                             <input
+                              onChange={(e) => setCity(e.target.value)}
+                              value={
+                                shippingAddress?.shippingAddress?.data?.city
+                              }
                               type="text"
-                              name="city"
-                              value={formData.city}
-                              onChange={handleInputChange}
                               className="w-full p-2 border border-gray-300 rounded"
                             />
                           </div>
@@ -278,9 +488,10 @@ const CheckoutPage = () => {
                               State/Province
                             </label>
                             <input
-                              name="state"
-                              value={formData.state}
-                              onChange={handleInputChange}
+                              onChange={(e) => setState(e.target.value)}
+                              value={
+                                shippingAddress?.shippingAddress?.data?.state
+                              }
                               type="text"
                               className="w-full p-2 border border-gray-300 rounded"
                             />
@@ -291,9 +502,10 @@ const CheckoutPage = () => {
                               Postal Code
                             </label>
                             <input
-                              name="zip"
-                              value={formData.zip}
-                              onChange={handleInputChange}
+                              onChange={(e) => setZip(e.target.value)}
+                              value={
+                                shippingAddress?.shippingAddress?.data?.zip
+                              }
                               type="text"
                               className="w-full p-2 border border-gray-300 rounded"
                             />
@@ -303,6 +515,7 @@ const CheckoutPage = () => {
                     </div>
                     <DialogFooter>
                       <Button
+                        onClick={handleSubmit}
                         type="submit"
                         className=" bg-red-500 rounded flex items-center justify-center cursor-pointer hover:bg-white hover:text-black "
                       >

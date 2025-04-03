@@ -18,7 +18,7 @@ router.route("/add-shipping-details").post(
   // create Product
   shippingdetails
 );
-router.route("/update-shipping-details/:id").patch(
+router.route("/update-shipping-details/:id").put(
   // verify token
   verifyJwt,
   // access control
@@ -46,6 +46,5 @@ router.route("/").get(
   // create Product
   getShippingDetails
 );
-
 
 export default router;
