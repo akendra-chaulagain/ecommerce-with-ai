@@ -11,9 +11,6 @@ import cors from "cors";
 app.use(cookieParser());
 app.use(express.json());
 
-
-
-
 app.use(
   cors({
     origin: "http://localhost:3000", // Allow only requests from this origin
@@ -29,7 +26,7 @@ connectDb()
       console.log(`server is running at port ${process.env.PORT || 5002}`);
     });
   })
-  
+
   .catch((err) => {
     console.log("connection failed", err);
   });
@@ -42,6 +39,7 @@ import reviewRoute from "../src/routes/review.routes.js"; //review routes
 import cartRoute from "../src/routes/cart.routes.js"; //cart routes
 import shippingRoute from "../src/routes/shipping.routes.js"; //cart routes
 import paymentRoute from "../src/routes/payment.routes.js"; //cart routes
+import orderRoute from "../src/routes/order.routes.js"; //cart routes
 // import orderRoute from "../src/routes/order.routes.js"; //cart routes
 
 app.use("/api/v1/users", userRoute);
@@ -51,4 +49,5 @@ app.use("/api/v1/review", reviewRoute);
 app.use("/api/v1/cart", cartRoute);
 app.use("/api/v1/shipping", shippingRoute);
 app.use("/api/v1/payment", paymentRoute);
+app.use("/api/v1/order", orderRoute);
 // app.use("/api/v1/order", cartRoute);
