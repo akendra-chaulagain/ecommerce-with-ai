@@ -34,17 +34,16 @@ const Page = () => {
         { withCredentials: true }
       );
 
-      // Update state with new cart data
       setCartdetails((prevCart) => {
         if (!prevCart || !prevCart.cartDetails) return prevCart;
 
-        const updatedItems = prevCart.items.map((item) =>
+        const updatedItems = prevCart.cartDetails.map((item) =>
           item.productId === productId ? { ...item, quantity } : item
         );
 
         return {
           ...prevCart,
-          cart: {
+          cartDetails: {
             ...prevCart.cartDetails,
             items: updatedItems,
             totalPrice: response.data.cart.totalPrice, // Update totalPrice here
@@ -95,9 +94,7 @@ const Page = () => {
       {/* <div className="grid sm:grid-cols-1 md:grid-cols-1  grid-cols-1 lg:grid-cols-5"> */}
 
       <div className="mt-[45px] px-[30px] ">
-        <h1 className="flex justify-center text-[30px] font-semibold my-[20px]">
-          MY CART
-        </h1>
+        <h2 className="text-3xl font-bold text-red-600 mb-8">My Cart</h2>
 
         <div className="grid sm:grid-cols-1 grid-cols-1 md:grid-cols-1 lg:grid-cols-4 gap-4 mt-[20px]">
           <div
@@ -105,81 +102,88 @@ const Page = () => {
             className="col-span-3  gap-2  bg-[#f7f7f7] 
  "
           >
-            {loading ? (
-              <h1>Loading ....</h1>
-            ) : cart?.cart?.items && cart.cart.items.length > 0 ? (
-              cart.cart.items.map((item, index) => (
-                <div
-                  className="grid sm:grid-cols-5 lg:grid-cols-5 grid-cols-2 mb-5 p-4 border rounded-lg bg-white shadow-sm"
-                  key={index}
-                >
-                  {/* Product Image */}
-                  <div className="w-full max-w-lg mx-auto sm:flex sm:justify-center">
-                    <Image
-                      src={item.image || "/images/product/placeholder.webp"}
-                      alt={item.name}
-                      width={150}
-                      height={150}
-                      className="object-cover cursor-pointer rounded-md"
-                    />
-                  </div>
+            <div className="bg-white rounded-lg shadow overflow-hidden">
+              <div className="px-6 py-4 bg-red-600 text-white font-medium">
+                Cart Summery
+              </div>
+              {loading ? (
+                <h1>Loading ....</h1>
+              ) : cart?.cart?.items && cart.cart.items.length > 0 ? (
+                cart.cart.items.map((item, index) => (
+                  <div
+                    className="grid sm:grid-cols-5 lg:grid-cols-5 grid-cols-2 mb-5 p-4 border "
+                    key={index}
+                  >
+                    {/* Product Image */}
+                    <div className="w-full max-w-lg mx-auto sm:flex sm:justify-center">
+                      <Image
+                        src={item.image || "/images/product/placeholder.webp"}
+                        alt={item.name}
+                        width={150}
+                        height={150}
+                        className="object-cover cursor-pointer rounded-md"
+                      />
+                    </div>
 
-                  {/* Item Details */}
-                  <div className="sm:col-span-3 ml-5">
-                    <h2 className="text-lg font-semibold">{item.name}</h2>
-                    <span className="text-red-600 text-sm">In Stock</span>
-                    <p className="text-gray-600 text-sm">Ships from Amazon</p>
+                    {/* Item Details */}
+                    <div className="sm:col-span-3 ml-5">
+                      <h2 className="text-lg font-semibold">{item.name}</h2>
+                      <span className="text-red-600 text-sm">In Stock</span>
+                      <p className="text-gray-600 text-sm">Ships from Amazon</p>
 
-                    {/* Quantity Counter */}
-                    <div className="flex items-center gap-4 mt-3">
-                      <button
-                        className="border px-3 py-1 text-lg"
-                        disabled={item.quantity <= 1}
-                        onClick={() =>
-                          handleUpdateCart(item.productId, item.quantity - 1)
-                        }
-                      >
-                        -
-                      </button>
-                      <p className="text-lg font-semibold">{item.quantity}</p>
-                      <button
-                        disabled={loading}
-                        className="border px-3 py-1 text-lg"
-                        onClick={() =>
-                          handleUpdateCart(item.productId, item.quantity + 1)
-                        }
-                      >
-                        +
-                      </button>
-                      <span className="cursor-pointer hover:text-red-600">
-                        <Trash2
-                          size={"19px"}
-                          onClick={() => handleDelete(item.productId)}
-                        />
-                      </span>
+                      {/* Quantity Counter */}
+                      <div className="flex items-center gap-4 mt-3 text-red-600">
+                        <button
+                          className="border px-3 py-1 text-lg"
+                          disabled={item.quantity <= 1}
+                          onClick={() =>
+                            handleUpdateCart(item.productId, item.quantity - 1)
+                          }
+                        >
+                          -
+                        </button>
+                        <p className="text-lg font-semibold">{item.quantity}</p>
+                        <button
+                          disabled={loading}
+                          className="border px-3 py-1 text-lg"
+                          onClick={() =>
+                            handleUpdateCart(item.productId, item.quantity + 1)
+                          }
+                        >
+                          +
+                        </button>
+                        <span className="cursor-pointer hover:text-red-600 text-red-600">
+                          <Trash2
+                            size={"19px"}
+                            onClick={() => handleDelete(item.productId)}
+                          />
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Price Display */}
+                    <div className="flex justify-center">
+                      <p className="text-lg font-semibold text-red-600">
+                        ${item.price}
+                      </p>
                     </div>
                   </div>
+                ))
+              ) : (
+                <p className="text-center text-gray-600 text-lg mt-[40px] font-bold">
+                  Your cart is empty.
+                </p>
+              )}
 
-                  {/* Price Display */}
-                  <div className="flex justify-center">
-                    <p className="text-lg font-semibold">${item.price}</p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-center text-gray-600 text-lg mt-[40px] font-bold">
-                Your cart is empty.
-              </p>
-            )}
-
-            <hr className="mt-[20px]" />
-            <div className="flex justify-end">
-              <p>
-                Subtotal ({cart?.cart?.items?.length ?? 0} item):{" "}
-                <span className="font-bold text-[18px]">
-                  ${cart?.cart?.totalPrice ?? 0}
-                </span>{" "}
-              </p>
+              <hr className="mt-[20px]" />
+              <div className="flex justify-end">
+                <p>
+                  Subtotal ({cart?.cart?.items?.length ?? 0} item):{" "}
+                  <span className="font-bold text-[18px]">
+                    ${cart?.cart?.totalPrice ?? 0}
+                  </span>{" "}
+                </p>
+              </div>
             </div>
           </div>
           {/* checkout */}
@@ -214,13 +218,3 @@ const Page = () => {
 };
 
 export default Page;
-
-// <div className="mt-[20px]">
-//   <Button
-//     onClick={handlePayment}
-//     className="bg-red-600 text-white border-2 w-full hover:text-black hover:bg-white px-[40px] py-[25px]"
-//   >
-//     Proceed to Checkout
-//   </Button>
-//   {showPaypal && <Paypal />}
-// </div>;

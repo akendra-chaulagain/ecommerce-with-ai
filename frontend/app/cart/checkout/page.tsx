@@ -164,7 +164,7 @@ const CheckoutPage = () => {
                       <input
                         type="text"
                         value={shippingAddress?.shippingAddress?.data?.name}
-                        className="w-full p-2 border border-gray-300 rounded"
+                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                       />
                     </div>
                   </div>
@@ -176,7 +176,7 @@ const CheckoutPage = () => {
                     <input
                       type="tel"
                       value={shippingAddress?.shippingAddress?.data?.contact}
-                      className="w-full p-2 border border-gray-300 rounded"
+                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                     />
                   </div>
                   <div className="mt-4">
@@ -187,7 +187,7 @@ const CheckoutPage = () => {
                     <input
                       type="tel"
                       value={shippingAddress?.shippingAddress?.data?.country}
-                      className="w-full p-2 border border-gray-300 rounded"
+                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                     />
                   </div>
 
@@ -198,7 +198,7 @@ const CheckoutPage = () => {
                     <input
                       type="text"
                       value={shippingAddress?.shippingAddress?.data?.street}
-                      className="w-full p-2 border border-gray-300 rounded"
+                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                     />
                   </div>
 
@@ -210,7 +210,7 @@ const CheckoutPage = () => {
                       <input
                         value={shippingAddress?.shippingAddress?.data?.city}
                         type="text"
-                        className="w-full p-2 border border-gray-300 rounded"
+                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                       />
                     </div>
 
@@ -221,7 +221,7 @@ const CheckoutPage = () => {
                       <input
                         value={shippingAddress?.shippingAddress?.data?.state}
                         type="text"
-                        className="w-full p-2 border border-gray-300 rounded"
+                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                       />
                     </div>
 
@@ -232,7 +232,7 @@ const CheckoutPage = () => {
                       <input
                         value={shippingAddress?.shippingAddress?.data?.zip}
                         type="text"
-                        className="w-full p-2 border border-gray-300 rounded"
+                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                       />
                     </div>
 
@@ -271,7 +271,7 @@ const CheckoutPage = () => {
                                   // placeholder={
                                   //   shippingAddress?.shippingAddress?.data?.name
                                   // }
-                                  className="w-full p-2 border border-gray-300 rounded"
+                                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                                 />
                               </div>
                             </div>
@@ -289,7 +289,7 @@ const CheckoutPage = () => {
                                 //   shippingAddress?.shippingAddress?.data
                                 //     ?.contact
                                 // }
-                                className="w-full p-2 border border-gray-300 rounded"
+                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                               />
                             </div>
                             <div className="mt-4">
@@ -306,7 +306,7 @@ const CheckoutPage = () => {
                                 //   shippingAddress?.shippingAddress?.data
                                 //     ?.country
                                 // }
-                                className="w-full p-2 border border-gray-300 rounded"
+                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                               />
                             </div>
 
@@ -322,7 +322,7 @@ const CheckoutPage = () => {
                                 // placeholder={
                                 //   shippingAddress?.shippingAddress?.data?.street
                                 // }
-                                className="w-full p-2 border border-gray-300 rounded"
+                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                               />
                             </div>
 
@@ -339,7 +339,7 @@ const CheckoutPage = () => {
                                   //   shippingAddress?.shippingAddress?.data?.city
                                   // }
                                   type="text"
-                                  className="w-full p-2 border border-gray-300 rounded"
+                                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                                 />
                               </div>
 
@@ -356,7 +356,7 @@ const CheckoutPage = () => {
                                   //     ?.state
                                   // }
                                   type="text"
-                                  className="w-full p-2 border border-gray-300 rounded"
+                                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                                 />
                               </div>
 
@@ -372,7 +372,7 @@ const CheckoutPage = () => {
                                   //   shippingAddress?.shippingAddress?.data?.zip
                                   // }
                                   type="text"
-                                  className="w-full p-2 border border-gray-300 rounded"
+                                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                                 />
                               </div>
                             </div>
@@ -429,7 +429,7 @@ const CheckoutPage = () => {
                               value={
                                 shippingAddress?.shippingAddress?.data?.name
                               }
-                              className="w-full p-2 border border-gray-300 rounded"
+                               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                             />
                           </div>
                         </div>
@@ -444,7 +444,7 @@ const CheckoutPage = () => {
                             value={
                               shippingAddress?.shippingAddress?.data?.contact
                             }
-                            className="w-full p-2 border border-gray-300 rounded"
+                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                           />
                         </div>
                         <div className="mt-4">
@@ -458,7 +458,7 @@ const CheckoutPage = () => {
                             value={
                               shippingAddress?.shippingAddress?.data?.country
                             }
-                            className="w-full p-2 border border-gray-300 rounded"
+                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                           />
                         </div>
 
@@ -472,7 +472,7 @@ const CheckoutPage = () => {
                             value={
                               shippingAddress?.shippingAddress?.data?.street
                             }
-                            className="w-full p-2 border border-gray-300 rounded"
+                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                           />
                         </div>
 
@@ -487,7 +487,7 @@ const CheckoutPage = () => {
                                 shippingAddress?.shippingAddress?.data?.city
                               }
                               type="text"
-                              className="w-full p-2 border border-gray-300 rounded"
+                               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                             />
                           </div>
 
@@ -501,7 +501,7 @@ const CheckoutPage = () => {
                                 shippingAddress?.shippingAddress?.data?.state
                               }
                               type="text"
-                              className="w-full p-2 border border-gray-300 rounded"
+                               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                             />
                           </div>
 
@@ -515,7 +515,7 @@ const CheckoutPage = () => {
                                 shippingAddress?.shippingAddress?.data?.zip
                               }
                               type="text"
-                              className="w-full p-2 border border-gray-300 rounded"
+                               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                             />
                           </div>
                         </div>
