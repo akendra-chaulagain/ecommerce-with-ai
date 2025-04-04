@@ -10,9 +10,7 @@ const orderSchema = new mongoose.Schema(
       },
     ],
     totalPrice: { type: Number, required: true },
-    shippingAddress: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "Shipping" },
-    ],
+    shippingAddress: { type: mongoose.Schema.Types.ObjectId, ref: "Shipping" },
 
     orderStatus: {
       type: String,
@@ -25,7 +23,7 @@ const orderSchema = new mongoose.Schema(
       enum: ["Pending", "Approved", "Cancelled"],
       default: "Pending",
     },
-    deliveryDate: { type: Date ,default: Date.now },
+    deliveryDate: { type: Date, default: Date.now },
 
     transactionId: { type: String },
     taxAmount: { type: Number, default: 0 },

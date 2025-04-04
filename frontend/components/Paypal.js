@@ -9,6 +9,9 @@ import { useCart } from "@/context/CartContent";
 // Sample cart data for PayPal integration
 
 const Paypal = ({ totalPrice }) => {
+  const [paypalClientId, setPaypalClientId] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const user = useAuth();
   const userName = user?.user?.name;
   const cart = useCart();
@@ -16,10 +19,14 @@ const Paypal = ({ totalPrice }) => {
 
   const shippingAddress = useShippingAddress();
   const deliverdata = shippingAddress.shippingAddress.data;
-  console.log(deliverdata);
 
-  const [paypalClientId, setPaypalClientId] = useState("");
-  const [loading, setLoading] = useState(false);
+  // saving the order details in the database
+  const shippinId = shippingAddress.shippingAddress.data._id;
+  console.log("total amount:", totalPrice);
+  const cartItems = cart.cart.items;
+  console.log("Shipping ID:", shippinId);
+  console.log("total amount:", totalPrice);
+  console.log("total amount:", cartItems);
 
   // Fetch PayPal client ID from environment or API
   useEffect(() => {
@@ -32,15 +39,38 @@ const Paypal = ({ totalPrice }) => {
     setPaypalClientId(clientId);
   }, []);
 
+  // handle order
+  const handleOrder = async (payment) => {
+    try {
+      // Send cartItems along with other data (totalPrice, shippingAddress, etc.)
+      const response = await axios.post(
+        "http://localhost:5000/api/create-orders", // Your backend API endpoint
+        {
+          products: cartItems, // Send cart items to the backend
+          totalPrice, // Total price of the order
+          paymentStatus: "Approved", // Payment status
+          transactionId: payment.id, // PayPal transaction ID
+          shippingAddress: selectedAddress, // Shipping address for the order
+        },
+        {
+          withCredentials: true, // Send cookies (if using authentication)
+        }
+      );
+
+      if (response.data.success) {
+        alert("Order placed successfully!");
+        // Redirect user or update UI after successful order creation
+      }
+    } catch (error) {
+      console.error("Error creating order:", error.response?.data || error);
+    }
+  };
+
   // PayPal order creation - called when the PayPal button is clicked
   const createOrder = async () => {
     setLoading(true);
-    
-   
 
     try {
-      
-
       // Send the cart details to backend to create the PayPal order
       const response = await axios.post(
         "http://localhost:5001/api/v1/payment/create-payment",
@@ -74,7 +104,6 @@ const Paypal = ({ totalPrice }) => {
     try {
       const orderID = data.orderID;
 
-      console.log("Order Approved! Order ID:", orderID);
       if (!orderID) {
         console.error(" No order ID provided!");
         alert(" No order ID received.");

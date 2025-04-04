@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Order } from "../models/order.models.js";
 
 const createOrder = (req, res) => {
@@ -9,6 +10,10 @@ const createOrder = (req, res) => {
       paymentStatus,
       totalPrice,
     } = req.body;
+
+
+    console.log('order ak');
+    
     // Validate required fields
     if (!products || !shippingAddress || !totalPrice) {
       return res.status(400).json({ message: "All fields are required" });
@@ -23,7 +28,7 @@ const createOrder = (req, res) => {
       totalPrice,
     });
     // Save the order to the database
- const orderCreated = response.save();
+    const orderCreated = response.save();
     if (!orderCreated) {
       return res.status(500).json({ message: "Order creation failed" });
     }
@@ -31,8 +36,87 @@ const createOrder = (req, res) => {
       .status(201)
       .json({ message: "Order created successfully", response });
   } catch (error) {
-    return res.status(500).json({ message: "Server error", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
   }
 };
 
-export { createOrder };
+// get all orders
+const getUserAllOrders = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const orders = await Order.aggregate([
+      {
+        $match: {
+          userId: new mongoose.Types.ObjectId(userId), // Match the userId
+        },
+      },
+      {
+        $lookup: {
+          from: "products", // Lookup product details from "products" collection
+          localField: "products.productId", // Match productId inside products array
+          foreignField: "_id",
+          as: "productDetails", // Store result as "productDetails"
+        },
+      },
+      {
+        $addFields: {
+          products: {
+            $map: {
+              input: "$products",
+              as: "p",
+              in: {
+                productId: "$$p.productId",
+                quantity: "$$p.quantity",
+                details: {
+                  $arrayElemAt: [
+                    {
+                      $filter: {
+                        input: "$productDetails",
+                        as: "pd",
+                        cond: { $eq: ["$$pd._id", "$$p.productId"] },
+                      },
+                    },
+                    0,
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          orderId: "$_id", // Map _id to orderId
+          userId: 1,
+          totalPrice: 1,
+          shippingAddress: 1,
+          orderStatus: 1,
+          paymentStatus: 1,
+          transactionId: 1,
+          orderDate: 1,
+          deliveryDate: 1,
+
+          products: {
+            productId: 1,
+            quantity: 1,
+            "details.name": 1,
+            "details.price": 1,
+            "details.description": 1,
+          },
+        },
+      },
+    ]);
+
+    return res.status(200).json({ message: "All orders", orders });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+};
+
+export { createOrder, getUserAllOrders };
