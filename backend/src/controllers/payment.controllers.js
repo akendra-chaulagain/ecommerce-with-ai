@@ -151,6 +151,7 @@ const capturePaypalOrder = async (req, res) => {
           });
         }
 
+        
         // creating the order in the database
         const order = new Order({
           userId: req.user.id,

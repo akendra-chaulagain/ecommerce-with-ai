@@ -38,14 +38,6 @@ const CheckoutPage = () => {
   const tax = 0.13 * subtotal;
   const totalPrice = (subtotal + shippingCost + tax).toFixed(2);
 
-
-
-
-
-  
-  
-  
-
   // for paypal handle payment
   const handlePayment = () => {
     setShowPaypal(true); // Show PayPal button on click
@@ -147,9 +139,6 @@ const CheckoutPage = () => {
       // console.log(error.response.data);
     }
   };
-
-
-
 
   return (
     <>
