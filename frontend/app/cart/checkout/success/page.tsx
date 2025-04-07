@@ -3,17 +3,28 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
+import { useCart } from "@/context/CartContent";
+import { useShippingAddress } from "@/context/ShippingContext";
 
 const PaymentPage = () => {
   const searchParams = useSearchParams();
   const token = searchParams.get("token"); // ✅ Get token from URL
   const [message, setMessage] = useState("Processing payment...");
 
+  // cartitems
+  const cart = useCart();
+  const cartItems = cart.cart?.items;
+  console.log(cartItems);
+
+  const shippingAddress = useShippingAddress();
+  const deliverdata = shippingAddress?.shippingAddress?.data;
+
   useEffect(() => {
     const processPayment = async () => {
       try {
-        const response = await axios.get(
+        const response = await axios.post(
           `http://localhost:5001/api/v1/payment/capture-payment?token=${token}`,
+          { token, cartItems: cartItems },
           { withCredentials: true }
         );
         if (response.data.success) {
@@ -33,7 +44,7 @@ const PaymentPage = () => {
     } else {
       setMessage("No token provided. Please try again.");
     }
-  }, [token]);
+  }, [token,cartItems]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center p-4">

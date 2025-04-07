@@ -4,6 +4,7 @@ import axios from "axios";
 import dotenv from "dotenv";
 import { sendreviewEmail } from "../utils/sendEmail.js";
 import { User } from "../models/user.models.js";
+import { Order } from "../models/order.models.js";
 dotenv.config();
 
 const PAYPAL_BASE_URL = "https://api-m.sandbox.paypal.com";
@@ -108,7 +109,11 @@ const createPaypalOrder = async (req, res) => {
 };
 
 const capturePaypalOrder = async (req, res) => {
-  const user = await User.findById(req.user.id);
+  const { cartItems, shippinId, token } = req.body;
+  console.log("cartItems from frontend:", cartItems);
+  console.log("shippinId from frontend:", shippinId);
+  console.log("token from frontend:", token);
+
   try {
     const token = req.query.token;
 
@@ -127,18 +132,57 @@ const capturePaypalOrder = async (req, res) => {
           "Content-Type": "application/json",
         },
       }
-    ); // Log the response from Pay
+    );
 
-    // Send email notification
-    const emailSubject = "Thank You for Your Order!";
-    const emailText = `Hi ${user.name},\n\nThank you for Ordering. We're excited to let you know that we've received your payment and will begin processing it right away.\n\nOrder ID: ${token}\n\nBest regards,\nYour E-Commerce Team`;
-     await sendreviewEmail(user.email, emailSubject, emailText);
-    res.json({
-      success: true,
-      message: "Payment  successfully",
-      data: response.data,
+    // saving thr order details in the database when the payment is completed
+
+    // / Extract shipping address from the response
+    const orderDetails = response.data.purchase_units[0];
+    const shippingAddress = orderDetails.shipping.address;
+    const payerDetails = response.data.payer;
+
+    // creating the order in the database
+    const order = new Order({
+      userId: req.user.id,
+      orderId: token,
+      // products: req.body.cartItems,
+      products: orderDetails.items.map((item) => ({
+        productId: item._id,
+        quantity: item.quantity,
+      })),
+      shippingAddress: {
+        name: shippingAddress.name.full_name,
+        street: shippingAddress.address_line_1,
+        city: shippingAddress.admin_area_2,
+        state: shippingAddress.admin_area_1,
+        zip: shippingAddress.postal_code,
+        country: shippingAddress.country_code,
+      },
+      orderStatus: "Approved",
+      paymentStatus: "Approved",
+      totalPrice:
+        response.data.purchase_units[0].payments.captures[0].amount.value,
+      transactionId: token,
     });
-   
+
+    // const orderCreated = await order.save();
+    // if (!orderCreated) {
+    //   return res.status(500).json({ message: "Order creation failed" });
+    // }
+
+    // // Send email notification
+    // const user = await User.findById(req.user.id);
+    // if (!user) {
+    //   return res.status(404).json({ message: "User not found" });
+    // }
+    // const emailSubject = "Thank You for Your Order!";
+    // const emailText = `Hi ${user.name},\n\nThank you for Ordering. We're excited to let you know that we've received your payment and will begin processing it right away.\n\nOrder ID: ${token}\n\nBest regards,\nYour E-Commerce Team`;
+    // await sendreviewEmail(user.email, emailSubject, emailText);
+    // res.json({
+    //   success: true,
+    //   message: "Payment  successfully",
+    //   data: response.data,
+    // });
   } catch (error) {
     res
       .status(500)

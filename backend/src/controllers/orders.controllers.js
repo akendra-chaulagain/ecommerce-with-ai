@@ -11,15 +11,15 @@ const createOrder = (req, res) => {
       totalPrice,
     } = req.body;
 
+    console.log("order ak");
 
-    console.log('order ak');
-    
     // Validate required fields
     if (!products || !shippingAddress || !totalPrice) {
       return res.status(400).json({ message: "All fields are required" });
     }
     // Create a new order
     const response = new Order({
+      orderId: token,
       userId: req.user.id,
       products,
       shippingAddress,

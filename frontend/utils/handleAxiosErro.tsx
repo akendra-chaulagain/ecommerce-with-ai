@@ -40,31 +40,7 @@ const Paypal = ({ totalPrice }) => {
   }, []);
 
   // handle order
-  const handleOrder = async (payment) => {
-    try {
-      // Send cartItems along with other data (totalPrice, shippingAddress, etc.)
-      const response = await axios.post(
-        "http://localhost:5000/api/create-orders", // Your backend API endpoint
-        {
-          products: cartItems, // Send cart items to the backend
-          totalPrice, // Total price of the order
-          paymentStatus: "Approved", // Payment status
-          transactionId: payment.id, // PayPal transaction ID
-          shippingAddress: selectedAddress, // Shipping address for the order
-        },
-        {
-          withCredentials: true, // Send cookies (if using authentication)
-        }
-      );
 
-      if (response.data.success) {
-        alert("Order placed successfully!");
-        // Redirect user or update UI after successful order creation
-      }
-    } catch (error) {
-      console.error("Error creating order:", error.response?.data || error);
-    }
-  };
 
   // PayPal order creation - called when the PayPal button is clicked
   const createOrder = async () => {
@@ -89,6 +65,8 @@ const Paypal = ({ totalPrice }) => {
         // Redirect user to PayPal approval URL
         window.location.href = approvalUrl;
         return;
+      } else {
+        throw new Error("Approval URL not received");
       }
 
       // Return the order ID to PayPal
@@ -99,43 +77,22 @@ const Paypal = ({ totalPrice }) => {
     }
   };
 
-  // Handle payment approval after PayPal user approval
-  const onApprove = async (data, actions) => {
-    try {
-      const orderID = data.orderID;
-
-      if (!orderID) {
-        console.error(" No order ID provided!");
-        alert(" No order ID received.");
-        return;
+    
+  const onApprove = async () => {
+    const token = new URLSearchParams(window.location.search).get("token");
+    if (token) {
+      try {
+      await axios.get(
+          `http://localhost:5001/api/v1/payment/capture-payment?token=${token}`,
+          { withCredentials: true }
+        );
+        alert("Payment captured successfully!");
+      } catch (err) {
+        console.error("Payment capture error:", err);
+        alert("Capture failed");
       }
-
-      // Capture payment via PayPal SDK
-      const captureResponse = await actions.order.capture();
-      if (captureResponse.status === "COMPLETED") {
-        // Payment was successful, now save order to database
-        await handleOrder(captureResponse);
-        alert("Payment and order saved successfully!");
-      } else {
-        alert("Payment was not completed. Please try again.");
-      }
-
-      // // Send token as query param for backend processing
-      // await axios.get(
-      //   `http://localhost:5001/api/v1/payment/capture-payment?token=${token}`,
-      //   { withCredentials: true }
-      // );
-
-      // alert("Payment captured successfully!");
-
-      // setLoading(false);
-    } catch (error) {
-      console.error("Error capturing PayPal payment:", error);
-      alert("Error capturing PayPal payment. Please try again.");
-      setLoading(false);
     }
   };
-
   // Handle payment error
   const onError = (err) => {
     console.error("PayPal error:", err);
