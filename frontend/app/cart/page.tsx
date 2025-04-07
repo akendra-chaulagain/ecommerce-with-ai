@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContent";
 
+
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { iCartResponse } from "@/types/types";
 
@@ -12,14 +13,21 @@ import Link from "next/link";
 import React, { useState } from "react";
 
 const Page = () => {
+
+  
+
+
+
   const [cartDetails, setCartdetails] = useState<
     iCartResponse | null | undefined
   >(null);
   const [loading, setLoading] = useState(false);
-  // const [showPaypal, setShowPaypal] = useState(false); // State to manage PayPal button visibility
+  
 
   // get login user cart details
   const cart = useCart(); // login user cart details
+  
+  
 
   // update cart quantity
   const handleUpdateCart = async (productId: string, quantity: number) => {

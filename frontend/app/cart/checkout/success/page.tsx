@@ -10,25 +10,39 @@ const PaymentPage = () => {
   const searchParams = useSearchParams();
   const token = searchParams.get("token"); // ✅ Get token from URL
   const [message, setMessage] = useState("Processing payment...");
+  const [loading, setLoading] = useState(false); // Add loading state
+  const [paymentProcessed, setPaymentProcessed] = useState(false);
 
   // cartitems
   const cart = useCart();
-  const cartItems = cart.cart?.items;
-  console.log(cartItems);
 
+  const cartItems = cart?.cart?.items;
+  // address id
   const shippingAddress = useShippingAddress();
-  const deliverdata = shippingAddress?.shippingAddress?.data;
+  const adressId = shippingAddress.shippingAddress?.data._id;
+  const totalPrice = Number(cart?.cart?.totalPrice);
 
-  useEffect(() => {
+
     const processPayment = async () => {
+      if (
+        loading ||
+        !token ||
+        isNaN(totalPrice) ||
+        totalPrice <= 0 ||
+        paymentProcessed
+      )
+        return; // Prevent running if already loading, no token, or invalid totalPrice
+      setLoading(true);
+
       try {
         const response = await axios.post(
           `http://localhost:5001/api/v1/payment/capture-payment?token=${token}`,
-          { token, cartItems: cartItems },
+          { cartItems: cartItems, adressId, totalPrice: totalPrice },
           { withCredentials: true }
         );
         if (response.data.success) {
           setMessage(response.data.message);
+          setPaymentProcessed(true);
         } else {
           console.error("Unexpected capture response:", response.data);
         }
@@ -36,15 +50,16 @@ const PaymentPage = () => {
       } catch (error) {
         console.error("Payment processing error:", error);
         setMessage("Payment failed. Please try again.");
+      } finally {
+        setLoading(false);
       }
     };
 
-    if (token) {
+  useEffect(() => {
+    if (token && !paymentProcessed) {
       processPayment();
-    } else {
-      setMessage("No token provided. Please try again.");
     }
-  }, [token,cartItems]);
+  }, [token, loading, paymentProcessed]); // Add paymentProcessed to dependencies
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center p-4">

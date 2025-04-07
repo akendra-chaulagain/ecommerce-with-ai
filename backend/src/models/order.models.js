@@ -34,7 +34,7 @@ const orderSchema = new mongoose.Schema(
 // Set deliveryDate to 4 days after the order is created
 orderSchema.pre("save", function (next) {
   if (!this.orderDate) {
-    this.deliveryDate = new Date(this.orderDate);
+    this.deliveryDate = new Date(this.createdAt);
     this.deliveryDate.setDate(this.deliveryDate.getDate() + 4); // 4 days after order creation
   }
   next();

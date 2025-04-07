@@ -109,10 +109,7 @@ const createPaypalOrder = async (req, res) => {
 };
 
 const capturePaypalOrder = async (req, res) => {
-  const { cartItems, shippinId, token } = req.body;
-  console.log("cartItems from frontend:", cartItems);
-  console.log("shippinId from frontend:", shippinId);
-  console.log("token from frontend:", token);
+  const { cartItems, adressId, totalPrice } = req.body;
 
   try {
     const token = req.query.token;
@@ -120,69 +117,84 @@ const capturePaypalOrder = async (req, res) => {
     if (!token) {
       return res.status(400).json({ error: "Missing order ID" });
     }
+    // Check if the order already exists and if payment has already been processed
+    const existingOrder = await Order.findOne({ orderId: token });
+
+    if (existingOrder) {
+      if (existingOrder.paymentStatus === "Approved") {
+        return res.status(200).json({
+          success: false,
+          message: "Payment has already been processed for this order.",
+        });
+      }
+    }
 
     const accessToken = await paypalAccesssToken();
 
-    const response = await axios.post(
-      `${PAYPAL_BASE_URL}/v2/checkout/orders/${token}/capture`,
-      {}, // Empty body required
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
+    const attempCaptureOne = async () => {
+      try {
+        const response = await axios.post(
+          `${PAYPAL_BASE_URL}/v2/checkout/orders/${token}/capture`,
+          {}, // Empty body required
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const cleanTotalPrice = Number(totalPrice);
+        if (isNaN(cleanTotalPrice)) {
+          return res.status(400).json({
+            error: "Invalid totalPrice: Value became NaN after casting",
+            originalValue: totalPrice,
+          });
+        }
+
+        // creating the order in the database
+        const order = new Order({
+          userId: req.user.id,
+          orderId: token,
+          // products: req.body.cartItems,
+          products: cartItems?.items?.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+          })),
+          shippingAddress: adressId,
+          orderStatus: "Approved",
+          paymentStatus: "Approved",
+          totalPrice: cleanTotalPrice,
+          transactionId: token,
+        });
+
+        const orderCreated = await order.save();
+        if (!orderCreated) {
+          return res.status(500).json({ message: "Order creation failed" });
+        }
+
+        // Send email notification
+        const user = await User.findById(req.user.id);
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+        const emailSubject = "Thank You for Your Order!";
+        const emailText = `Hi ${user.name},\n\nThank you for Ordering. We're excited to let you know that we've received your payment and will begin processing it right away.\n\nOrder ID: ${token}\n\nBest regards,\nYour E-Commerce Team`;
+        await sendreviewEmail(user.email, emailSubject, emailText);
+        res.json({
+          success: true,
+          message: "Payment  successfully",
+          data: response.data,
+        });
+      } catch (error) {
+        console.error("Error capturing PayPal order:", error);
+        res.status(500).json({
+          error: "Error capturing PayPal order",
+          details: error.message,
+        });
       }
-    );
+    };
 
-    // saving thr order details in the database when the payment is completed
-
-    // / Extract shipping address from the response
-    const orderDetails = response.data.purchase_units[0];
-    const shippingAddress = orderDetails.shipping.address;
-    const payerDetails = response.data.payer;
-
-    // creating the order in the database
-    const order = new Order({
-      userId: req.user.id,
-      orderId: token,
-      // products: req.body.cartItems,
-      products: orderDetails.items.map((item) => ({
-        productId: item._id,
-        quantity: item.quantity,
-      })),
-      shippingAddress: {
-        name: shippingAddress.name.full_name,
-        street: shippingAddress.address_line_1,
-        city: shippingAddress.admin_area_2,
-        state: shippingAddress.admin_area_1,
-        zip: shippingAddress.postal_code,
-        country: shippingAddress.country_code,
-      },
-      orderStatus: "Approved",
-      paymentStatus: "Approved",
-      totalPrice:
-        response.data.purchase_units[0].payments.captures[0].amount.value,
-      transactionId: token,
-    });
-
-    // const orderCreated = await order.save();
-    // if (!orderCreated) {
-    //   return res.status(500).json({ message: "Order creation failed" });
-    // }
-
-    // // Send email notification
-    // const user = await User.findById(req.user.id);
-    // if (!user) {
-    //   return res.status(404).json({ message: "User not found" });
-    // }
-    // const emailSubject = "Thank You for Your Order!";
-    // const emailText = `Hi ${user.name},\n\nThank you for Ordering. We're excited to let you know that we've received your payment and will begin processing it right away.\n\nOrder ID: ${token}\n\nBest regards,\nYour E-Commerce Team`;
-    // await sendreviewEmail(user.email, emailSubject, emailText);
-    // res.json({
-    //   success: true,
-    //   message: "Payment  successfully",
-    //   data: response.data,
-    // });
+    await attempCaptureOne();
   } catch (error) {
     res
       .status(500)

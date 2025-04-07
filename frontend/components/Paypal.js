@@ -20,10 +20,10 @@ const Paypal = ({ totalPrice }) => {
   const shippingAddress = useShippingAddress();
   const deliverdata = shippingAddress.shippingAddress.data;
 
-  // // saving the order details in the database
-  // const shippinId = shippingAddress.shippingAddress.data._id;
+  // saving the order details in the database
+  const shippinId = shippingAddress.shippingAddress.data._id;
 
-  // const cartItems = cart.cart.items;
+  const cartItems = cart.cart.items;
 
   // Fetch PayPal client ID from environment or API
   useEffect(() => {
@@ -80,9 +80,8 @@ const Paypal = ({ totalPrice }) => {
       try {
         const response = await axios.post(
           `http://localhost:5001/api/v1/payment/capture-payment?token=${token}`,
-          {
-            withCredentials: true,
-          }
+
+          { withCredentials: true }
         );
 
         if (response.data.success) {
