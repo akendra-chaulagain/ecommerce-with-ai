@@ -2,8 +2,8 @@ import { paypalAccesssToken } from "../middleware/paypal.middleware.js";
 import axios from "axios";
 
 import dotenv from "dotenv";
-import { Payment } from "../models/payment.models.js";
-import { verifyOrderStatus } from "../utils/verifyOrderStatus.js";
+import { sendreviewEmail } from "../utils/sendEmail.js";
+import { User } from "../models/user.models.js";
 dotenv.config();
 
 const PAYPAL_BASE_URL = "https://api-m.sandbox.paypal.com";
@@ -16,7 +16,7 @@ const createPaypalOrder = async (req, res) => {
     tax = 0,
     discount = 0,
   } = req.body;
-  // console.log(cartItems);
+
   const itemTotal = cartItems
     .reduce((sum, item) => sum + item.price * item.quantity, 0)
     .toString();
@@ -29,6 +29,7 @@ const createPaypalOrder = async (req, res) => {
     const accessToken = await paypalAccesssToken();
     const response = await axios.post(
       `${PAYPAL_BASE_URL}/v2/checkout/orders`, // PayPal endpoint for creating orders
+
       {
         intent: "CAPTURE", // Payment intent (CAPTURE means you want to capture the payment after approval)
         purchase_units: [
@@ -107,6 +108,7 @@ const createPaypalOrder = async (req, res) => {
 };
 
 const capturePaypalOrder = async (req, res) => {
+  const user = await User.findById(req.user.id);
   try {
     const token = req.query.token;
 
@@ -126,15 +128,21 @@ const capturePaypalOrder = async (req, res) => {
         },
       }
     ); // Log the response from Pay
+
+    // Send email notification
+    const emailSubject = "Thank You for Your Order!";
+    const emailText = `Hi ${user.name},\n\nThank you for Ordering. We're excited to let you know that we've received your payment and will begin processing it right away.\n\nOrder ID: ${token}\n\nBest regards,\nYour E-Commerce Team`;
+     await sendreviewEmail(user.email, emailSubject, emailText);
     res.json({
       success: true,
-      message: "Payment captured successfully",
-      data: response,
+      message: "Payment  successfully",
+      data: response.data,
     });
+   
   } catch (error) {
     res
       .status(500)
-      .json({ error: error.message, message: "error while capture data" });
+      .json({ error: "Error capturing PayPal order", details: error.message });
   }
 };
 

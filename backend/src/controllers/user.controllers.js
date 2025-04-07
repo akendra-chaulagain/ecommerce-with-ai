@@ -219,8 +219,7 @@ const resentOtpAgain = async (req, res) => {
 // user profile
 const getLoginUser = async (req, res) => {
   try {
-    console.log("ak");
-
+    
     const user = await User.findById(req.user.id).select("-password"); // Exclude password
     if (!user) return res.status(404).json({ message: "User not found" });
 

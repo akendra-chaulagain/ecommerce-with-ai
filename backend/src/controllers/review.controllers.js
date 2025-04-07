@@ -3,7 +3,7 @@ import { Review } from "../models/review.models.js";
 import { sendreviewEmail } from "../utils/sendEmail.js";
 import { User } from "../models/user.models.js";
 import { Product } from "../models/product.models.js";
-const { ObjectId } = mongoose.Types;
+
 
 // create review
 const createReview = async (req, res) => {

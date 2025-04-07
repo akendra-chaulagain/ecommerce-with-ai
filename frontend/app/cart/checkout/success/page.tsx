@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
-import { axiosInstence } from "@/hooks/axiosInstence";
+import Link from "next/link";
 
 const PaymentPage = () => {
   const searchParams = useSearchParams();
@@ -12,10 +12,16 @@ const PaymentPage = () => {
   useEffect(() => {
     const processPayment = async () => {
       try {
-        const response = await axiosInstence.post("/api/checkout/success", {
-          token,
-        });
-        setMessage(response.data.message); // ✅ Set success message from server response
+        const response = await axios.get(
+          `http://localhost:5001/api/v1/payment/capture-payment?token=${token}`,
+          { withCredentials: true }
+        );
+        if (response.data.success) {
+          setMessage(response.data.message);
+        } else {
+          console.error("Unexpected capture response:", response.data);
+        }
+        // ✅ Set success message from server response
       } catch (error) {
         console.error("Payment processing error:", error);
         setMessage("Payment failed. Please try again.");
@@ -30,193 +36,64 @@ const PaymentPage = () => {
   }, [token]);
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-semibold mb-4">{message}</h1>
-      <button
-        onClick={() => (window.location.href = "/")}
-        className="px-4 py-2 bg-green-500 text-white rounded-md"
-      >
-        Go Home
-      </button>
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center p-4">
+      <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-8 text-center">
+        <div className="mb-6 flex justify-center">
+          <div className="rounded-full bg-red-100 p-3">
+            <svg
+              className="w-8 h-8 text-red-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
+        </div>
+
+        <h1 className="text-2xl font-bold text-gray-800 mb-2">{message}</h1>
+
+        <p className="text-gray-600 mb-6">
+          Thank you for your purchase. Your order has been confirmed.
+          {token && (
+            <span className="block mt-2 font-medium">Order ID: {token}</span>
+          )}
+        </p>
+
+        <div className="border-t border-gray-200 pt-4 mt-4">
+          <p className="text-sm text-gray-500 mb-4">
+            A confirmation email has been sent to your registered email address.
+          </p>
+
+          <div className="flex flex-col space-y-3">
+            <Link
+              href="/order"
+              className="text-red-600 hover:text-red-800 font-medium"
+            >
+              View Order Details
+            </Link>
+
+            <Link
+              href="/"
+              className="text-red-600 hover:text-red-800 font-medium"
+            >
+              Return to Home
+            </Link>
+
+            <p className="text-sm text-gray-500">
+              {/* Redirecting to dashboard in {countdown} seconds... */}
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
 export default PaymentPage;
-
-// import React from 'react';
-
-// const CheckoutPage = () => {
-//   return (
-//     <div className="container mx-auto px-4 py-8">
-//       <h1 className="text-2xl font-bold mb-6">Checkout</h1>
-
-//       <div className="flex flex-col md:flex-row gap-8">
-//         {/* Left Side - Customer Information */}
-//         <div className="w-full md:w-2/3">
-//           {/* Address Section */}
-//           <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-//             <h2 className="text-xl font-semibold mb-4">Shipping Address</h2>
-
-//             <form>
-//               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-//                 <div>
-//                   <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-//                   <input type="text" className="w-full p-2 border border-gray-300 rounded" />
-//                 </div>
-
-//                 <div>
-//                   <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-//                   <input type="text" className="w-full p-2 border border-gray-300 rounded" />
-//                 </div>
-//               </div>
-
-//               <div className="mt-4">
-//                 <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-//                 <input type="email" className="w-full p-2 border border-gray-300 rounded" />
-//               </div>
-
-//               <div className="mt-4">
-//                 <label className="block text-sm font-medium text-gray-700 mb-1">Address Line 1</label>
-//                 <input type="text" className="w-full p-2 border border-gray-300 rounded" />
-//               </div>
-
-//               <div className="mt-4">
-//                 <label className="block text-sm font-medium text-gray-700 mb-1">Address Line 2 (Optional)</label>
-//                 <input type="text" className="w-full p-2 border border-gray-300 rounded" />
-//               </div>
-
-//               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-//                 <div>
-//                   <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
-//                   <input type="text" className="w-full p-2 border border-gray-300 rounded" />
-//                 </div>
-
-//                 <div>
-//                   <label className="block text-sm font-medium text-gray-700 mb-1">State/Province</label>
-//                   <input type="text" className="w-full p-2 border border-gray-300 rounded" />
-//                 </div>
-
-//                 <div>
-//                   <label className="block text-sm font-medium text-gray-700 mb-1">Postal Code</label>
-//                   <input type="text" className="w-full p-2 border border-gray-300 rounded" />
-//                 </div>
-//               </div>
-
-//               <div className="mt-4">
-//                 <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
-//                 <select className="w-full p-2 border border-gray-300 rounded">
-//                   <option>United States</option>
-//                   <option>Canada</option>
-//                   <option>United Kingdom</option>
-//                   {/* Add more countries as needed */}
-//                 </select>
-//               </div>
-
-//               <div className="mt-4">
-//                 <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-//                 <input type="tel" className="w-full p-2 border border-gray-300 rounded" />
-//               </div>
-//             </form>
-//           </div>
-
-//           {/* Product Details Section */}
-//           <div className="bg-white p-6 rounded-lg shadow-md">
-//             <h2 className="text-xl font-semibold mb-4">Product Details</h2>
-
-//             <div className="border-b pb-4">
-//               <div className="flex items-center gap-4">
-//                 <div className="w-16 h-16 bg-gray-200 rounded"></div>
-//                 <div className="flex-grow">
-//                   <h3 className="font-medium">Product Name</h3>
-//                   <p className="text-sm text-gray-600">Size: Medium | Color: Blue</p>
-//                 </div>
-//                 <div className="font-medium">$99.99</div>
-//               </div>
-//             </div>
-
-//             <div className="border-b py-4">
-//               <div className="flex items-center gap-4">
-//                 <div className="w-16 h-16 bg-gray-200 rounded"></div>
-//                 <div className="flex-grow">
-//                   <h3 className="font-medium">Another Product</h3>
-//                   <p className="text-sm text-gray-600">Size: Large | Color: Black</p>
-//                 </div>
-//                 <div className="font-medium">$49.99</div>
-//               </div>
-//             </div>
-
-//             <div className="pt-4">
-//               <div className="flex justify-between mb-2">
-//                 <span>Subtotal</span>
-//                 <span>$149.98</span>
-//               </div>
-//               <div className="flex justify-between mb-2">
-//                 <span>Shipping</span>
-//                 <span>$5.99</span>
-//               </div>
-//               <div className="flex justify-between mb-2">
-//                 <span>Tax</span>
-//                 <span>$9.00</span>
-//               </div>
-//               <div className="flex justify-between font-bold text-lg mt-2 pt-2 border-t">
-//                 <span>Total</span>
-//                 <span>$164.97</span>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* Right Side - Payment Section */}
-//         <div className="w-full md:w-1/3">
-//           <div className="bg-white p-6 rounded-lg shadow-md sticky top-4">
-//             <h2 className="text-xl font-semibold mb-4">Payment</h2>
-
-//             <div className="mb-6">
-//               <div className="border rounded p-4 mb-4">
-//                 <div className="flex items-center gap-2">
-//                   <input type="radio" id="credit-card" name="payment-method" checked />
-//                   <label htmlFor="credit-card">Credit Card</label>
-//                 </div>
-//               </div>
-
-//               <div className="border rounded p-4 mb-4">
-//                 <div className="flex items-center gap-2">
-//                   <input type="radio" id="paypal" name="payment-method" />
-//                   <label htmlFor="paypal">PayPal</label>
-//                 </div>
-//               </div>
-//             </div>
-
-//             <div className="mb-6">
-//               <label className="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
-//               <input type="text" className="w-full p-2 border border-gray-300 rounded" placeholder="XXXX XXXX XXXX XXXX" />
-//             </div>
-
-//             <div className="grid grid-cols-2 gap-4 mb-6">
-//               <div>
-//                 <label className="block text-sm font-medium text-gray-700 mb-1">Expiration</label>
-//                 <input type="text" className="w-full p-2 border border-gray-300 rounded" placeholder="MM/YY" />
-//               </div>
-
-//               <div>
-//                 <label className="block text-sm font-medium text-gray-700 mb-1">CVV</label>
-//                 <input type="text" className="w-full p-2 border border-gray-300 rounded" placeholder="123" />
-//               </div>
-//             </div>
-
-//             <button className="w-full py-3 bg-red-600 text-white font-medium rounded hover:bg-red-700 transition">
-//               Pay $164.97
-//             </button>
-
-//             <p className="text-xs text-gray-500 mt-4 text-center">
-//               Your personal data will be used to process your order, support your experience, and for other purposes described in our privacy policy.
-//             </p>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default CheckoutPage;
