@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { axiosInstence } from "@/hooks/axiosInstence";
+import { ArrowRight } from "lucide-react";
 
 interface ICategory {
   _id: number;
@@ -41,33 +42,48 @@ const Semi_cat = () => {
       {category?.length === 0 ? (
         ""
       ) : (
-        <div className="mt-[50px] ">
-          <h1 className="flex justify-center font-semibold text-[30px] mb-[20px] tracking-wide text-[#848383]">
-            #OUR CATEGORY
-          </h1>
-          <div className="grid grid-cols-2 mt-[25px] gap-4   sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-            {category?.map((item: ICategory, index) => (
-              <div key={index} className="sm:mb-[20px] md:mb-[20px] mb-[20px]">
-                <Link href={`/category/${item._id}`}>
-                  <Image
-                    src={item.categoryImage}
-                    alt="logo"
-                    width={400}
-                    height={0}
-                    className=" w-full h-full object-cover cursor-pointer "
-                  />
+        <>
+          <section className="py-16 px-6  mx-auto">
+            <div className="text-center mb-12">
+              <h1 className="flex justify-center font-semibold text-[30px] mb-[20px] tracking-wide text-[#848383]">
+                #OUR CATEGORY
+              </h1>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Discover our carefully curated collections designed for your
+                lifestyle
+              </p>
+            </div>
 
-                  <span
-                    className="flex justify-center font-bold underline mt-[6px]
-          cursor-pointer hover:text-red-800  "
-                  >
-                    {item.name}
-                  </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-6">
+              {category?.map((category, index) => (
+                <Link
+                  href={`/category/${category._id}`}
+                  key={index}
+                  className="group block overflow-hidden relative h-96 rounded"
+                >
+                  <div className="relative h-full w-full overflow-hidden">
+                    <Image
+                      src={category.categoryImage}
+                      alt={category.name}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                    <div className="absolute bottom-0 left-0 right-0 p-6">
+                      <h3 className="text-xl font-semibold text-white mb-2">
+                        {category.name}
+                      </h3>
+                      <span className="inline-flex items-center text-white text-sm font-medium opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
+                        Explore
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </span>
+                    </div>
+                  </div>
                 </Link>
-              </div>
-            ))}
-          </div>
-        </div>
+              ))}
+            </div>
+          </section>
+        </>
       )}
     </>
   );

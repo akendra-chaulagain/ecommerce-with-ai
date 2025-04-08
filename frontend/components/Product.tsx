@@ -1,55 +1,82 @@
 "use client";
-import { ShoppingCart, Star } from "lucide-react";
+import { ArrowRight, Eye, ShoppingCart, Star } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 import Category from "../category.json";
-import { Button } from "./ui/button";
+
+import Link from "next/link";
 
 const Product = () => {
   return (
     <>
-      <div className="mt-[100px] mb-[40px] ">
-        <h1 className="flex justify-center font-semibold text-[27px] mb-[20px] tracking-wide text-[#adb5bd]">
-          #OUR PRODUCTS
-        </h1>
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
-          {Category.map((data) => (
-            <div
-              key={data.id}
-              className="cursor-pointer border-2 border-[#f2f2f2] p-4 rounded "
-            >
-              <Image
-                src={data.photo}
-                alt="logo"
-                width={700}
-                height={100}
-                className=" flex justify-center object-fill cursor-pointer "
-              />
-              <h3 className="font-semibold text-[21px] text-red-600 ml-[6px]">
-                ${data.price}
-              </h3>
-              <p className="text-[16px] ml-[6px]">{data.p}</p>
-              <div className="flex ml-[6px]">
-                <span className="flex mt-[6px] mb-[10px]">
-                  <Star size={15} color="red" />
-                  <Star size={15} color="red" />
-                  <Star size={15} color="red" />
-                  <Star size={15} color="red" />
-                  <Star size={15} color="red" />
-                </span>
-                <span className="ml-[5px]">23</span>
-              </div>
+      <section className=" bg-white">
+        <div className=" mx-auto px-6">
+          <div className="flex justify-center mb-12">
+            <h1 className=" font-semibold text-[27px] mb-[20px] tracking-wide text-[#adb5bd]">
+              #OUR PRODUCTS
+            </h1>
+          </div>
 
-              <Button
-                variant="outline"
-                className="bg-red-600 text-white text-[15px] mt-[10px]"
-              >
-                Add to Cart <ShoppingCart size={16} />
-              </Button>
-            </div>
-          ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
+            {Category.map((product) => (
+              <div key={product.id} className="group">
+                <div className="relative overflow-hidden rounded-lg bg-gray-100">
+                  <div className="relative aspect-[3/4] overflow-hidden">
+                    <Image
+                      src={product.photo}
+                      alt={product.name}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
+                      aria-label="Add to wishlist"
+                    >
+                      <ShoppingCart className="h-5 w-5" />
+                    </button>
+                    <button
+                      className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
+                      aria-label="Quick view"
+                    >
+                      <Eye className="h-5 w-5" />
+                    </button>
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform">
+                    <button className="w-full bg-black text-white py-3 font-medium flex items-center justify-center">
+                      <ShoppingCart className="h-5 w-5 mr-2" />
+                      Add to Cart
+                    </button>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <h3 className="font-medium text-lg">{product.name}</h3>
+                  <div className="flex justify-between items-center mt-2">
+                    <p className="font-bold">${product.price}</p>
+                    <div className="flex items-center">
+                      <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
+                      <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
+                      <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
+                      <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
+                      <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-end mt-10">
+            <Link
+              href="/products"
+              className="text-gray-900 font-medium inline-flex items-center hover:underline"
+            >
+              View All
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
+          </div>
         </div>
-      </div>
+      </section>
     </>
   );
 };

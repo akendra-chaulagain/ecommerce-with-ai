@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import ResposnsiveBar from "@/components/resposnsiveNavbar";
-import { ChevronRight, ChevronLeft, ArrowRight } from "lucide-react";
+import { ChevronRight, ChevronLeft, ArrowRight,  } from "lucide-react";
 
 const Category = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -27,6 +27,7 @@ const Category = () => {
       // color: "from-indigo-900/70 to-indigo-950/90",
     },
   ];
+
 
   // const featuredCategories = [
   //   {
@@ -185,39 +186,8 @@ const Category = () => {
           ))}
         </div>
       </section>
-      {/* 
-      <div className=" text-[16px] mt-[35px] ">
-        <div className=" flex justify-center   h-[35vh] sm:grid-cols-1  lg:h-[83vh] lg:grid lg:grid-cols-2 bg-[#F2F3F5] ">
-          <div className="hidden sm:hidden lg:block">
-            <Link href={"/category"}>
-              <Image
-                src="/bg.png"
-                alt="h1"
-                width={600}
-                height={100}
-                className=" w-full object-fill h-[83vh]"
-              />
-            </Link>
-          </div>
-          <div className="flex items-center ">
-            <div>
-              <h1 className="text-[30px] font-bold text-gray-600 mb-[10px] ">
-                NEW ARRIVALS ARE HERE
-              </h1>
-              <div className="flex justify-center">
-                <Link
-                  href="/category"
-                  className="  px-[30px] py-[4px]  bg-red-600 hover:bg-white text-white hover:text-red-600"
-                >
-                  SHOP NOW
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
 
-     
-      </div> */}
+      
     </>
   );
 };
