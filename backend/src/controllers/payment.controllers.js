@@ -110,6 +110,7 @@ const createPaypalOrder = async (req, res) => {
 
 const capturePaypalOrder = async (req, res) => {
   const { cartItems, adressId, totalPrice } = req.body;
+  console.log(cartItems);
 
   try {
     const token = req.query.token;
@@ -151,13 +152,12 @@ const capturePaypalOrder = async (req, res) => {
           });
         }
 
-        
         // creating the order in the database
         const order = new Order({
           userId: req.user.id,
           orderId: token,
           // products: req.body.cartItems,
-          products: cartItems?.items?.map((item) => ({
+          products: cartItems?.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
           })),

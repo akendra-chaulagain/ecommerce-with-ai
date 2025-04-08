@@ -77,6 +77,41 @@ const Product = () => {
           </div>
         </div>
       </section>
+      <section className="py-16 px-6">
+        <div className=" mx-auto relative overflow-hidden rounded-lg">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
+            <div className="bg-gray-900 text-white p-12 lg:p-16 flex items-center">
+              <div>
+                <span className="inline-block px-4 py-1 bg-white text-gray-900 text-sm font-bold mb-6">
+                  NEW COLLECTION
+                </span>
+                <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                  Elevate Your Style This Season
+                </h2>
+                <p className="text-gray-300 mb-8 text-lg">
+                  Discover our curated selection of premium pieces designed for
+                  the modern lifestyle.
+                </p>
+                <Link
+                  href="/collections/featured"
+                  className="inline-flex items-center bg-white text-gray-900 px-8 py-4 font-medium hover:bg-gray-200 transition-colors"
+                >
+                  Discover More
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </div>
+            </div>
+            <div className="relative h-80 lg:h-auto">
+              <Image
+                src="/images/slider/s2.webp"
+                alt="Feature collection"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
     </>
   );
 };

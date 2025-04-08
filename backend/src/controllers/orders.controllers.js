@@ -68,20 +68,24 @@ const getUserAllOrders = async (req, res) => {
               input: "$products",
               as: "p",
               in: {
-                productId: "$$p.productId",
-                quantity: "$$p.quantity",
-                details: {
-                  $arrayElemAt: [
-                    {
-                      $filter: {
-                        input: "$productDetails",
-                        as: "pd",
-                        cond: { $eq: ["$$pd._id", "$$p.productId"] },
+                $mergeObjects: [
+                  {
+                    productId: "$$p.productId",
+                    quantity: "$$p.quantity",
+                  },
+                  {
+                    $arrayElemAt: [
+                      {
+                        $filter: {
+                          input: "$productDetails",
+                          as: "pd",
+                          cond: { $eq: ["$$pd._id", "$$p.productId"] },
+                        },
                       },
-                    },
-                    0,
-                  ],
-                },
+                      0,
+                    ],
+                  },
+                ],
               },
             },
           },
@@ -99,13 +103,19 @@ const getUserAllOrders = async (req, res) => {
           transactionId: 1,
           orderDate: 1,
           deliveryDate: 1,
-
           products: {
-            productId: 1,
-            quantity: 1,
-            "details.name": 1,
-            "details.price": 1,
-            "details.description": 1,
+            $map: {
+              input: "$products",
+              as: "product",
+              in: {
+                productId: "$$product.productId",
+                quantity: "$$product.quantity",
+                name: "$$product.name",
+                price: "$$product.price",
+                description: "$$product.description",
+                images: "$$product.images",
+              },
+            },
           },
         },
       },
@@ -115,8 +125,7 @@ const getUserAllOrders = async (req, res) => {
   } catch (error) {
     return res
       .status(500)
-      .json({ message: "Server error", error: error.message });
+      .json({ message: "Server error please try again", error: error.message });
   }
 };
-
 export { createOrder, getUserAllOrders };

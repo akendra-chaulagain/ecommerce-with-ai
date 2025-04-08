@@ -6,8 +6,6 @@ import React from "react";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-const backendURL = process.env.BACKEND_URL;
-console.log(backendURL);
 
 const page = () => {
   return (

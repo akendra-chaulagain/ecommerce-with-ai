@@ -15,6 +15,8 @@ interface ICategory {
 const Semi_cat = () => {
   const [category, setCategory] = useState<ICategory[] | null>([]);
   const [error, setError] = useState<boolean>(false);
+  console.log(error);
+  
 
   useEffect(() => {
     (async () => {
@@ -83,6 +85,7 @@ const Semi_cat = () => {
               ))}
             </div>
           </section>
+          
         </>
       )}
     </>
