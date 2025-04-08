@@ -188,6 +188,8 @@ const Category = () => {
       </section>
 
       
+
+      
     </>
   );
 };

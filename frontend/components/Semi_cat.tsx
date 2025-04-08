@@ -16,7 +16,6 @@ const Semi_cat = () => {
   const [category, setCategory] = useState<ICategory[] | null>([]);
   const [error, setError] = useState<boolean>(false);
   console.log(error);
-  
 
   useEffect(() => {
     (async () => {
@@ -85,9 +84,30 @@ const Semi_cat = () => {
               ))}
             </div>
           </section>
-          
         </>
       )}
+      <div className="relative h-96 md:h-[500px] overflow-hidden mb-[30px]">
+        <Image
+          src="/h2.jpg"
+          alt="Spring Collection 2025"
+          fill
+          className=""
+          objectFit=""
+        />
+        <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+          <div className="text-center text-white p-6">
+            <h1 className="text-4xl md:text-6xl font-bold mb-4">
+              Spring Collection 2025
+            </h1>
+            <p className="text-xl mb-6">
+              Refresh your wardrobe with our latest styles
+            </p>
+            <button className="bg-white text-black px-8 py-3 font-medium hover:bg-gray-100 transition">
+              SHOP NOW
+            </button>
+          </div>
+        </div>
+      </div>
     </>
   );
 };
