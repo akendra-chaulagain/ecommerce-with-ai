@@ -4,7 +4,6 @@ import "./globals.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Navbar from "@/components/Navbar";
-
 import Logobar from "@/components/Logobar";
 import Topbar from "@/components/Topbar";
 import { Toaster } from "@/components/ui/toaster";
@@ -12,6 +11,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContent";
 import { ShippingProvider } from "@/context/ShippingContext";
 import Footer from "@/components/Footer";
+// import { usePathname } from "next/navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,12 +41,15 @@ export default function RootLayout({
         <AuthProvider>
           <CartProvider>
             <ShippingProvider>
-              <Topbar />
-              <Logobar />
-              <Navbar />
-              {/* <AuthProvider>{children}</AuthProvider> */}
+              <header>
+                <Topbar />
+                <Logobar />
+                <Navbar />
+              </header>
               {children}
-              <Footer />
+              <footer>
+                <Footer />
+              </footer>
               <Toaster />
             </ShippingProvider>
           </CartProvider>

@@ -1,14 +1,23 @@
 "use client";
 import React from "react";
-import { CreditCard, ListOrdered, LucidePackageOpen, MapPin, Search, ShoppingCart, User } from "lucide-react";
+import {
+  CreditCard,
+  LucidePackageOpen,
+  MapPin,
+  Search,
+  Settings,
+  ShoppingCart,
+  User,
+  UserCircle,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { useCart } from "@/context/CartContent";
 
 const Logobar = () => {
   const user = useAuth();
-  
-  
+  const cart = useCart(); // login user cart details
 
   return (
     <>
@@ -75,17 +84,25 @@ const Logobar = () => {
             ) : (
               <Link href="/order" className="flex cursor-pointer">
                 <span>
-                  <LucidePackageOpen/>
+                  <LucidePackageOpen />
                 </span>
-                <span className="ml-[7px] hover:underline">Your Orders</span>
+                <span className="ml-[7px] hover:underline">Orders</span>
               </Link>
             )}
-
+            <Link href="/profile" className="flex cursor-pointer">
+              <span>
+                <Settings />
+              </span>
+              <span className="ml-[7px] hover:underline"> </span>
+            </Link>
             <Link href="/cart" className="flex cursor-pointer">
               <span>
                 <ShoppingCart />
               </span>
-              <span className="ml-[7px] hover:underline">Bag (0)</span>
+              <span className="ml-[7px] hover:underline">
+                {" "}
+                ({cart?.cart?.items.length})
+              </span>
             </Link>
           </div>
         </div>

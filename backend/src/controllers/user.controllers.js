@@ -87,19 +87,6 @@ const loginUser = async (req, res) => {
       }
     );
 
-    // Send OTP via email/SMS
-    // await SentOtpWhileLogin(email, otp);
-    // res
-    //   .status(200)
-    //   .cookie("tempToken", temporaryAccessToken, {
-    //     httpOnly: true,
-    //     secure: true,
-    //     sameSite: "Strict",
-    //   })
-    //   .json({
-    //     message: "OTP sent to your email.",
-    //   });
-
     // Set the temporary token as a cookie
     await SentOtpWhileLogin(email, otp);
     res.cookie("tempToken", temporaryAccessToken, {
@@ -219,7 +206,6 @@ const resentOtpAgain = async (req, res) => {
 // user profile
 const getLoginUser = async (req, res) => {
   try {
-    
     const user = await User.findById(req.user.id).select("-password"); // Exclude password
     if (!user) return res.status(404).json({ message: "User not found" });
 
@@ -259,9 +245,12 @@ const logOutUser = async (req, res) => {
 // update password
 const updatePassword = async (req, res) => {
   try {
-    const { password, newPassword } = req.body;
+    const { password, newPassword, confirmPassword } = req.body;
     if (!password || !newPassword) {
       return res.status(400).json({ message: "Enter all the fields" });
+    }
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
     }
     if (password === newPassword) {
       return res
@@ -286,7 +275,7 @@ const updatePassword = async (req, res) => {
 // update user
 const updateUser = async (req, res) => {
   try {
-    const { name, email, contact, role, address } = req.body;
+    const { name, email, contact, role } = req.body;
 
     // Fetch existing user
     const user = await User.findById(req.user.id);
@@ -302,7 +291,6 @@ const updateUser = async (req, res) => {
         email,
         contact,
         role,
-        address,
 
         // // ...(avtar && { avtar }),
       },
@@ -393,7 +381,7 @@ const getUser = async (req, res) => {
 // delete user
 const deleteUser = async (req, res) => {
   try {
-     console.log(`Delete request received for user ID: ${req.params.id}`);
+    console.log(`Delete request received for user ID: ${req.params.id}`);
     const user = await User.findById(req.params.id).select("-password");
 
     if (!user) {

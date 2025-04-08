@@ -33,9 +33,10 @@ function Page() {
   useEffect(() => {
     getOrderData();
   }, []);
-  console.log(order);
 
   // Usage
+  console.log(order);
+  
 
   return (
     <>
@@ -56,7 +57,7 @@ function Page() {
                   ) : (
                     <>
                       <table className="w-full">
-                        <tbody>
+                        <div>
                           {order?.map((order, index) => (
                             <div
                               key={order._id || index}
@@ -67,43 +68,45 @@ function Page() {
                               </div>
 
                               <div className="p-4 space-y-4">
-                                {order.products.map((product:iProductDetails) => (
-                                  <div
-                                    key={product._id}
-                                    className="flex items-center border-b pb-4"
-                                  >
-                                    {/* Product Image */}
-                                    <div className="w-20 h-20 flex-shrink-0 mr-4">
-                                      <Image
-                                        src={
-                                          product?.images?.[0] ||
-                                          "/placeholder.jpg"
-                                        }
-                                        alt={product?.name || "Product Image"}
-                                        width={80}
-                                        height={80}
-                                        className="rounded object-cover"
-                                      />
-                                    </div>
+                                {order.products.map(
+                                  (product: iProductDetails) => (
+                                    <div
+                                      key={product.productId}
+                                      className="flex items-center border-b pb-4"
+                                    >
+                                      {/* Product Image */}
+                                      <div className="w-20 h-20 flex-shrink-0 mr-4">
+                                        <Image
+                                          src={
+                                            product?.images?.[0] ||
+                                            "/placeholder.jpg"
+                                          }
+                                          alt={product?.name || "Product Image"}
+                                          width={80}
+                                          height={80}
+                                          className="rounded object-cover"
+                                        />
+                                      </div>
 
-                                    {/* Product Info */}
-                                    <div className="flex-1">
-                                      <h4 className="text-lg font-medium">
-                                        {product?.name}
-                                      </h4>
-                                      <p className="text-sm text-gray-600">
-                                        Qty: {product.quantity}
-                                      </p>
-                                      <p className="text-sm text-gray-600">
-                                        Price: ${product?.price?.toFixed(2)}
-                                      </p>
-                                      <p className="text-sm text-gray-600 font-semibold">
-                                        Estimated Delivery:{" "}
-                                        {formatDate(order?.deliveryDate)}
-                                      </p>
+                                      {/* Product Info */}
+                                      <div className="flex-1">
+                                        <h4 className="text-lg font-medium">
+                                          {product?.name}
+                                        </h4>
+                                        <p className="text-sm text-gray-600">
+                                          Qty: {product.quantity}
+                                        </p>
+                                        <p className="text-sm text-gray-600">
+                                          Price: ${product?.price?.toFixed(2)}
+                                        </p>
+                                        <p className="text-sm text-gray-600 font-semibold">
+                                          Estimated Delivery:{" "}
+                                          {formatDate(order?.deliveryDate)}
+                                        </p>
+                                      </div>
                                     </div>
-                                  </div>
-                                ))}
+                                  )
+                                )}
 
                                 {/* Order Summary */}
                                 <div className="text-right text-sm text-gray-700 mt-4">
@@ -119,7 +122,7 @@ function Page() {
                               </div>
                             </div>
                           ))}
-                        </tbody>
+                        </div>
                       </table>
                     </>
                   )}

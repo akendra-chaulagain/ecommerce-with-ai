@@ -38,7 +38,8 @@ export interface iProductDetails {
   name: string;
   price: number;
   rating: number;
-  quantity:number
+  quantity: number;
+  productId:number
 }
 
 export interface iReview {
