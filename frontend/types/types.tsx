@@ -38,6 +38,7 @@ export interface iProductDetails {
   name: string;
   price: number;
   rating: number;
+  quantity:number
 }
 
 export interface iReview {
@@ -80,7 +81,6 @@ export interface CartItem {
   name: string;
   price: number;
   image: string;
-  
 }
 
 export interface IShippingAddressDetails {
@@ -96,4 +96,14 @@ export interface IShippingAddressDetails {
 }
 export interface IShippingAddress {
   data: IShippingAddressDetails;
+}
+// for order
+
+export interface iOrder {
+  deliveryDate: string;
+  _id: string;
+  totalPrice: number;
+  products: iProductDetails[];
+  length: number;
+  orderStatus:string
 }

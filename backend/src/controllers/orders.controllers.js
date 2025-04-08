@@ -11,7 +11,6 @@ const createOrder = (req, res) => {
       totalPrice,
     } = req.body;
 
-    console.log("order ak");
 
     // Validate required fields
     if (!products || !shippingAddress || !totalPrice) {
@@ -53,6 +52,7 @@ const getUserAllOrders = async (req, res) => {
           userId: new mongoose.Types.ObjectId(userId), // Match the userId
         },
       },
+      { $sort: { _id: -1 } }, // Add this in your pipeline
       {
         $lookup: {
           from: "products", // Lookup product details from "products" collection
@@ -119,6 +119,7 @@ const getUserAllOrders = async (req, res) => {
           },
         },
       },
+      
     ]);
 
     return res.status(200).json({ message: "All orders", orders });

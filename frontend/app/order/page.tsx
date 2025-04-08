@@ -1,23 +1,21 @@
 // pages/order.js
 "use client";
 import { useEffect, useState } from "react";
-import P1 from "@/public/images/product/p3.jpg";
 import Image from "next/image";
 
 import { axiosInstence } from "@/hooks/axiosInstence";
 import LoadingPage from "@/components/Loading";
-
-const formatDate = (dateStr) => {
-  if (!dateStr) return "";
+import { iOrder, iProductDetails } from "@/types/types";
+const formatDate = (dateStr: string) => {
   return new Date(dateStr).toLocaleDateString("en-US", {
     year: "numeric",
-    month: "short", // e.g., "Apr"
+    month: "short",
     day: "numeric",
   });
 };
 
 function Page() {
-  const [order, setOrder] = useState([]);
+  const [order, setOrder] = useState<iOrder[]>([]);
   const [loading, setLoading] = useState(true);
 
   const getOrderData = async () => {
@@ -25,7 +23,7 @@ function Page() {
       const resposne = await axiosInstence.get("/order/get-user-order", {
         withCredentials: true,
       });
-      setOrder(resposne.data.orders[0]);
+      setOrder(resposne.data.orders);
     } catch (error) {
       console.log(error);
     } finally {
@@ -35,7 +33,7 @@ function Page() {
   useEffect(() => {
     getOrderData();
   }, []);
-  // console.log(order[0]?.products?.details);
+  console.log(order);
 
   // Usage
 
@@ -52,63 +50,74 @@ function Page() {
               {/* Order Summary */}
 
               <div className="bg-white rounded-lg shadow overflow-hidden">
-                <div className="px-6 py-4 bg-red-600 text-white font-medium">
-                  Order Summary
-                </div>
                 <div className="p-6">
-                  {order.length === 0 ? (
+                  {order?.length === 0 ? (
                     <p className="text-gray-500">Your order list is empty</p>
                   ) : (
                     <>
                       <table className="w-full">
-                        <thead>
-                          <tr className="border-b">
-                            <th className="text-left py-2">Product</th>
-                            <th className="text-center py-2">Quantity</th>
-                            <th className="text-right py-2">Price</th>
-                            <th className="text-right py-2">Status</th>
-                            <th className="text-right py-2">
-                              Estimated delivery date
-                            </th>
-                            <th></th>
-                          </tr>
-                        </thead>
                         <tbody>
-                          {order?.products?.map((item) => (
-                            <tr key={item.id} className="border-b">
-                              <td className="py-4 flex items-center space-x-4">
-                                {/* Image Wrapper */}
-                                <div className="w-24 h-24 flex-shrink-0">
-                                  <Image
-                                    src={P1}
-                                    alt={item.name}
-                                    width={80}
-                                    height={50}
-                                    className="object-cover cursor-pointer rounded-md"
-                                  />
-                                </div>
+                          {order?.map((order, index) => (
+                            <div
+                              key={order._id || index}
+                              className="mb-6 border rounded-lg shadow bg-white"
+                            >
+                              <div className="bg-red-600 text-white p-4 font-semibold">
+                                Order #{index + 1}
+                              </div>
 
-                                {/* Item Name */}
-                                <div className="font-medium text-gray-800">
-                                  {item.name.slice(0, 30)}
-                                </div>
-                              </td>
+                              <div className="p-4 space-y-4">
+                                {order.products.map((product:iProductDetails) => (
+                                  <div
+                                    key={product._id}
+                                    className="flex items-center border-b pb-4"
+                                  >
+                                    {/* Product Image */}
+                                    <div className="w-20 h-20 flex-shrink-0 mr-4">
+                                      <Image
+                                        src={
+                                          product?.images?.[0] ||
+                                          "/placeholder.jpg"
+                                        }
+                                        alt={product?.name || "Product Image"}
+                                        width={80}
+                                        height={80}
+                                        className="rounded object-cover"
+                                      />
+                                    </div>
 
-                              <td className="py-4">
-                                <div className="flex items-center justify-center">
-                                  <span className="px-4">{item.quantity}</span>
+                                    {/* Product Info */}
+                                    <div className="flex-1">
+                                      <h4 className="text-lg font-medium">
+                                        {product?.name}
+                                      </h4>
+                                      <p className="text-sm text-gray-600">
+                                        Qty: {product.quantity}
+                                      </p>
+                                      <p className="text-sm text-gray-600">
+                                        Price: ${product?.price?.toFixed(2)}
+                                      </p>
+                                      <p className="text-sm text-gray-600 font-semibold">
+                                        Estimated Delivery:{" "}
+                                        {formatDate(order?.deliveryDate)}
+                                      </p>
+                                    </div>
+                                  </div>
+                                ))}
+
+                                {/* Order Summary */}
+                                <div className="text-right text-sm text-gray-700 mt-4">
+                                  Status:{" "}
+                                  <span className="font-medium">
+                                    {order.orderStatus}
+                                  </span>{" "}
+                                  | Total:{" "}
+                                  <span className="font-semibold">
+                                    ${order.totalPrice.toFixed(2)}
+                                  </span>
                                 </div>
-                              </td>
-                              <td className="py-4 text-right">
-                                ${item.price.toFixed(2)}
-                              </td>
-                              <td className="py-4 text-right">
-                                {order.orderStatus}
-                              </td>
-                              <td className="py-4 text-right">
-                                {formatDate(order.deliveryDate)}
-                              </td>
-                            </tr>
+                              </div>
+                            </div>
                           ))}
                         </tbody>
                       </table>
