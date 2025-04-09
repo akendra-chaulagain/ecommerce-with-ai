@@ -2,7 +2,7 @@
 import { ArrowRight, Eye, ShoppingCart, Star } from "lucide-react";
 import Image from "next/image";
 import React from "react";
-import Category from "../category.json";
+import Category from "../../category.json";
 
 import Link from "next/link";
 
@@ -55,11 +55,11 @@ const Product = () => {
                   <div className="flex justify-between items-center mt-2">
                     <p className="font-bold">${product.price}</p>
                     <div className="flex items-center">
-                      <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
-                      <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
-                      <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
-                      <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
-                      <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
+                      <Star className="h-4 w-4 text-red-600 fill-red-600" />
+                      <Star className="h-4 w-4 text-red-600 fill-red-600" />
+                      <Star className="h-4 w-4 text-red-600 fill-red-600" />
+                      <Star className="h-4 w-4 text-red-600 fill-red-600" />
+                      <Star className="h-4 w-4 text-red-600 fill-red-600" />
                     </div>
                   </div>
                 </div>
@@ -80,7 +80,7 @@ const Product = () => {
       <section className="py-16 px-6">
         <div className=" mx-auto relative overflow-hidden rounded-lg">
           <div className="grid grid-cols-1 lg:grid-cols-2">
-            <div className="bg-gray-900 text-white p-12 lg:p-16 flex items-center">
+            <div className="bg-red-600 text-white p-12 lg:p-16 flex items-center">
               <div>
                 <span className="inline-block px-4 py-1 bg-white text-gray-900 text-sm font-bold mb-6">
                   NEW COLLECTION

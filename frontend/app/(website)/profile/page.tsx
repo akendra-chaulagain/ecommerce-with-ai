@@ -1,6 +1,6 @@
 // pages/settings.jsx
 "use client";
-import LoadingPage from "@/components/Loading";
+import LoadingPage from "@/components/webiste/Loading";
 import { useAuth } from "@/context/AuthContext";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { useNotificationToast } from "@/hooks/toast";

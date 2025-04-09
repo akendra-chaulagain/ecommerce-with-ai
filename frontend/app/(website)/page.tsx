@@ -1,7 +1,7 @@
-import Category from "@/components/Category";
-import Product from "@/components/Product";
-import Semi_cat from "@/components/Semi_cat";
-import Homeslider from "@/components/Homeslider";
+import Category from "@/components/webiste/Category";
+import Product from "@/components/webiste/Product";
+import Semi_cat from "@/components/webiste/Semi_cat";
+import Homeslider from "@/components/webiste/Homeslider";
 import React from "react";
 
 import "slick-carousel/slick/slick.css";

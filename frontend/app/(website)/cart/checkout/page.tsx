@@ -4,7 +4,7 @@ import { useCart } from "@/context/CartContent";
 
 import Image from "next/image";
 import React, { useState } from "react";
-import Paypal from "@/components/Paypal";
+import Paypal from "@/components/webiste/Paypal";
 import { Button } from "@/components/ui/button";
 import { useShippingAddress } from "@/context/ShippingContext";
 import {

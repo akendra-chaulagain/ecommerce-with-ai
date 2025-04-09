@@ -26,7 +26,7 @@ const Items = ({ category }: ItemsProps) => {
               href={`/category/${category._id}/product-details-${data._id}`}
             >
               <Image
-                src={data.images[0]}
+                src={data.images[0] || ""}
                 alt="logo"
                 width={300}
                 height={100}

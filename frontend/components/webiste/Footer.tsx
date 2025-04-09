@@ -14,7 +14,7 @@ import {
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-gray-300 mt-[60px]">
+    <footer className="bg-red-700 text-white mt-[60px]">
       {/* Newsletter Section */}
 
       {/* Main Footer Content */}

@@ -21,7 +21,7 @@ import axios from "axios";
 interface ReviewProps {
   reviews: iReview[];
   lastId: string;
-  sendRatingToParent:(rating:number)=>void
+  sendRatingToParent: (rating: number) => void;
 }
 
 const calculateAverageRating = (reviews: { rating: number }[]) => {
@@ -30,7 +30,11 @@ const calculateAverageRating = (reviews: { rating: number }[]) => {
   return (totalRating / reviews.length).toFixed(1); // Round to 1 decimal place
 };
 
-const Review: React.FC<ReviewProps> = ({ reviews, lastId ,sendRatingToParent }) => {
+const Review: React.FC<ReviewProps> = ({
+  reviews,
+  lastId,
+  sendRatingToParent,
+}) => {
   const showToast = useNotificationToast(); // Use the custom hook
   const averateRating = calculateAverageRating(reviews);
 
@@ -155,12 +159,13 @@ const Review: React.FC<ReviewProps> = ({ reviews, lastId ,sendRatingToParent }) 
               {Array.from({ length: 5 }).map((_, index) => (
                 <Star
                   key={index}
-                  size={20}
-                  color={
-                    index < Math.round(parseFloat(averateRating))
-                      ? "red "
-                      : "gray"
-                  }
+                  className={`h-4 w-4 ${
+                    averateRating
+                      ? index < Math.round(parseFloat(averateRating.toString())) // Rating available
+                        ? "text-red-600 fill-red-600" // Filled star
+                        : "text-gray-400 fill-gray-400" // Empty star
+                      : "text-gray-400 fill-gray-400" // Default if no rating
+                  }`}
                 />
               ))}
               {/* <Star size={20} color="red" /> */}
@@ -264,11 +269,17 @@ const Review: React.FC<ReviewProps> = ({ reviews, lastId ,sendRatingToParent }) 
               <div className="ml-[6px]">
                 <span className="flex mt-[6px] mb-[10px]">
                   <span className="flex mt-[6px] mb-[10px]">
-                    {Array.from({ length: 5 }).map((_, starIndex) => (
+                    {Array.from({ length: 5 }).map((_, index) => (
                       <Star
-                        key={starIndex}
-                        size={20}
-                        color={starIndex < data.rating ? "red" : "gray"}
+                        key={index}
+                        className={`h-4 w-4 ${
+                          averateRating
+                            ? index <
+                              Math.round(parseFloat(averateRating.toString())) // Rating available
+                              ? "text-red-600 fill-red-600" // Filled star
+                              : "text-gray-400 fill-gray-400" // Empty star
+                            : "text-gray-400 fill-gray-400" // Default if no rating
+                        }`}
                       />
                     ))}
                   </span>

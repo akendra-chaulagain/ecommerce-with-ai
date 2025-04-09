@@ -113,9 +113,6 @@ const Page = () => {
                         src={data}
                         alt="logo"
                         layout="fill"
-                        // width={400}
-                        // height={100}
-                        // className=" h-[70vh] cursor-pointer"
                         objectFit="cover"
                         className="cursor-pointer"
                       />
@@ -140,12 +137,13 @@ const Page = () => {
                     {Array.from({ length: 5 }).map((_, index) => (
                       <Star
                         key={index}
-                        size={20}
-                        color={
-                          index < Math.round(parseFloat(rating.toString()))
-                            ? "red "
-                            : "gray"
-                        }
+                        className={`h-4 w-4 ${
+                          rating
+                            ? index < Math.round(parseFloat(rating.toString())) // Rating available
+                              ? "text-red-600 fill-red-600" // Filled star
+                              : "text-gray-400 fill-gray-400" // Empty star
+                            : "text-gray-400 fill-gray-400" // Default if no rating
+                        }`}
                       />
                     ))}
                   </span>
@@ -228,7 +226,6 @@ const Page = () => {
         </div>
       </div>
 
-    
       <Review
         reviews={reviews}
         lastId={lastId}

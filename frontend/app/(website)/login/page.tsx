@@ -1,5 +1,5 @@
 "use client";
-import LoadingPage from "@/components/Loading";
+import LoadingPage from "@/components/webiste/Loading";
 import { Button } from "@/components/ui/button";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { useNotificationToast } from "@/hooks/toast";

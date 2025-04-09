@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 
 import { axiosInstence } from "@/hooks/axiosInstence";
-import LoadingPage from "@/components/Loading";
+import LoadingPage from "@/components/webiste/Loading";
 import { iOrder, iProductDetails } from "@/types/types";
 const formatDate = (dateStr: string) => {
   return new Date(dateStr).toLocaleDateString("en-US", {

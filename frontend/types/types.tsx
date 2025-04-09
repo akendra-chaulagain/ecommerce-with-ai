@@ -23,6 +23,9 @@ export interface iProduct {
   _id: string;
   details?: iProductDetails;
   reviews: iReview[];
+  images: [];
+  price: string;
+  description: string;
 }
 
 export interface apiResponse {
@@ -39,7 +42,7 @@ export interface iProductDetails {
   price: number;
   rating: number;
   quantity: number;
-  productId:number
+  productId: number;
 }
 
 export interface iReview {
@@ -106,5 +109,5 @@ export interface iOrder {
   totalPrice: number;
   products: iProductDetails[];
   length: number;
-  orderStatus:string
+  orderStatus: string;
 }

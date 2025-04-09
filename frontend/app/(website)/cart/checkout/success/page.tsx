@@ -5,7 +5,7 @@ import axios from "axios";
 import Link from "next/link";
 import { useCart } from "@/context/CartContent";
 import { useShippingAddress } from "@/context/ShippingContext";
-import LoadingPage from "@/components/Loading";
+import LoadingPage from "@/components/webiste/Loading";
 
 const PaymentPage = () => {
   const searchParams = useSearchParams();

@@ -1,16 +1,14 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+// import '../app/'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import Navbar from "@/components/Navbar";
-import Logobar from "@/components/Logobar";
-import Topbar from "@/components/Topbar";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContent";
 import { ShippingProvider } from "@/context/ShippingContext";
-import Footer from "@/components/Footer";
+
 // import { usePathname } from "next/navigation";
 
 const geistSans = Geist({
@@ -41,15 +39,8 @@ export default function RootLayout({
         <AuthProvider>
           <CartProvider>
             <ShippingProvider>
-              <header>
-                <Topbar />
-                <Logobar />
-                <Navbar />
-              </header>
               {children}
-              <footer>
-                <Footer />
-              </footer>
+
               <Toaster />
             </ShippingProvider>
           </CartProvider>

@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import ResposnsiveBar from "@/components/resposnsiveNavbar";
+import ResposnsiveBar from "@/components/webiste/resposnsiveNavbar";
 import { ChevronRight, ChevronLeft, ArrowRight,  } from "lucide-react";
 
 const Category = () => {
