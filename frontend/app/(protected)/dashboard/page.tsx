@@ -1,12 +1,12 @@
 // pages/dashboard/page.js or pages/dashboard/page.jsx
+import HomeItems from "@/components/dashboard/home-items";
 import React from "react";
 
 const Dashboard = () => {
   return (
-    <div>
-      <h1>Dashboard</h1>
-      {/* Your dashboard content */}
-    </div>
+    <>
+      <HomeItems />
+    </>
   );
 };
 

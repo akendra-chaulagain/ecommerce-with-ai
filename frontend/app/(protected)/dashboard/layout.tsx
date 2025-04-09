@@ -1,19 +1,28 @@
+"use client";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/dashboard/admin-sidebar";
+// import Navbar from "@/components/webiste/Navbar";
+import AdminNavbar from "@/components/dashboard/AdminNavbar";
+// import { AppNavbar } from "@/components/dashboard/navbar";
 
-export default async function DashboardLayout({
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // const user = await currentUser();
-
-  // const isAdmin = user?.publicMetadata?.role === "admin";
-  // if (!isAdmin) {
-  //   redirect("/");
-  // }
-
   return (
-    
-        <div className=" p-4">{children}</div>
-     
+    <SidebarProvider>
+      <div className="w-full flex h-screen overflow-hidden">
+        {/* Sidebar on the left */}
+        <AppSidebar />
+        <div className="flex flex-col w-full">
+          <AdminNavbar />
+          <main className="w-full flex-1 overflow-auto p-6 bg-gray-50">
+            {children} {/* Render children content */}
+          </main>
+        </div>
+      </div>
+      {/* </div> */}
+    </SidebarProvider>
   );
 }
