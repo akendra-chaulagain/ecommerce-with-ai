@@ -151,7 +151,7 @@ const getAllCategories = async (req, res) => {
   try {
     const cetegories = await Category.find().sort({ createdAt: -1 });
     // const cetegories = await Category.paginate({}, { page: 1, limit: 10 }); // Mongoose method
-    // const cetegories = await Category.paginate({}, { page: 1, limit: 10 }); // Mongoose method
+    // const cetegories = await Category.paginate({}, { page: 1, limit: 10 });
     return res.status(200).json({
       success: true,
       message: "All categories",

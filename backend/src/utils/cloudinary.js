@@ -27,15 +27,30 @@ const uploadPhoto = async (localFilePath, folderName) => {
   }
 };
 
+// const updatePhoto = async (publicId, localFilePath, folderName) => {
+//   try {
+//     const options = publicId
+//       ? { public_id: publicId, overwrite: true } // Use existing publicId to overwrite the image
+//       : {};
+
+//     if (!publicId || !localFilePath) {
+//       throw new Error("Public ID and file path are required");
+//     }
+//     const response = await cloudinary.uploader.upload(localFilePath, {
+//       ...options,
+//       folder: folderName,
+//       type: "upload",
+//     });
+//     fs.unlinkSync(localFilePath);
+//     return response;
+//   } catch (error) {
+//     fs.unlinkSync(localFilePath);
+//   }
+// };
+
 const updatePhoto = async (publicId, localFilePath, folderName) => {
   try {
-    const options = publicId
-      ? { public_id: publicId, overwrite: true } // Use existing publicId to overwrite the image
-      : {};
-
-    if (!publicId || !localFilePath) {
-      throw new Error("Public ID and file path are required");
-    }
+    const options = publicId ? { public_id: publicId, overwrite: true } : {};
     const response = await cloudinary.uploader.upload(localFilePath, {
       ...options,
       folder: folderName,
@@ -45,8 +60,10 @@ const updatePhoto = async (publicId, localFilePath, folderName) => {
     return response;
   } catch (error) {
     fs.unlinkSync(localFilePath);
+    throw error;
   }
 };
+
 
 // Function to upload multiple images to Cloudinary
 const uploadMultipleImagesToCloudinary = async (files, folderName) => {

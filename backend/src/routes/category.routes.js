@@ -25,11 +25,11 @@ router.route("/create-category").post(
 );
 
 // edit category route
-router.route("/edit-category/:id").patch(
+router.route("/edit-category/:id").put(
   // verify token
   verifyJwt,
   // access control
-  authorize("Admin"),
+  authorize("Admin","User"),
   // update image
   upload.single("categoryImage"),
   // edit category
