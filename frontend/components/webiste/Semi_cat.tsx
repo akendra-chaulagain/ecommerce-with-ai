@@ -24,17 +24,14 @@ const Semi_cat = () => {
           "/category/home-category"
         );
 
-        if (Array.isArray(response.data.data)) {
-          setCategory(response.data.data);
-        } else {
-          throw new Error("Invalid category data format");
-        }
+        setCategory(response.data.data);
       } catch (error) {
         setError(true);
         console.log(error);
       }
     })();
   }, []);
+  console.log(category);
 
   return (
     <>
@@ -56,23 +53,23 @@ const Semi_cat = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-6">
-              {category?.map((category, index) => (
+              {category?.map((categoryData, index) => (
                 <Link
-                  href={`/category/${category._id}`}
+                  href={`/category/${categoryData._id}`}
                   key={index}
                   className="group block overflow-hidden relative h-96 rounded"
                 >
                   <div className="relative h-full w-full overflow-hidden">
                     <Image
-                      src={category.categoryImage}
-                      alt={category.name}
                       fill
+                      src={categoryData?.categoryImage || "/h2.jpg"}
+                      alt={categoryData?.name || "Category Image"}
                       className="object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                     <div className="absolute bottom-0 left-0 right-0 p-6">
                       <h3 className="text-xl font-semibold text-white mb-2">
-                        {category.name}
+                        {categoryData?.name}
                       </h3>
                       <span className="inline-flex items-center text-white text-sm font-medium opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
                         Explore
@@ -87,13 +84,7 @@ const Semi_cat = () => {
         </>
       )}
       <div className="relative h-96 md:h-[500px] overflow-hidden mb-[30px]">
-        <Image
-          src="/h2.jpg"
-          alt="Spring Collection 2025"
-          fill
-          className=""
-          objectFit=""
-        />
+        <Image fill src="/h2.jpg" alt="Spring Collection 2025" />
         <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
           <div className="text-center text-white p-6">
             <h1 className="text-4xl md:text-6xl font-bold mb-4">

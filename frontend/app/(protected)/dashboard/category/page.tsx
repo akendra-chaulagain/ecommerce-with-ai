@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useCategory } from "@/context/admin/CategoryContext";
 import Image from "next/image";
+import Link from "next/link";
 
 const Page = () => {
   const category = useCategory();
@@ -40,7 +41,9 @@ const Page = () => {
         <TableBody>
           {category?.category?.data?.map((datcategoryData) => (
             <TableRow key={datcategoryData._id}>
-              <TableCell className="font-medium">{datcategoryData._id}</TableCell>
+              <TableCell className="font-medium">
+                {datcategoryData._id}
+              </TableCell>
               <TableCell>{datcategoryData.name}</TableCell>
               <TableCell>{datcategoryData.description}</TableCell>
               <TableCell>
@@ -66,14 +69,16 @@ const Page = () => {
               </TableCell>
               <TableCell>
                 <div className="flex justify-center space-x-2">
-                  <Button
-                    // onClick={() => handleEdit(invoice.id)}
-                    variant="outline"
-                    size="sm"
-                    className="text-blue-600 border-blue-200 hover:bg-blue-50 hover:text-blue-700"
-                  >
-                    Edit
-                  </Button>
+                  <Link href={`/dashboard/category/${datcategoryData._id}`}>
+                    <Button
+                      // onClick={() => handleEdit(invoice.id)}
+                      variant="outline"
+                      size="sm"
+                      className="text-blue-600 border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                    >
+                      Edit
+                    </Button>
+                  </Link>
                   <Button
                     // onClick={() => handleDelete(invoice.id)}
                     variant="outline"

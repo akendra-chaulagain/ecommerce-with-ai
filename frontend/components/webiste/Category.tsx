@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import ResposnsiveBar from "@/components/webiste/resposnsiveNavbar";
-import { ChevronRight, ChevronLeft, ArrowRight,  } from "lucide-react";
+import { ChevronRight, ChevronLeft, ArrowRight } from "lucide-react";
 
 const Category = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -27,65 +27,6 @@ const Category = () => {
       // color: "from-indigo-900/70 to-indigo-950/90",
     },
   ];
-
-
-  // const featuredCategories = [
-  //   {
-  //     name: "Women's Collection",
-  //     image: "/api/placeholder/600/800",
-  //     link: "/category/women",
-  //   },
-  //   {
-  //     name: "Men's Style",
-  //     image: "/api/placeholder/600/800",
-  //     link: "/category/men",
-  //   },
-  //   {
-  //     name: "Accessories",
-  //     image: "/api/placeholder/600/800",
-  //     link: "/category/accessories",
-  //   },
-  //   {
-  //     name: "Footwear",
-  //     image: "/api/placeholder/600/800",
-  //     link: "/category/footwear",
-  //   },
-  // ];
-
-  // const trendingProducts = [
-  //   {
-  //     id: 1,
-  //     name: "Premium Cotton Tee",
-  //     price: 49.99,
-  //     rating: 4.8,
-  //     image: "/api/placeholder/500/600",
-  //     tag: "Bestseller",
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "Structured Blazer",
-  //     price: 129.99,
-  //     rating: 4.9,
-  //     image: "/api/placeholder/500/600",
-  //     tag: "New",
-  //   },
-  //   {
-  //     id: 3,
-  //     name: "Designer Denim",
-  //     price: 89.99,
-  //     rating: 4.7,
-  //     image: "/api/placeholder/500/600",
-  //     tag: "Limited",
-  //   },
-  //   {
-  //     id: 4,
-  //     name: "Statement Accessory",
-  //     price: 39.99,
-  //     rating: 4.6,
-  //     image: "/api/placeholder/500/600",
-  //     tag: "Trending",
-  //   },
-  // ];
 
   useEffect(() => {
     setIsVisible(true);
@@ -124,7 +65,7 @@ const Category = () => {
           >
             <div className="relative w-full h-full">
               <Image
-                src={slide.image}
+                src={slide.image|| "/h1.jpg"}
                 alt={slide.title}
                 fill
                 className="object-cover"
@@ -186,10 +127,6 @@ const Category = () => {
           ))}
         </div>
       </section>
-
-      
-
-      
     </>
   );
 };
