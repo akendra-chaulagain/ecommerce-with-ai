@@ -1,6 +1,6 @@
-import { Bell, Menu, MessageSquare, Search, User } from 'lucide-react';
-import React from 'react'
-import { SidebarTrigger } from '../ui/sidebar';
+import { Bell, Menu, MessageSquare, Search, User } from "lucide-react";
+import React from "react";
+import { SidebarTrigger } from "../ui/sidebar";
 
 const AdminNavbar = () => {
   return (
@@ -48,6 +48,6 @@ const AdminNavbar = () => {
       </nav>
     </>
   );
-}
+};
 
 export default AdminNavbar;

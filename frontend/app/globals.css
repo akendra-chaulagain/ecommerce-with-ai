@@ -4,19 +4,19 @@
 
 /* @import "tailwindcss"; */
 body {
-  /* margin: 0.2% 10% 0.5% 10%; */
+  margin: 0.2% 10% 0.5% 10%;
   overflow-x: hidden;
 }
 @media screen and (min-width: 200px) {
   body {
-    /* margin: 0% 0% 0% 0%; */
+    margin: 0% 0% 0% 0%;
   }
 }
-/* @media screen and (min-width: 768px) {
-  body {
+@media screen and (min-width: 768px) {
+  .website {
     margin: 0.2% 10% 0.5% 10%;
   }
-} */
+}
 @layer base {
   :root {
     --background: 0 0% 100%;

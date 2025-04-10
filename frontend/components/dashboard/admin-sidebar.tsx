@@ -29,12 +29,12 @@ import Image from "next/image";
 const items = [
   {
     title: "Home",
-    url: "#",
+    url: "/dashboard",
     icon: Home,
   },
   {
-    title: "Inbox",
-    url: "#",
+    title: "Category",
+    url: "/dashboard/category",
     icon: Inbox,
   },
   {

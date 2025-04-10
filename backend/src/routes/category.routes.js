@@ -71,6 +71,3 @@ router.route("/delete_category/:id").delete(
 router.route("/:id").get(getProductsAcoordingToCategory);
 
 export default router;
-
-
-

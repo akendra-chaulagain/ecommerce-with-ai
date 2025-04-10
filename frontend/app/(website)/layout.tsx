@@ -18,7 +18,7 @@ export default async function DashboardLayout({
   // }
 
   return (
-    <>
+    <div className="website">
       <header>
         <Topbar />
         <Logobar />
@@ -29,6 +29,6 @@ export default async function DashboardLayout({
         <Footer />
       </footer>
       <Toaster />
-    </>
+    </div>
   );
 }

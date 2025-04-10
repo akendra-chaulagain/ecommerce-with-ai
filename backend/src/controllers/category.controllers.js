@@ -149,7 +149,9 @@ const deleteCategory = async (req, res) => {
 // get all categories
 const getAllCategories = async (req, res) => {
   try {
-    const cetegories = await Category.find();
+    const cetegories = await Category.find().sort({ createdAt: -1 });
+    // const cetegories = await Category.paginate({}, { page: 1, limit: 10 }); // Mongoose method
+    // const cetegories = await Category.paginate({}, { page: 1, limit: 10 }); // Mongoose method
     return res.status(200).json({
       success: true,
       message: "All categories",
@@ -232,10 +234,7 @@ const getProductsAcoordingToCategory = async (req, res) => {
           as: "products",
         },
       },
-      
     ]);
-
-    
 
     return res
       .status(200)
