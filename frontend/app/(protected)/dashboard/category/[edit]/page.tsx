@@ -104,7 +104,7 @@ export default function EditPage() {
                       height={100}
                       src={
                         categoryDetails?.categoryImage ||
-                        "/images/product/p3.jpg"
+                        "/images/product/p4.jpg"
                       }
                       alt="Current profile"
                       className="w-full h-full object-cover"

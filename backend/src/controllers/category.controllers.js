@@ -49,7 +49,7 @@ const creatCategory = async (req, res) => {
 //  edit category
 const editCategory = async (req, res) => {
   try {
-    const { name, description, categoryImage } = req.body;
+    const { name, description } = req.body;
     const { id } = req.params;
     const category = await Category.findById(id);
     if (!category) {
@@ -59,29 +59,23 @@ const editCategory = async (req, res) => {
       });
     }
 
-    if (!category.categoryImage) {
-      // this code will run only at the first time when categoryImage is not available
-      // for category image
-      const localImage = req.file?.path;
+    
 
-      let categoryImageUpload = null;
-      if (localImage) {
-        const folderName = "category";
-        categoryImageUpload = await uploadPhoto(localImage, folderName);
-      }
-      category.categoryImage = categoryImageUpload?.secure_url;
-      await category.save({ validateBeforeSave: false });
-    } else {
-      // this code will run when categoryImage is already available
-      let categoryImage = category.categoryImage;
-      const folderName = "category";
+    const folderName = "category";
+    let categoryImage = category.categoryImage;
 
-      if (req.file?.path) {
-        let publicId = category.categoryImage
+    // Upload image if file is provided
+    if (req.file?.path) {
+      if (!category.categoryImage) {
+        // first time uploading
+        const uploadResponse = await uploadPhoto(req.file.path, folderName);
+        categoryImage = uploadResponse.secure_url;
+      } else {
+        // replacing existing image
+        const publicId = category.categoryImage
           ? category.categoryImage.split("/").pop().split(".")[0]
           : undefined;
 
-        // Call updatePhoto() with publicId (if exists) and new file path
         const uploadResponse = await updatePhoto(
           publicId,
           req.file.path,
@@ -90,17 +84,17 @@ const editCategory = async (req, res) => {
         categoryImage = uploadResponse.secure_url;
       }
     }
+
     const updatedCategory = await Category.findByIdAndUpdate(
       id,
       {
         name,
-        categoryImage,
         description,
+        categoryImage, // ✅ Now correctly updated
       },
-      {
-        new: true,
-      }
+      { new: true }
     );
+
     return res.status(201).json({
       success: true,
       message: "Category updated",
@@ -114,6 +108,8 @@ const editCategory = async (req, res) => {
     });
   }
 };
+
+
 
 // delete category
 const deleteCategory = async (req, res) => {
