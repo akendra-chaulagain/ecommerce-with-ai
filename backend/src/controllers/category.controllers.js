@@ -9,9 +9,16 @@ import { PaginationParameters } from "mongoose-paginate-v2";
 const creatCategory = async (req, res) => {
   try {
     const { name, description } = req.body;
+
     if (!name) {
-      throw new Error("Name is required");
+      return new Error("Name is required");
     }
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Category image is required" });
+    }
+
     // search for existing category
     const category = await Category.findOne({ name });
     if (category) {
@@ -22,6 +29,7 @@ const creatCategory = async (req, res) => {
 
     // for category image
     const localImage = req.file?.path;
+
     const folderName = "category";
     let cloudinaryImage = null;
     if (localImage) {
@@ -35,7 +43,7 @@ const creatCategory = async (req, res) => {
       categoryImage: cloudinaryImage?.secure_url,
     });
     return res
-      .status(201)
+      .status(200)
       .json({ success: true, message: "Category added", data: newCategory });
   } catch (error) {
     console.error("Error creating category:", error);
@@ -65,8 +73,8 @@ const editCategory = async (req, res) => {
     let Image = category.categoryImage;
 
     // Upload image if file is provided
+
     if (req.file?.path) {
-      // logger.info("Image path:", req.file.path); // Log the image path
       if (!category.categoryImage) {
         // first time uploading
         const uploadResponse = await uploadPhoto(req.file.path, folderName);

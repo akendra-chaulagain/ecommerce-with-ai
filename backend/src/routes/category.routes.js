@@ -14,10 +14,10 @@ import { upload } from "../middleware/multer.middleware.js";
 
 // create category route
 router.route("/create-category").post(
-  // verify token
-  verifyJwt,
-  // access control
-  authorize("Admin"),
+  // // verify token
+  // verifyJwt,
+  // // access control
+  // authorize("Admin"),
   // upload image
   upload.single("categoryImage"),
   // create category
