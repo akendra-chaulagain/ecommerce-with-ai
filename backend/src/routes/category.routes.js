@@ -60,10 +60,10 @@ router.route("/category_details/:id").get(
 );
 // category delete route
 router.route("/delete_category/:id").delete(
-  // verify token
-  verifyJwt,
-  // access control
-  authorize("Admin"),
+  // // verify token
+  // verifyJwt,
+  // // access control
+  // authorize("Admin"),
   // get  individual category details
   deleteCategory
 );

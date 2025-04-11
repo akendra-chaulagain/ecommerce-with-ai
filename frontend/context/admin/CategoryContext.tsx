@@ -11,14 +11,20 @@ import {
 } from "react";
 
 interface iCategoryContext {
+  getAllCategories: (page: number) => void;
+  catDeleting: boolean;
   category: iCategory | null;
   categoryDetails: iCategoryResponse | null;
   upadteDetails: iCategoryResponse | null;
   loading: boolean;
   loadingCategory: boolean;
   loadingUpdate: boolean;
+  setCurrentPage: (page: number) => void;
   addLoading: boolean;
   error: string | null;
+  currentPage: number;
+  totalPages: number;
+  deleteCategory: (categoryId: string) => void;
   getCategoryById: (categoryId: string) => void;
   updateCategory: (categoryId: string, data: FormData) => void;
   createCategory: (data: FormData) => void;
@@ -30,6 +36,7 @@ interface iChildren {
 interface iCategory {
   data: iCategoryResponse[];
   length: number | null;
+  totalPages: number;
 }
 interface iCategoryResponse {
   _id: string;
@@ -40,6 +47,12 @@ interface iCategoryResponse {
 }
 const defaultCategoryValue: iCategoryContext = {
   category: null,
+  getAllCategories: () => {},
+  currentPage: 1,
+  deleteCategory: () => {},
+  setCurrentPage: () => {},
+  catDeleting: false,
+  totalPages: 1,
   categoryDetails: null,
   loading: true,
   error: null,
@@ -67,15 +80,25 @@ export const CategoryProvider = ({ children }: iChildren) => {
   const [loadingCategory, setLoadingCategory] = useState(false); // Separate loading for category fetching
   const [loadingUpdate, setLoadingUpdate] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
+  const [catDeleting, setCatDeleting] = useState(false);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   // get all category
-  const getAllCategories = async () => {
+  const limit = 7;
+  const getAllCategories = async (page: number) => {
     setLoading(true);
     try {
-      const res = await axiosInstence.get<iCategory>("/category/", {
-        withCredentials: true, // Include credentials in the request
-      });
+      const res = await axiosInstence.get<iCategory>(
+        `/category?page=${page}&limit=${limit}`,
+        {
+          withCredentials: true, // Include credentials in the request
+        }
+      );
+      // const { data, pagination } = res.data;
       setCategory(res.data);
+      setTotalPages(res.data.totalPages);
+      setCurrentPage(page);
       setError(null);
     } catch (error) {
       setError(null);
@@ -85,8 +108,8 @@ export const CategoryProvider = ({ children }: iChildren) => {
     }
   };
   useEffect(() => {
-    getAllCategories();
-  }, []);
+    getAllCategories(currentPage);
+  }, [currentPage]);
 
   // get category by id
   const getCategoryById = async (categoryId: string) => {
@@ -163,9 +186,31 @@ export const CategoryProvider = ({ children }: iChildren) => {
       setAddLoading(false);
     }
   };
+
+  // delete category
+  const deleteCategory = async (categoryId: string) => {
+    setCatDeleting(true);
+    try {
+      await axiosInstence.delete<iCategoryResponse>(
+        `/category/delete_category/${categoryId}`,
+        {
+          withCredentials: true, // Include credentials in the request
+        }
+      );
+      showToast("Category deleted successfully");
+      setError(null);
+    } catch (error) {
+      setError(null);
+      console.log(error);
+    } finally {
+      setCatDeleting(false);
+    }
+  };
+
   return (
     <CategoryContext.Provider
       value={{
+        getAllCategories,
         categoryDetails,
         category,
         loading,
@@ -177,6 +222,11 @@ export const CategoryProvider = ({ children }: iChildren) => {
         updateCategory,
         createCategory,
         addLoading,
+        setCurrentPage,
+        currentPage,
+        totalPages,
+        deleteCategory,
+        catDeleting,
       }}
     >
       {children}

@@ -153,13 +153,26 @@ const deleteCategory = async (req, res) => {
 // get all categories
 const getAllCategories = async (req, res) => {
   try {
-    const cetegories = await Category.find().sort({ createdAt: -1 });
-    // const cetegories = await Category.paginate({}, { page: 1, limit: 10 }); // Mongoose method
-    // const cetegories = await Category.paginate({}, { page: 1, limit: 10 });
+    // for pagination
+    const page = parseInt(req.query.page) || 1; // default page is 1
+    const limit = parseInt(req.query.limit) || 7; // default limit is 10
+    const skip = (page - 1) * limit; // calculate skip value
+    const totalCategories = await Category.countDocuments(); // get total number of categories
+
+    const cetegories = await Category.find()
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
     return res.status(200).json({
       success: true,
       message: "All categories",
       data: cetegories,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(totalCategories / limit),
+        totalItems: totalCategories,
+      },
     });
   } catch (error) {
     res.status(501).json({

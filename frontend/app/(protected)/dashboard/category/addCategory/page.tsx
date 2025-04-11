@@ -4,6 +4,7 @@ import LoadingPage from "@/components/webiste/Loading";
 import { useCategory } from "@/context/admin/CategoryContext";
 
 import { useNotificationToast } from "@/hooks/toast";
+import { X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -51,7 +52,7 @@ export default function EditPage() {
                 href="/dashboard/category"
                 className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
               >
-                Cancel
+                <X />
               </Link>
             </div>
 

@@ -18,7 +18,7 @@ export default function DashboardLayout({
           <AppSidebar />
           <div className="flex flex-col w-full">
             <AdminNavbar />
-            <main className="w-full flex-1 overflow-auto p-6 bg-gray-50">
+            <main className="w-full flex-1 overflow-auto px-20 py-10 bg-gray-50">
               {children}
             </main>
           </div>
