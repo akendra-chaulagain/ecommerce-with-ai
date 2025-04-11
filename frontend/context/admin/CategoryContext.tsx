@@ -13,6 +13,8 @@ interface iCategoryContext {
   categoryDetails: iCategoryResponse | null;
   upadteDetails: iCategoryResponse | null;
   loading: boolean;
+  loadingCategory: boolean;
+  loadingUpdate: boolean;
   error: string | null;
   getCategoryById: (categoryId: string) => void;
   updateCategory: (categoryId: string, data: FormData) => void;
@@ -40,6 +42,8 @@ const defaultCategoryValue: iCategoryContext = {
   getCategoryById: () => {},
   updateCategory: () => {},
   upadteDetails: null,
+  loadingCategory: true,
+  loadingUpdate: true,
 };
 
 const CategoryContext = createContext(defaultCategoryValue);
@@ -53,9 +57,12 @@ export const CategoryProvider = ({ children }: iChildren) => {
   );
 
   const [loading, setLoading] = useState(true);
+    const [loadingCategory, setLoadingCategory] = useState(false); // Separate loading for category fetching
+    const [loadingUpdate, setLoadingUpdate] = useState(false);
   const [error, setError] = useState(null);
   // get all category
   const getAllCategories = async () => {
+    setLoading(true);
     try {
       const res = await axiosInstence.get<iCategory>("/category/", {
         withCredentials: true, // Include credentials in the request
@@ -75,6 +82,7 @@ export const CategoryProvider = ({ children }: iChildren) => {
 
   // get category by id
   const getCategoryById = async (categoryId: string) => {
+     setLoadingCategory(true);
     try {
       const res = await axiosInstence.get<{ data: iCategoryResponse }>(
         `/category/category_details/${categoryId}`,
@@ -88,18 +96,22 @@ export const CategoryProvider = ({ children }: iChildren) => {
       setError(null);
       console.log(error);
     } finally {
-      setLoading(false);
+      setLoadingCategory(false);
     }
   };
 
   // update category
   const updateCategory = async (categoryId: string, data: FormData) => {
+    setLoadingUpdate(true)
     try {
       const res = await axiosInstence.put<iCategoryResponse>(
         `/category/edit-category/${categoryId}`,
         data,
         {
           withCredentials: true, // Include credentials in the request
+          headers: {
+            "Content-Type": "multipart/form-data", // Make sure this is set automatically
+          },
         }
       );
       setUpadteDetails(res.data);
@@ -108,7 +120,7 @@ export const CategoryProvider = ({ children }: iChildren) => {
       setError(null);
       console.log(error);
     } finally {
-      setLoading(false);
+      setLoadingUpdate(false);
     }
   };
 
@@ -119,6 +131,8 @@ export const CategoryProvider = ({ children }: iChildren) => {
         category,
         loading,
         error,
+        loadingCategory,
+        loadingUpdate,
         getCategoryById,
         upadteDetails,
         updateCategory,

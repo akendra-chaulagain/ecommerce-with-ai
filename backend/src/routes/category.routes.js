@@ -32,6 +32,7 @@ router.route("/edit-category/:id").put(
   // authorize("Admin","User"),
   // update image
   upload.single("categoryImage"),
+
   // edit category
   editCategory
 );

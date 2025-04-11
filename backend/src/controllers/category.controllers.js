@@ -50,6 +50,8 @@ const creatCategory = async (req, res) => {
 const editCategory = async (req, res) => {
   try {
     const { name, description } = req.body;
+
+    // console.log("image akendra",req.file.path);
     const { id } = req.params;
     const category = await Category.findById(id);
     if (!category) {
@@ -59,29 +61,29 @@ const editCategory = async (req, res) => {
       });
     }
 
-    
-
     const folderName = "category";
-    let categoryImage = category.categoryImage;
+    let Image = category.categoryImage;
 
     // Upload image if file is provided
     if (req.file?.path) {
+      // logger.info("Image path:", req.file.path); // Log the image path
       if (!category.categoryImage) {
         // first time uploading
         const uploadResponse = await uploadPhoto(req.file.path, folderName);
-        categoryImage = uploadResponse.secure_url;
+        Image = uploadResponse.secure_url;
       } else {
         // replacing existing image
         const publicId = category.categoryImage
           ? category.categoryImage.split("/").pop().split(".")[0]
           : undefined;
+        console.log("Public ID:", publicId); // Log the public ID
 
         const uploadResponse = await updatePhoto(
           publicId,
           req.file.path,
           folderName
         );
-        categoryImage = uploadResponse.secure_url;
+        Image = uploadResponse.secure_url;
       }
     }
 
@@ -90,7 +92,7 @@ const editCategory = async (req, res) => {
       {
         name,
         description,
-        categoryImage, // ✅ Now correctly updated
+        categoryImage: Image, // ✅ Now correctly updated
       },
       { new: true }
     );
@@ -108,8 +110,6 @@ const editCategory = async (req, res) => {
     });
   }
 };
-
-
 
 // delete category
 const deleteCategory = async (req, res) => {
