@@ -1,15 +1,5 @@
 "use client";
-import {
-  Bell,
-  Calendar,
-  Home,
-  Inbox,
-  Menu,
-  MessageSquare,
-  Search,
-  Settings,
-  User,
-} from "lucide-react";
+import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -19,7 +9,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 
 import Link from "next/link";
