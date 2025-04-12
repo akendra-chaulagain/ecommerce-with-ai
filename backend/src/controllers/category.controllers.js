@@ -1,14 +1,14 @@
 import mongoose from "mongoose";
-import { Category } from "../models/category.models.js";
+import Category from "../models/category.models.js";
 import { Product } from "../models/product.models.js";
 import { updatePhoto, uploadPhoto } from "../utils/cloudinary.js";
 import { v2 as cloudinary } from "cloudinary";
-import { PaginationParameters } from "mongoose-paginate-v2";
+import slugify from "slugify";
 
-// create catehory
+// updated create category (new category using parent and child)
 const creatCategory = async (req, res) => {
   try {
-    const { name, description } = req.body;
+    const { name, description, parentCategory } = req.body;
 
     if (!name) {
       return new Error("Name is required");
@@ -37,11 +37,15 @@ const creatCategory = async (req, res) => {
     }
 
     // create new category
-    const newCategory = await Category.create({
+    const newCategory = new Category({
       name,
+
+      parentCategory: parentCategory, // Set to null if no parent category is provided
       description,
       categoryImage: cloudinaryImage?.secure_url,
     });
+    await newCategory.save(); // Save the new category to the database
+
     return res
       .status(200)
       .json({ success: true, message: "Category added", data: newCategory });
@@ -54,10 +58,11 @@ const creatCategory = async (req, res) => {
     });
   }
 };
+
 //  edit category
 const editCategory = async (req, res) => {
   try {
-    const { name, description } = req.body;
+    const { name, description, parentCategory } = req.body;
 
     // console.log("image akendra",req.file.path);
     const { id } = req.params;
@@ -89,7 +94,8 @@ const editCategory = async (req, res) => {
         const uploadResponse = await updatePhoto(
           publicId,
           req.file.path,
-          folderName
+          folderName,
+          parentCategory
         );
         Image = uploadResponse.secure_url;
       }
@@ -152,30 +158,62 @@ const deleteCategory = async (req, res) => {
 
 // get all categories
 const getAllCategories = async (req, res) => {
+  // try {
+  //   // for pagination
+  //   const page = parseInt(req.query.page) || 1; // default page is 1
+  //   const limit = parseInt(req.query.limit) || 7; // default limit is 10
+  //   const skip = (page - 1) * limit; // calculate skip value
+  //   const totalCategories = await Category.countDocuments(); // get total number of categories
+
+  //   const cetegories = await Category.find()
+  //     .skip(skip)
+  //     .limit(limit)
+  //     .sort({ createdAt: -1 });
+
+  //   return res.status(200).json({
+  //     success: true,
+  //     message: "All categories",
+  //     data: cetegories,
+  //     pagination: {
+  //       currentPage: page,
+  //       totalPages: Math.ceil(totalCategories / limit),
+  //       totalItems: totalCategories,
+  //     },
+  //   });
+  // } catch (error) {
+  //   res.status(501).json({
+  //     success: false,
+  //     message: "Something went wrong! try again later",
+  //     error: error.message,
+  //   });
+  // }
   try {
-    // for pagination
-    const page = parseInt(req.query.page) || 1; // default page is 1
-    const limit = parseInt(req.query.limit) || 7; // default limit is 10
-    const skip = (page - 1) * limit; // calculate skip value
-    const totalCategories = await Category.countDocuments(); // get total number of categories
-
-    const cetegories = await Category.find()
-      .skip(skip)
-      .limit(limit)
-      .sort({ createdAt: -1 });
-
+    const categories = await Category.find();
+    res.status(200).json(categories);
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    res.status(500).json({ message: "Error fetching categories" });
+  }
+};
+// get subcategories
+const getSubCategories = async (req, res) => {
+  try {
+    const subCategories = await Category.find({
+      parentCategory: req.params.id,
+    });
+    if (!subCategories) {
+      return res.status(404).json({
+        success: false,
+        message: "Subcategories not found",
+      });
+    }
     return res.status(200).json({
       success: true,
-      message: "All categories",
-      data: cetegories,
-      pagination: {
-        currentPage: page,
-        totalPages: Math.ceil(totalCategories / limit),
-        totalItems: totalCategories,
-      },
+      message: "Subcategories",
+      data: subCategories,
     });
   } catch (error) {
-    res.status(501).json({
+    return res.status(501).json({
       success: false,
       message: "Something went wrong! try again later",
       error: error.message,
@@ -264,6 +302,37 @@ const getProductsAcoordingToCategory = async (req, res) => {
   }
 };
 
+const categoryTree = async (req, res, parentId = null) => {
+  try {
+    const allCategories = await Category.find().lean();
+    // recursive function to build the tree
+    const buildTree = (categories, parentId = null) => {
+      return categories
+        .filter((cat) => {
+          if (parentId === null) return !cat.parentCategory;
+          return cat.parentCategory?.toString() === parentId.toString();
+        })
+        .map((cat) => ({
+          _id: cat._id,
+          name: cat.name,
+          slug: cat.slug,
+          description: cat.description,
+          categoryImage: cat.categoryImage,
+          children: buildTree(categories, cat._id),
+        }));
+    };
+    const tree = buildTree(allCategories, null);
+    res.status(200).json({ success: true, data: tree });
+  } catch (error) {
+    console.error("Error fetching category tree:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch categories",
+      error: error.message,
+    });
+  }
+};
+
 export {
   creatCategory,
   editCategory,
@@ -272,4 +341,6 @@ export {
   deleteCategory,
   getFiveDataForHomeScreen,
   getProductsAcoordingToCategory,
+  getSubCategories,
+  categoryTree,
 };

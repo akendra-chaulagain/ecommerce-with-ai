@@ -2,12 +2,14 @@ import { Router } from "express";
 const router = Router();
 import {
   categoryDetails,
+  categoryTree,
   creatCategory,
   deleteCategory,
   editCategory,
   getAllCategories,
   getFiveDataForHomeScreen,
   getProductsAcoordingToCategory,
+  getSubCategories,
 } from "../controllers/category.controllers.js";
 import { authorize, verifyJwt } from "../middleware/auth.middleware.js";
 import { upload } from "../middleware/multer.middleware.js";
@@ -47,6 +49,27 @@ router.route("/").get(
   // get all category
   getAllCategories
 );
+
+// get sub category route
+router.route("/sub-category/:id").get(
+  // verify token
+  // verifyJwt,
+  // access control
+  // authorize("Admin", "User"),
+  // get all category
+  getSubCategories
+);
+
+// get category tree route
+router.route("/tree").get(
+  // verify token
+  // verifyJwt,
+  // access control
+  // authorize("Admin", "User"),
+  // get all category
+  categoryTree
+);
+
 // get 5 category route
 router.route("/home-category").get(
   // get all category
