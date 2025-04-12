@@ -8,19 +8,19 @@ import { X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 export default function EditPage() {
   // get categary by id from the url
+  const searchParams = useSearchParams();
+  const add_subCat = searchParams.get("add_subCat");
   const showToast = useNotificationToast(); // Use the custom hook
-
   // usestate for thr forms
   const [name, setName] = useState("");
   const [categoryImage, setCategoryImage] = useState<File | string>();
   const [description, setDescription] = useState("");
-
   //   context
   const { addLoading, createCategory } = useCategory();
-
   // add category
   const handleAddCategory = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevent default form submission
@@ -30,6 +30,9 @@ export default function EditPage() {
 
     if (categoryImage instanceof File) {
       formData.append("categoryImage", categoryImage);
+    }
+    if (add_subCat) {
+      formData.append("parentCategory", add_subCat);
     }
     try {
       await createCategory(formData);
@@ -47,7 +50,16 @@ export default function EditPage() {
         <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto bg-white rounded-lg shadow p-8">
             <div className="flex justify-between items-center mb-6">
-              <h1 className="text-2xl font-bold text-gray-900">Add Category</h1>
+              {add_subCat ? (
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Add Sub Category
+                </h1>
+              ) : (
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Add Category
+                </h1>
+              )}
+
               <Link
                 href="/dashboard/category"
                 className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"

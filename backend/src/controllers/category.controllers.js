@@ -302,24 +302,27 @@ const getProductsAcoordingToCategory = async (req, res) => {
   }
 };
 
-const categoryTree = async (req, res, parentId = null) => {
+const categoryTree = async (req, res) => {
   try {
     const allCategories = await Category.find().lean();
     // recursive function to build the tree
+
     const buildTree = (categories, parentId = null) => {
-      return categories
-        .filter((cat) => {
-          if (parentId === null) return !cat.parentCategory;
-          return cat.parentCategory?.toString() === parentId.toString();
-        })
-        .map((cat) => ({
-          _id: cat._id,
-          name: cat.name,
-          slug: cat.slug,
-          description: cat.description,
-          categoryImage: cat.categoryImage,
-          children: buildTree(categories, cat._id),
-        }));
+      // Filter categories that belong to the current parent
+      const filtered = categories.filter((cat) => {
+        if (!parentId) return !cat.parentCategory;
+        return cat.parentCategory?.toString() === parentId.toString();
+      });
+
+      // Map filtered categories into nested objects
+      return filtered.map((cat) => ({
+        _id: cat._id,
+        name: cat.name,
+        slug: cat.slug,
+        description: cat.description,
+        categoryImage: cat.categoryImage,
+        children: buildTree(categories, cat._id), // Recursively find children
+      }));
     };
     const tree = buildTree(allCategories, null);
     res.status(200).json({ success: true, data: tree });

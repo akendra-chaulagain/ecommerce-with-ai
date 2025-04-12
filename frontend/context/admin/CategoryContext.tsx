@@ -90,7 +90,7 @@ export const CategoryProvider = ({ children }: iChildren) => {
     setLoading(true);
     try {
       const res = await axiosInstence.get<iCategory>(
-        `/category?page=${page}&limit=${limit}`,
+        `/category/tree?page=${page}&limit=${limit}`,
         {
           withCredentials: true, // Include credentials in the request
         }

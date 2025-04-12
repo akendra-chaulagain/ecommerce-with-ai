@@ -1,13 +1,7 @@
 "use client";
+
 import React from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+
 import {
   Pagination,
   PaginationContent,
@@ -19,10 +13,9 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { useCategory } from "@/context/admin/CategoryContext";
-import Image from "next/image";
 import Link from "next/link";
 import LoadingPage from "@/components/webiste/Loading";
-import ConfirmDialog from "@/components/dashboard/dialog";
+import CategoryTree from "@/components/dashboard/CategoryRecursiveUi";
 
 const Page = () => {
   const {
@@ -76,86 +69,10 @@ const Page = () => {
           {category?.data && category?.data.length > 0 ? (
             <>
               {/* Table with Categories */}
-              <Table>
-                <TableHeader>
-                  <TableRow className="font-bold">
-                    <TableHead>Name</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Image</TableHead>
-                    <TableHead className="text-right">Created Date</TableHead>
-                    <TableHead className="text-center">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {category?.data.map((datcategoryData) => (
-                    <TableRow key={datcategoryData._id}>
-                      <TableCell className="font-medium">
-                        {datcategoryData._id}
-                      </TableCell>
-                      <TableCell>{datcategoryData.name}</TableCell>
-                      <TableCell>{datcategoryData.description}</TableCell>
-                      <TableCell>
-                        <div className="relative w-16 h-16 rounded-full overflow-hidden mb-4">
-                          <Image
-                            src={datcategoryData.categoryImage || "/"}
-                            alt="Profile"
-                            layout="fill"
-                            objectFit="cover"
-                            className="rounded-full"
-                          />
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {new Date(datcategoryData.createdAt).toLocaleString(
-                          "en-US",
-                          {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          }
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex justify-center space-x-2">
-                          <Link
-                            href={`/dashboard/category/${datcategoryData._id}`}
-                          >
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="text-blue-600 border-blue-200 hover:bg-blue-50 hover:text-blue-700"
-                            >
-                              Edit
-                            </Button>
-                          </Link>
-                          {/* for dialog  */}
-                          {/* <Dialog/> */}
-                          <ConfirmDialog
-                            trigger={
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
-                              >
-                                Delete
-                              </Button>
-                            }
-                            title="Are you sure you want to delete ?"
-                            description="This will permanently delete the category."
-                            confirmText="Delete"
-                            cancelText="Cancel"
-                            onConfirm={() =>
-                              handleDeleteCategory(datcategoryData._id)
-                            }
-                          />
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <CategoryTree
+                categories={category.data}
+                onDelete={handleDeleteCategory}
+              />
 
               {/* Pagination */}
               <div className="p-4 bg-green-60 border-t flex justify-between items-center">
