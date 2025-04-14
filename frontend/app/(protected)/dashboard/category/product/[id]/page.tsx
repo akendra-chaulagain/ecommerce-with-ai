@@ -47,6 +47,7 @@ const ProductListingPage = () => {
   const showToast = useNotificationToast();
   // get category id from the url
   const { id } = useParams();
+
   const [product, setProduct] = useState<iProductResponse>();
   const [loading, setLoading] = useState(false);
 
@@ -100,8 +101,8 @@ const ProductListingPage = () => {
             </div>
             <div className="flex gap-3">
               <Link
-                href={""}
-                // href={`/dashboard/category/addCategory/addProduct?sub_cat_id=${category._id}`}
+                // href={"/dashboard/category/addCategory/addProduct"}
+                href={`/dashboard/category/addCategory/addProduct?sub_cat_id=${id}`}
               >
                 <Button
                   size="sm"
@@ -184,7 +185,7 @@ const ProductListingPage = () => {
                         </div>
                         <div>
                           <p className="font-medium text-gray-800">
-                            {data?.name}
+                            {data?.name.slice(0, 50)}
                           </p>
                           <p className="text-xs text-gray-500">{data?.SKU}</p>
                         </div>

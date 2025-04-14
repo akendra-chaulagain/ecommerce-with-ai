@@ -74,7 +74,7 @@ const Page = () => {
       {loading ? (
         <LoadingPage />
       ) : (
-        <div className=" mx-auto p-6 mt-10 bg-white rounded-xl shadow-md">
+        <div className=" max-w-1xl mx-auto bg-white rounded-lg shadow p-8 px-20">
           <div className="flex justify-end">
             <Link
               href={`/dashboard/category/product/${product?.data.categoryId}`}
@@ -96,13 +96,13 @@ const Page = () => {
                   <CarouselContent>
                     {product?.data?.images?.map((data, index: number) => (
                       <CarouselItem key={index} className="flex justify-center">
-                        <div className="relative w-full h-[70vh]">
+                        <div className="relative w-full h-[70vh] ">
                           {" "}
                           <Image
                             src={data}
                             alt="logo"
                             layout="fill"
-                            objectFit="cover"
+                            objectFit="content"
                             className="cursor-pointer"
                           />
                         </div>

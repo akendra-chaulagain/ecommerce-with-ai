@@ -24,8 +24,9 @@ const AddProduct = () => {
   const [material, setMaterial] = useState("");
   const [isActive, setIsActive] = useState(true);
   const [size, setSize] = useState<string[]>([]);
-  const [color, setColor] = useState<string[]>([]);
   const [newSizeOption, setNewSizeOption] = useState("");
+
+  const [color, setColor] = useState<string[]>([]);
   const [newColorOption, setNewColorOption] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -42,12 +43,13 @@ const AddProduct = () => {
     updatedImages.splice(index, 1);
     setProductImages(updatedImages);
   };
-  console.log(productImages);
+
 
   // add product
   // get categary by id from the url
   const searchParams = useSearchParams();
   const sub_cat_id = searchParams.get("sub_cat_id");
+
 
   const handleAddProduct = async (e: React.FormEvent) => {
     setLoading(true);
@@ -76,9 +78,7 @@ const AddProduct = () => {
       formData.append("categoryId", sub_cat_id);
     }
 
-    // if (productImages instanceof File) {
-    //   formData.append("images", productImages);
-    // }
+
 
     try {
       const response = await axiosInstence.post(
@@ -135,12 +135,12 @@ const AddProduct = () => {
       {loading ? (
         <LoadingPage />
       ) : (
-        <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8 mt-14">
-          <div className="max-w-4xl mx-auto bg-white rounded-lg shadow p-8">
+        <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8 ">
+          <div className="max-w-1xl mx-auto bg-white rounded-lg shadow p-8">
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-2xl font-bold text-gray-900">Add Product</h1>
               <Link
-                href="/dashboard/category"
+                href={`/dashboard/category/product/${sub_cat_id}`}
                 className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
               >
                 <X />
