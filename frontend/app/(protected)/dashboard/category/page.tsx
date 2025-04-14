@@ -16,6 +16,7 @@ import { useCategory } from "@/context/admin/CategoryContext";
 import Link from "next/link";
 import LoadingPage from "@/components/webiste/Loading";
 import CategoryTree from "@/components/dashboard/CategoryRecursiveUi";
+import { PlusIcon } from "lucide-react";
 
 const Page = () => {
   const {
@@ -47,11 +48,11 @@ const Page = () => {
         <div className="w-full mx-auto rounded-md border px-10">
           <div className="bg-white p-6 rounded-t-md border-b flex justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-gray-800">
-                Categories
+              <h2 className="text-xl font-bold text-gray-800">
+                Category Management
               </h2>
-              <p className="text-sm text-gray-500 mt-1">
-                A list of your recent product categories
+              <p className="text-sm text-gray-600 mt-1">
+                Organize your product catalog with categories and subcategories
               </p>
             </div>
             <div>
@@ -60,7 +61,7 @@ const Page = () => {
                   variant="outline"
                   className="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 hover:text-white focus:outline-none "
                 >
-                  Add New Category
+                  <PlusIcon className="w-4 h-4" /> New Category
                 </Button>
               </Link>
             </div>

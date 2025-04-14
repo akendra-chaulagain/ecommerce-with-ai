@@ -11,42 +11,42 @@ const createProduct = async (req, res) => {
   try {
     const { name, description, price, categoryId, sku, size, color } = req.body;
 
-    // if (!name) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "Name filed is required fields",
-    //   });
-    // }
-    // if (!name) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "Name filed is required fields",
-    //   });
-    // }
-    // if (!description) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "Description filed is required ",
-    //   });
-    // }
-    // if (!description) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "Name filed is required ",
-    //   });
-    // }
-    // if (!price) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "Price filed is required ",
-    //   });
-    // }
-    // if (!sku) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "SKU filed is required",
-    //   });
-    // }
+    if (!name) {
+      return res.status(400).json({
+        success: false,
+        message: "Name filed is required fields",
+      });
+    }
+    if (!name) {
+      return res.status(400).json({
+        success: false,
+        message: "Name filed is required fields",
+      });
+    }
+    if (!description) {
+      return res.status(400).json({
+        success: false,
+        message: "Description filed is required ",
+      });
+    }
+    if (!description) {
+      return res.status(400).json({
+        success: false,
+        message: "Name filed is required ",
+      });
+    }
+    if (!price) {
+      return res.status(400).json({
+        success: false,
+        message: "Price filed is required ",
+      });
+    }
+    if (!sku) {
+      return res.status(400).json({
+        success: false,
+        message: "SKU filed is required",
+      });
+    }
 
     // multiple images are save in the cloudinary and the urls are returned
     const folderName = "products";
