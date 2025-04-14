@@ -15,11 +15,11 @@ import {
 // create category route
 router.route("/create-product").post(
   // verify token
-  verifyJwt,
-  // access control
-  authorize("Admin"),
+  // verifyJwt,
+  // // access control
+  // authorize("Admin"),
   // upload image
-  upload.array("images", 4),
+  upload.array("images", 5),
   // create Product
   createProduct
 );

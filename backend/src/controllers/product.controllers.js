@@ -9,24 +9,44 @@ import { Review } from "../models/review.models.js";
 
 const createProduct = async (req, res) => {
   try {
-    const { name, description, price, categoryId } = req.body;
-    if (!name || !description || !price || !categoryId) {
-      return res.status(400).json({
-        success: false,
-        message: "Please fill the required fields",
-      });
-    }
-    // use the cloudinary upload method to upload the images to cloudinary
-    // the upload method takes the file path and an object with the folder key set to products
-    if (!req.files || req.files.length === 0) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Images are required" });
-    } else if (req.files.length > 4) {
-      return res
-        .status(400)
-        .json({ success: false, message: "You can upload up to 4 images" });
-    }
+    const { name, description, price, categoryId, sku, size, color } = req.body;
+
+    // if (!name) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Name filed is required fields",
+    //   });
+    // }
+    // if (!name) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Name filed is required fields",
+    //   });
+    // }
+    // if (!description) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Description filed is required ",
+    //   });
+    // }
+    // if (!description) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Name filed is required ",
+    //   });
+    // }
+    // if (!price) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Price filed is required ",
+    //   });
+    // }
+    // if (!sku) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "SKU filed is required",
+    //   });
+    // }
 
     // multiple images are save in the cloudinary and the urls are returned
     const folderName = "products";
@@ -35,13 +55,15 @@ const createProduct = async (req, res) => {
       req.files,
       folderName
     );
-
     const product = new Product({
       name,
       description,
       price,
       categoryId,
       images: uploadImages,
+      sku,
+      size,
+      color,
     });
     const productcreated = await product.save();
     return res.status(201).json({
