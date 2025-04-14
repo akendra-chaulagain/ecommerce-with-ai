@@ -289,6 +289,9 @@ const getProductsAcoordingToCategory = async (req, res) => {
           as: "products",
         },
       },
+      // {
+      //   $unwind: "$products", // Optional: to avoid array of category
+      // },
     ]);
 
     return res

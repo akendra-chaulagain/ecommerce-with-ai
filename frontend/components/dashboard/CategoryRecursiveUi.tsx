@@ -115,18 +115,10 @@ const CategoryItem = ({
             </Link>
 
             {/* Add Product */}
-            <Link
-              href={`/dashboard/category/addCategory/addProduct?sub_cat_id=${category._id}`}
-            >
-              <Button size="sm" variant="outline" className="gap-1">
-                <PackagePlusIcon className="w-4 h-4" />
-                <span className="hidden sm:inline">Add Product</span>
-              </Button>
-            </Link>
-
+           
             <div className="flex bg-gray-100 rounded-md divide-x divide-gray-200">
               {/* View Products */}
-              <Link href={`/dashboard/category/${category._id}`}>
+              <Link href={`/dashboard/category/product/${category._id}`}>
                 <Button
                   size="sm"
                   variant="ghost"
@@ -138,7 +130,7 @@ const CategoryItem = ({
               </Link>
 
               {/* Edit */}
-              <Link href={`/dashboard/category/${category._id}`}>
+              <Link href={`/dashboard/category/edit/${category._id}`}>
                 <Button
                   size="sm"
                   variant="ghost"

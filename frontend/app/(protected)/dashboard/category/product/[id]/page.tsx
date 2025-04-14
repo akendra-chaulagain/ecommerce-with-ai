@@ -67,6 +67,8 @@ const ProductListingPage = () => {
     getProductData();
   }, [id]);
 
+  
+
   return (
     <>
       {loading ? (
@@ -192,7 +194,10 @@ const ProductListingPage = () => {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-2">
-                        <Link href="/dashboard/products/view/1">
+                        {/* http://localhost:3000/dashboard/category/product/view/123 */}
+                        <Link
+                          href={`/dashboard/category/product/view/${data._id}`}
+                        >
                           <Button
                             size="sm"
                             variant="ghost"
