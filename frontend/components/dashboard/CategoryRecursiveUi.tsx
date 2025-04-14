@@ -115,7 +115,7 @@ const CategoryItem = ({
             </Link>
 
             {/* Add Product */}
-           
+
             <div className="flex bg-gray-100 rounded-md divide-x divide-gray-200">
               {/* View Products */}
               <Link href={`/dashboard/category/product/${category._id}`}>

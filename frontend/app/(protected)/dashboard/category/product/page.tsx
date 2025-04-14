@@ -67,6 +67,8 @@ const ProductListingPage = () => {
     getProductData();
   }, [id]);
 
+
+
   return (
     <>
       {loading ? (

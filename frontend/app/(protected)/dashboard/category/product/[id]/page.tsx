@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -18,6 +18,7 @@ import ConfirmDialog from "@/components/dashboard/dialog";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { useParams } from "next/navigation";
 import LoadingPage from "@/components/webiste/Loading";
+import { useNotificationToast } from "@/hooks/toast";
 
 interface Product {
   name: string;
@@ -43,31 +44,43 @@ interface iProductResponse {
 }
 
 const ProductListingPage = () => {
+  const showToast = useNotificationToast();
   // get category id from the url
   const { id } = useParams();
   const [product, setProduct] = useState<iProductResponse>();
   const [loading, setLoading] = useState(false);
 
-  // get  product accordinbg to the category id
-
-  useEffect(() => {
-    // Fetch product data when the component mounts or when the category ID changes
-    const getProductData = async () => {
-      setLoading(true);
-      try {
-        const response = await axiosInstence.get(`/category/${id}`);
-        setProduct(response.data.products[0]);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching product data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getProductData();
+  const getProductData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await axiosInstence.get(`/category/${id}`);
+      setProduct(response.data.products[0]);
+    } catch (error) {
+      console.error("Error fetching product data:", error);
+    } finally {
+      setLoading(false);
+    }
   }, [id]);
 
-  
+  useEffect(() => {
+    getProductData();
+  }, [getProductData]);
+
+  // delete product
+  const handledelete = async (productId: string) => {
+    setLoading(true);
+    try {
+      await axiosInstence.delete(`/product/delete-product/${productId}`, {
+        withCredentials: true,
+      });
+      showToast("Product deleted successfully");
+      getProductData();
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -218,6 +231,7 @@ const ProductListingPage = () => {
                         <ConfirmDialog
                           trigger={
                             <Button
+                              // onClick={handledelete(data._id)}
                               size="sm"
                               variant="ghost"
                               className="h-8 w-8 p-0 text-red-600"
@@ -229,7 +243,9 @@ const ProductListingPage = () => {
                           description="Are you sure you want to delete this product? This action cannot be undone."
                           confirmText="Delete"
                           cancelText="Cancel"
-                          onConfirm={() => {}}
+                          onConfirm={() => {
+                            handledelete(data._id);
+                          }}
                         />
                       </div>
                     </td>

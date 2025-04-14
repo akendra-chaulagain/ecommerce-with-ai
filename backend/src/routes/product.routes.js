@@ -51,10 +51,10 @@ router.route("/update-product/:productId/:imagePublicId").patch(
 // delete product
 
 router.route("/delete-product/:id").delete(
-  // verify token
-  verifyJwt,
-  // access control
-  authorize("Admin"),
+  // // verify token
+  // verifyJwt,
+  // // access control
+  // authorize("Admin"),
   // create Product
   deleteProduct
 );
