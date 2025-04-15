@@ -5,47 +5,39 @@ import {
   updatePhoto,
   uploadMultipleImagesToCloudinary,
 } from "../utils/cloudinary.js";
-import { Review } from "../models/review.models.js";
 
 const createProduct = async (req, res) => {
-  try {
-    const { name, description, price, categoryId, sku, size, color } = req.body;
+  // console.log(req.body);
 
-    if (!name) {
-      return res.status(400).json({
-        success: false,
-        message: "Name filed is required fields",
-      });
-    }
-    if (!name) {
-      return res.status(400).json({
-        success: false,
-        message: "Name filed is required fields",
-      });
-    }
-    if (!description) {
-      return res.status(400).json({
-        success: false,
-        message: "Description filed is required ",
-      });
-    }
-    if (!description) {
-      return res.status(400).json({
-        success: false,
-        message: "Name filed is required ",
-      });
-    }
-    if (!price) {
-      return res.status(400).json({
-        success: false,
-        message: "Price filed is required ",
-      });
-    }
-    if (!sku) {
-      return res.status(400).json({
-        success: false,
-        message: "SKU filed is required",
-      });
+  try {
+    const {
+      name,
+      description,
+      price,
+      categoryId,
+      sku,
+      size,
+      color,
+      brand,
+      specifications,
+      gender,
+      material,
+    } = req.body;
+
+    const requiredFields = [
+      { field: name, fieldName: "Name" },
+      { field: description, fieldName: "Description" },
+      { field: price, fieldName: "Price" },
+      { field: sku, fieldName: "SKU" },
+    ];
+
+    for (const { field, fieldName } of requiredFields) {
+      if (!field) {
+        return res.status(400).json({
+          success: false,
+          message: `${fieldName} field is required`,
+        });
+      }
     }
 
     // multiple images are save in the cloudinary and the urls are returned
@@ -64,6 +56,10 @@ const createProduct = async (req, res) => {
       sku,
       size,
       color,
+      brand,
+      specifications,
+      gender,
+      material,
     });
     const productcreated = await product.save();
     return res.status(201).json({
@@ -82,7 +78,20 @@ const createProduct = async (req, res) => {
 
 const editProduct = async (req, res) => {
   try {
-    const { name, description, price, categoryId, size, color } = req.body;
+    const {
+      name,
+      description,
+      price,
+      categoryId,
+      sku,
+      size,
+      color,
+      brand,
+      specifications,
+      gender,
+      material,
+      discountPrice,
+    } = req.body;
     const { id } = req.params;
 
     // find user by req.params.id
@@ -94,21 +103,13 @@ const editProduct = async (req, res) => {
       });
     }
 
-    const productImage = await Product.findById(id);
-    if (productImage.images.length + req.files.length <= 4) {
-      // add images
-      const folderName = "products";
-      const uploadedImages = await uploadMultipleImagesToCloudinary(
-        req.files,
-        folderName
-      );
-      // Append new images to the existing array (instead of replacing)
-      productImage.images.push(...uploadedImages);
-      // Save the updated product without validation errors
-      await productImage.save({ validateBeforeSave: false });
-    }
+    // multiple images are save in the cloudinary and the urls are returned
+    const folderName = "products";
 
-    // console.log(productImage.images.length);
+    const uploadImages = await uploadMultipleImagesToCloudinary(
+      req.files,
+      folderName
+    );
 
     const updatedProducts = await Product.findByIdAndUpdate(
       id,
@@ -117,8 +118,15 @@ const editProduct = async (req, res) => {
         description,
         price,
         categoryId,
+        sku,
         size,
         color,
+        brand,
+        specifications,
+        gender,
+        material,
+        discountPrice,
+        images: uploadImages,
       },
       { new: true },
       { varlidateBeforeSave: true }
@@ -131,59 +139,6 @@ const editProduct = async (req, res) => {
       success: true,
       message,
       product: updatedProducts,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-      error: error.message,
-    });
-  }
-};
-
-// update product images
-const editProductImage = async (req, res) => {
-  try {
-    const { productId, imagePublicId } = req.params;
-
-    // update images
-    const folderName = "products";
-    const localImage = req.file.path;
-    // console.log(localImage);
-
-    const uploadResponse = await updatePhoto(
-      imagePublicId,
-      localImage,
-      folderName
-    );
-
-    const product = await Product.findById(productId);
-
-    // Find index of the image to update
-    const imageIndex = product.images.findIndex((img) =>
-      img.includes(imagePublicId)
-    );
-
-    if (imageIndex === -1) {
-      return res.status(404).json({
-        success: false,
-        message: "Image not found in product",
-      });
-    }
-
-    // Replace the specific image in the array
-    product.images[imageIndex] = uploadResponse.secure_url;
-
-    // Save the updated product
-    await product.save({ validateBeforeSave: false });
-
-    const updatedFields = Object.keys(req.body).join(", ");
-    const message = ` ${updatedFields} updated successfully.`;
-
-    return res.status(200).json({
-      success: true,
-      message,
-      product,
     });
   } catch (error) {
     return res.status(500).json({
@@ -253,7 +208,6 @@ const productDetails = async (req, res) => {
 export {
   createProduct,
   editProduct,
-  editProductImage,
   deleteProduct,
   getAllproducts,
   productDetails,

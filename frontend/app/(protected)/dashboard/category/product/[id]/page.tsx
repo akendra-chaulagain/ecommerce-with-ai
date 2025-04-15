@@ -220,7 +220,7 @@ const ProductListingPage = () => {
                             <EyeIcon className="h-4 w-4" />
                           </Button>
                         </Link>
-                        <Link href="/dashboard/products/edit/1">
+                        <Link href={`/dashboard/category/product/editProduct/${data._id}`}>
                           <Button
                             size="sm"
                             variant="ghost"

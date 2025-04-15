@@ -44,12 +44,10 @@ const AddProduct = () => {
     setProductImages(updatedImages);
   };
 
-
   // add product
   // get categary by id from the url
   const searchParams = useSearchParams();
   const sub_cat_id = searchParams.get("sub_cat_id");
-
 
   const handleAddProduct = async (e: React.FormEvent) => {
     setLoading(true);
@@ -78,8 +76,6 @@ const AddProduct = () => {
       formData.append("categoryId", sub_cat_id);
     }
 
-
-
     try {
       const response = await axiosInstence.post(
         "/product/create-product",
@@ -92,9 +88,7 @@ const AddProduct = () => {
         }
       );
       console.log(response.data);
-      // Handle success response here
-      // For example, you can show a success message or redirect the user
-      // to another page
+
       setName("");
       setDescription("");
       setPrice("");

@@ -1,11 +1,42 @@
 "use client";
+import { axiosInstence } from "@/hooks/axiosInstence";
 import { PlusCircle, Trash2, X } from "lucide-react";
 import Image from "next/image";
-import React, { useState } from "react";
+import { useParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
+
+interface iProduct {
+  data: iProductDetails;
+  message: string;
+}
+interface iProductDetails {
+  id: string;
+  name: string;
+  description: string;
+  price: string;
+  category: string;
+  brand: string;
+  color: string;
+  size: string[];
+  material: string;
+  specifications: string;
+  status: string;
+  sku: string;
+  discountPrice: string;
+  isActive: boolean;
+  gender: string[];
+  categoryId: string;
+  images: string[];
+  newSizeOption: string;
+  newColorOption: string;
+}
 
 const Page = () => {
+  const { id } = useParams();
+  const [productDetails, setProductDetails] = useState<iProduct>();
   const [size, setSize] = useState<string[]>([]);
   const [newSizeOption, setNewSizeOption] = useState("");
+  const [existingImages, setExistingImages] = useState<string[]>([]);
   const [productImages, setProductImages] = useState<File[]>([]);
   const [color, setColor] = useState<string[]>([]);
   const [newColorOption, setNewColorOption] = useState("");
@@ -17,26 +48,40 @@ const Page = () => {
     }
   };
 
-  const removeImage = (index: number) => {
-    const updatedImages = [...productImages];
-    updatedImages.splice(index, 1);
-    setProductImages(updatedImages);
+  const removeExistingImage = (index: number) => {
+    const updated = [...existingImages];
+    updated.splice(index, 1);
+    setExistingImages(updated);
   };
-  const [product, setProduct] = useState({
+
+  const removeNewImage = (index: number) => {
+    const updated = [...productImages];
+    updated.splice(index, 1);
+    setProductImages(updated);
+  };
+
+  const [product, setProduct] = useState<iProductDetails>({
+    id: "",
     name: "",
     description: "",
     price: "",
-    discountPrice: "",
+    category: "",
     brand: "",
+    color: "",
+    size: [],
+    material: "",
+    specifications: "",
+    status: "",
     sku: "",
-    material: " ",
-    gender: " ",
+    discountPrice: "",
+    isActive: false,
+    gender: [""],
+    categoryId: "",
+    images: [],
     newSizeOption: "",
     newColorOption: "",
-    specifications: "",
-    isActive: false,
-    images: [],
   });
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -46,9 +91,68 @@ const Page = () => {
     setProduct((prev) => ({ ...prev, [name]: value }));
   };
 
+  // get product details by id
+  useEffect(() => {
+    const fetchDataFromId = async () => {
+      try {
+        const response = await axiosInstence.get<iProduct>(
+          `/product/product-details/${id}`,
+          {
+            withCredentials: true,
+          }
+        );
+        setProductDetails(response.data);
+        const productData = response.data.data;
+        setProduct({
+          ...productData,
+        });
+
+        setSize(productData.size);
+        setColor([productData.color]);
+        setExistingImages(productData.images); // or productData.images, based on your API
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchDataFromId();
+  }, [id]);
+
+  // update product
+  const handleUpdateProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await axiosInstence.put(
+        `/product/update-product/${id}`,
+        {
+          ...product,
+          size: size.flat(),
+          color: color.flat(), // flattens in case there's any nesting
+
+          // images: productImages,
+        },
+        { withCredentials: true }
+      );
+      if (productImages.length > 0) {
+        const formData = new FormData();
+        productImages.forEach((image) => {
+          formData.append("images", image);
+        });
+        await axiosInstence.post(
+          `/product/upload-images/${id}`,
+          formData,
+          { withCredentials: true }
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  console.log("product", product);
+  
+
   return (
     <>
-      <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8 mt-14">
+      <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8 ">
         <div className="max-w-1xl mx-auto bg-white rounded-lg shadow p-8">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold text-gray-900">Edit Product</h1>
@@ -236,8 +340,8 @@ const Page = () => {
                 <input
                   name="size"
                   type="text"
-                  value={product.newSizeOption}
-                  onChange={handleChange}
+                  value={newSizeOption}
+                  onChange={(e) => setNewSizeOption(e.target.value)}
                   className="flex-grow px-4 py-2 border border-gray-300 rounded-l-md focus:ring-red-500 focus:border-red-500"
                   placeholder="Enter size (e.g. S, M, L)"
                 />
@@ -281,8 +385,8 @@ const Page = () => {
                 <input
                   name="color"
                   type="text"
-                  value={product.newColorOption}
-                  onChange={handleChange}
+                  value={newColorOption}
+                  onChange={(e) => setNewColorOption(e.target.value)}
                   className="flex-grow px-4 py-2 border border-gray-300 rounded-l-md focus:ring-red-500 focus:border-red-500"
                   placeholder="Enter color (Red, Blue, Green, etc.)"
                 />
@@ -323,23 +427,47 @@ const Page = () => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Product Images (Max 5)
               </label>
-              <div className="flex flex-wrap items-center gap-4">
-                {/* Display uploaded images */}
+
+              <div className="flex flex-wrap gap-3">
+                {/* EXISTING images from DB */}
+                {existingImages.map((image, index) => (
+                  <div
+                    key={`existing-${index}`}
+                    className="relative w-24 h-24 bg-gray-200 rounded overflow-hidden"
+                  >
+                    <Image
+                      width={100}
+                      height={100}
+                      src={image}
+                      alt={`Existing image ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeExistingImage(index)}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))}
+
+                {/* NEW uploaded images */}
                 {productImages.map((image, index) => (
                   <div
-                    key={index}
+                    key={`new-${index}`}
                     className="relative w-24 h-24 bg-gray-200 rounded overflow-hidden"
                   >
                     <Image
                       width={100}
                       height={100}
                       src={URL.createObjectURL(image)}
-                      alt={`Product image ${index + 1}`}
+                      alt={`New image ${index + 1}`}
                       className="w-full h-full object-cover"
                     />
                     <button
                       type="button"
-                      onClick={() => removeImage(index)}
+                      onClick={() => removeNewImage(index)}
                       className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
                     >
                       <Trash2 size={14} />
@@ -348,7 +476,7 @@ const Page = () => {
                 ))}
 
                 {/* Upload button */}
-                {productImages.length < 5 && (
+                {existingImages.length + productImages.length < 5 && (
                   <label className="w-24 h-24 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded cursor-pointer hover:bg-gray-50">
                     <PlusCircle className="text-gray-400" />
                     <span className="text-xs text-gray-500 mt-1">
@@ -359,13 +487,13 @@ const Page = () => {
                       multiple
                       name="images"
                       className="hidden"
-                      // key={productImages.length}
                       accept="image/*"
                       onChange={handleImageUpload}
                     />
                   </label>
                 )}
               </div>
+
               <span className="text-red-600 text-xs mt-2 block">
                 Upload up to 5 high-quality images of your product. First image
                 will be the main display image.
@@ -409,6 +537,15 @@ const Page = () => {
               </div>
             </div>
             {/* {error && <div className="mb-4 text-red-600 text-sm"> {error}</div>} */}
+            {/* Save Button */}
+            <div className="flex justify-end">
+              <button
+                onClick={handleUpdateProduct}
+                className="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+              >
+                Save Changes
+              </button>
+            </div>
           </form>
         </div>
       </div>

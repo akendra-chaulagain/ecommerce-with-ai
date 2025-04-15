@@ -7,7 +7,6 @@ import {
   createProduct,
   deleteProduct,
   editProduct,
-  editProductImage,
   getAllproducts,
   productDetails,
 } from "../controllers/product.controllers.js";
@@ -25,27 +24,15 @@ router.route("/create-product").post(
 );
 
 // edit product route
-router.route("/update-product/:id").patch(
-  // verify token
-  verifyJwt,
-  // access control
-  authorize("Admin"),
+router.route("/update-product/:id").put(
+  // // verify token
+  // verifyJwt,
+  // // access control
+  // authorize("Admin"),
   // upload image
-  upload.array("images", 4),
+  upload.array("images", 5),
   // create Product
   editProduct
-);
-
-// update product images
-router.route("/update-product/:productId/:imagePublicId").patch(
-  // verify token
-  verifyJwt,
-  // access control
-  authorize("Admin"),
-  // upload image
-  upload.single("images"),
-  // create Product
-  editProductImage
 );
 
 // delete product
