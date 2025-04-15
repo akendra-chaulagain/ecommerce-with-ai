@@ -161,6 +161,18 @@ const editProduct = async (req, res) => {
     });
   }
 };
+// delete image
+const deleteImgae = async (req, res) => {
+  try {
+    const imageId  = req.params.id;
+    console.log(imageId);
+  } catch (error) {
+    return res.status(401).json({
+      message: "server error while deleting product",
+      message: error.message,
+    });
+  }
+};
 
 // delete product
 const deleteProduct = async (req, res) => {
@@ -168,12 +180,12 @@ const deleteProduct = async (req, res) => {
     const { id } = req.params;
     const product = await Product.findById(id);
 
-    // if (product.images && product.images.length > 0) {
-    //   for (const image of product.images) {
-    //     const publicId = image.split("/").pop().split(".")[0]; // Extract publicId
-    //     await cloudinary.uploader.destroy(`products/${publicId}`);
-    //   }
-    // }
+    if (product.images && product.images.length > 0) {
+      for (const image of product.images) {
+        const publicId = image.split("/").pop().split(".")[0]; // Extract publicId
+        await cloudinary.uploader.destroy(`products/${publicId}`);
+      }
+    }
     const deletedproduct = await Product.findByIdAndDelete(id);
     return res.status(200).json({ message: "product deleted", deletedproduct });
   } catch (error) {
@@ -224,4 +236,5 @@ export {
   deleteProduct,
   getAllproducts,
   productDetails,
+  deleteImgae,
 };

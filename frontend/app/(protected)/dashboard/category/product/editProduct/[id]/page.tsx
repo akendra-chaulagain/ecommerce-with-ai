@@ -60,11 +60,11 @@ const Page = () => {
     setExistingImages(updated);
   };
 
-  const removeNewImage = (index: number) => {
-    const updated = [...productImages];
-    updated.splice(index, 1);
-    setProductImages(updated);
-  };
+  // const removeNewImage = (index: number) => {
+  //   const updated = [...productImages];
+  //   updated.splice(index, 1);
+  //   setProductImages(updated);
+  // };
 
   const [product, setProduct] = useState<iProductDetails>({
     id: "",
@@ -178,6 +178,15 @@ const Page = () => {
       console.log(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleImage = async (image) => {
+    const imageId = image.split("/").pop().split(".")[0];
+    try {
+      await axiosInstence.delete(`/product/delete-image/${imageId}`);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -488,34 +497,11 @@ const Page = () => {
                         onClick={() => removeExistingImage(index)}
                         className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
                       >
-                        <Trash2 size={14} />
+                        <Trash2 size={14} onClick={() => handleImage(image)} />
                       </button>
                     </div>
                   ))}
-
                   {/* NEW uploaded images */}
-                  {productImages.map((image, index) => (
-                    <div
-                      key={`new-${index}`}
-                      className="relative w-24 h-24 bg-gray-200 rounded overflow-hidden"
-                    >
-                      <Image
-                        width={100}
-                        height={100}
-                        src={URL.createObjectURL(image)}
-                        alt={`New image ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeNewImage(index)}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
-                  ))}
-
                   {/* Upload button */}
                   {existingImages.length + productImages.length < 5 && (
                     <label className="w-24 h-24 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded cursor-pointer hover:bg-gray-50">

@@ -5,6 +5,7 @@ import { authorize, verifyJwt } from "../middleware/auth.middleware.js";
 import { upload } from "../middleware/multer.middleware.js";
 import {
   createProduct,
+  deleteImgae,
   deleteProduct,
   editProduct,
   getAllproducts,
@@ -55,16 +56,21 @@ router.route("/").get(
   getAllproducts
 );
 
-
-
-
-
 // productDetails
 router.route("/product-details/:id").get(
   // verify token
 
   // create Product
   productDetails
+);
+
+// delete image
+
+router.route("/delete-image/:id").delete(
+  // verify token
+
+  // create Product
+  deleteImgae
 );
 
 export default router;
