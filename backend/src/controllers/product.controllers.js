@@ -29,6 +29,8 @@ const createProduct = async (req, res) => {
       { field: description, fieldName: "Description" },
       { field: price, fieldName: "Price" },
       { field: sku, fieldName: "SKU" },
+      { field: color, fieldName: "color" },
+      { field: size, fieldName: "size" },
     ];
 
     for (const { field, fieldName } of requiredFields) {
@@ -84,17 +86,21 @@ const editProduct = async (req, res) => {
       price,
       categoryId,
       sku,
-      size,
-      color,
+
       brand,
       specifications,
       gender,
       material,
       discountPrice,
+      size,
+      color,
     } = req.body;
+    // const size = JSON.parse(req.body.size);
+    // const color = JSON.parse(req.body.color);
+
     const { id } = req.params;
 
-    // find user by req.params.id
+    // Find the product
     const product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({
@@ -103,15 +109,20 @@ const editProduct = async (req, res) => {
       });
     }
 
-    // multiple images are save in the cloudinary and the urls are returned
     const folderName = "products";
+    let uploadImages = product.images; // start with existing images
 
-    const uploadImages = await uploadMultipleImagesToCloudinary(
-      req.files,
-      folderName
-    );
+    // Upload new images if provided and merge them
+    if (req.files && req.files.length > 0) {
+      const newImages = await uploadMultipleImagesToCloudinary(
+        req.files,
+        folderName
+      );
+      uploadImages = [...product.images, ...newImages];
+    }
 
-    const updatedProducts = await Product.findByIdAndUpdate(
+    // Update the product
+    const updatedProduct = await Product.findByIdAndUpdate(
       id,
       {
         name,
@@ -128,17 +139,19 @@ const editProduct = async (req, res) => {
         discountPrice,
         images: uploadImages,
       },
-      { new: true },
-      { varlidateBeforeSave: true }
+      {
+        new: true, // return the updated document
+        validateBeforeSave: true,
+      }
     );
 
     const updatedFields = Object.keys(req.body).join(", ");
-    const message = ` ${updatedFields} updated successfully.`;
+    const message = `${updatedFields} updated successfully.`;
 
     return res.status(200).json({
       success: true,
       message,
-      product: updatedProducts,
+      product: updatedProduct,
     });
   } catch (error) {
     return res.status(500).json({

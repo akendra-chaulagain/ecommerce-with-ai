@@ -55,6 +55,10 @@ router.route("/").get(
   getAllproducts
 );
 
+
+
+
+
 // productDetails
 router.route("/product-details/:id").get(
   // verify token
