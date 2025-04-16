@@ -223,10 +223,26 @@ const deleteReview = async (req, res) => {
     });
   }
 };
+const getAllReview = async (req, res) => {
+  try {
+    const response = await Review.find();
+    return res.status(200).json({
+      message: "Review",
+
+      data: response,
+    });
+  } catch (error) {
+    return res.status(401).json({
+      message: "server error while fetching review",
+      message: error.message,
+    });
+  }
+};
 
 export {
   createReview,
   getAllReviewAccordingToProduct,
   editReview,
   deleteReview,
+  getAllReview,
 };

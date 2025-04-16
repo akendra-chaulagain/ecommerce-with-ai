@@ -6,6 +6,7 @@ import {
   createReview,
   deleteReview,
   editReview,
+  getAllReview,
   getAllReviewAccordingToProduct,
 } from "../controllers/review.controllers.js";
 
@@ -40,5 +41,8 @@ router.route("/delete-review/:id").delete(
   authorize("Admin", "User"),
   deleteReview
 );
+
+// get all review
+router.route("/").get(getAllReview);
 
 export default router;

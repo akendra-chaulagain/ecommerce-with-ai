@@ -202,9 +202,7 @@ export default function OrdersPage() {
                             <p className="text-sm text-gray-600">
                               Size: {data.size} | Color: {data.color}
                             </p>
-                            <p className="text-[12px] font-semibold">
-                              quantity; {data?.quantity}
-                            </p>
+                           
                           </div>
                           <div className="font-medium">${data.price}</div>
                         </div>

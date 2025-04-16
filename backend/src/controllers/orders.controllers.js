@@ -171,22 +171,7 @@ const getOrderDetails = async (req, res) => {
         },
       },
 
-      // $group: {
-      //   _id: "$_id",
-      //   userId: { $first: "$userId" },
-      //   orderId: { $first: "$orderId" },
-      //   totalPrice: { $first: "$totalPrice" },
-      //   shippingAddress: { $first: "$shippingAddress" },
-      //   orderStatus: { $first: "$orderStatus" },
-      //   paymentStatus: { $first: "$paymentStatus" },
-      //   transactionId: { $first: "$transactionId" },
-      //   taxAmount: { $first: "$taxAmount" },
-      //   deliveryDate: { $first: "$deliveryDate" },
-      //   createdAt: { $first: "$createdAt" },
-      //   updatedAt: { $first: "$updatedAt" },
 
-      //   products: { $push: "$products" }, // includes details
-      // },
       {
         $group: {
           _id: "$_id",

@@ -1,5 +1,5 @@
 "use client";
-import {  Home, Inbox, ListOrdered, Search, Settings } from "lucide-react";
+import {  Home, Inbox, ListOrdered, Newspaper,  Settings } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -32,9 +32,9 @@ const items = [
     icon: ListOrdered,
   },
   {
-    title: "Search",
-    url: "#",
-    icon: Search,
+    title: "Review",
+    url: "/dashboard/review",
+    icon: Newspaper,
   },
   {
     title: "Settings",

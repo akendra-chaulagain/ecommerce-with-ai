@@ -1,18 +1,22 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   EyeIcon,
+  Trash2Icon,
   PlusIcon,
+  PencilIcon,
   Search,
   ShoppingBag,
   ArrowLeft,
   ArrowRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ConfirmDialog from "@/components/dashboard/dialog";
+import { axiosInstence } from "@/hooks/axiosInstence";
 
 import LoadingPage from "@/components/webiste/Loading";
-
+import { useNotificationToast } from "@/hooks/toast";
 import { useOrder } from "@/context/admin/OrderContext";
 const formatDate = (dateStr: string) => {
   return new Date(dateStr).toLocaleDateString("en-US", {
@@ -23,12 +27,52 @@ const formatDate = (dateStr: string) => {
 };
 
 const ProductListingPage = () => {
+  const showToast = useNotificationToast();
+
   //   get order list
   const { getOrderLoading, order } = useOrder();
+  const [review, setReview] = useState([]);
+
+  const [loading, setLoading] = useState(false);
+
+  // delete product
+  const handledelete = async (productId: string) => {
+    setLoading(true);
+    try {
+      await axiosInstence.delete(`/product/delete-product/${productId}`, {
+        withCredentials: true,
+      });
+      showToast("Product deleted successfully");
+      //   getProductData();
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //   get review
+
+  useEffect(() => {
+    // Define the fetchReview function inside the useEffect
+    const fetchReview = async () => {
+      try {
+        const response = await axiosInstence.get("/review", {
+          withCredentials: true,
+        });
+        setReview(response.data.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchReview();
+  }, []);
+  console.log(review);
 
   return (
     <>
-      {getOrderLoading ? (
+      {getOrderLoading || loading ? (
         <LoadingPage />
       ) : (
         <div className="w-full mx-auto rounded-xl border shadow-sm bg-white">
@@ -36,9 +80,10 @@ const ProductListingPage = () => {
 
           {/* Filter Bar */}
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 p-4 border-b bg-gray-50">
+            {/* Category Filter */}
             <div>
               <h2 className="text-xl font-bold text-gray-800">
-                Order Management
+                Review Management
               </h2>
               <p className="text-sm text-gray-600 mt-1">
                 Manage your product inventory
@@ -94,8 +139,8 @@ const ProductListingPage = () => {
               <tbody className="divide-y divide-gray-200">
                 {/* {
                 order?.map((data, index: number) => ( */}
-                {order && order.length > 0 ? (
-                  order.map((data, index: number) => (
+                {review && review.length > 0 ? (
+                  review.map((data, index: number) => (
                     <tr className="hover:bg-gray-50" key={index}>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
@@ -141,7 +186,36 @@ const ProductListingPage = () => {
                               <EyeIcon className="h-4 w-4" />
                             </Button>
                           </Link>
-                         
+                          <Link
+                            href={`/dashboard/category/product/editProduct/${data._id}`}
+                          >
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-8 w-8 p-0 text-amber-600"
+                            >
+                              <PencilIcon className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                          <ConfirmDialog
+                            trigger={
+                              <Button
+                                // onClick={handledelete(data._id)}
+                                size="sm"
+                                variant="ghost"
+                                className="h-8 w-8 p-0 text-red-600"
+                              >
+                                <Trash2Icon className="h-4 w-4" />
+                              </Button>
+                            }
+                            title="Delete Product"
+                            description="Are you sure you want to delete this product? This action cannot be undone."
+                            confirmText="Delete"
+                            cancelText="Cancel"
+                            onConfirm={() => {
+                              handledelete(data._id);
+                            }}
+                          />
                         </div>
                       </td>
                     </tr>
