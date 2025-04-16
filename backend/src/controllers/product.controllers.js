@@ -164,8 +164,22 @@ const editProduct = async (req, res) => {
 // delete image
 const deleteImgae = async (req, res) => {
   try {
-    const imageId  = req.params.id;
-    console.log(imageId);
+    const imageId = req.params.id;
+    const productId = req.query.productId;
+    const imageUrl = req.query.imageUrl;
+
+    // find product
+    if (imageId) {
+      await cloudinary.uploader.destroy(`products/${imageId}`);
+    }
+
+    await Product.findByIdAndUpdate(productId, {
+      $pull: {
+        images: imageUrl,
+      },
+    });
+
+    return res.status(200).json("Image deleted");
   } catch (error) {
     return res.status(401).json({
       message: "server error while deleting product",

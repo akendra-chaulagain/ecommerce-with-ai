@@ -1,8 +1,10 @@
 "use client";
+import ConfirmDialog from "@/components/dashboard/dialog";
+import { Button } from "@/components/ui/button";
 import LoadingPage from "@/components/webiste/Loading";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { useNotificationToast } from "@/hooks/toast";
-import { set } from "date-fns";
+
 import { PlusCircle, Trash2, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,7 +16,7 @@ interface iProduct {
   message: string;
 }
 interface iProductDetails {
-  id: string;
+  _id: string;
   name: string;
   description: string;
   price: string;
@@ -60,14 +62,8 @@ const Page = () => {
     setExistingImages(updated);
   };
 
-  // const removeNewImage = (index: number) => {
-  //   const updated = [...productImages];
-  //   updated.splice(index, 1);
-  //   setProductImages(updated);
-  // };
-
   const [product, setProduct] = useState<iProductDetails>({
-    id: "",
+    _id: "",
     name: "",
     description: "",
     price: "",
@@ -181,12 +177,21 @@ const Page = () => {
     }
   };
 
-  const handleImage = async (image) => {
-    const imageId = image.split("/").pop().split(".")[0];
+  const handleImage = async (image: string) => {
+    const imageId = image?.split("/")?.pop()?.split(".")[0];
+    setLoading(true);
+
     try {
-      await axiosInstence.delete(`/product/delete-image/${imageId}`);
+      await axiosInstence.delete(
+        `/product/delete-image/${imageId}?productId=${product._id}&imageUrl=${image}`
+      );
+      showToast("Image deleted");
+      setLoading(false);
+      fetchDataFromId();
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -494,10 +499,18 @@ const Page = () => {
                       />
                       <button
                         type="button"
-                        onClick={() => removeExistingImage(index)}
                         className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
                       >
-                        <Trash2 size={14} onClick={() => handleImage(image)} />
+                        <ConfirmDialog
+                          trigger={<Trash2 className="h-4 w-4" />}
+                          title="Delete Image"
+                          description="Are you sure you want to delete this image? This action cannot be undone."
+                          confirmText="Delete"
+                          cancelText="Cancel"
+                          onConfirm={() => {
+                            handleImage(image); // This will be executed if the user confirms
+                          }}
+                        />
                       </button>
                     </div>
                   ))}
