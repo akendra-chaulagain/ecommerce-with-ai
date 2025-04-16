@@ -35,7 +35,7 @@ function Page() {
   }, []);
 
   // Usage
-  console.log(order);
+  
   
 
   return (

@@ -1,5 +1,5 @@
 "use client";
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import {  Home, Inbox, ListOrdered, Search, Settings } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -27,9 +27,9 @@ const items = [
     icon: Inbox,
   },
   {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
+    title: "Order",
+    url: "/dashboard/order",
+    icon: ListOrdered,
   },
   {
     title: "Search",

@@ -1,6 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
-import Image from "next/image";
+import React, { useState } from "react";
 import Link from "next/link";
 import {
   EyeIcon,
@@ -19,54 +18,24 @@ import { axiosInstence } from "@/hooks/axiosInstence";
 import { useParams } from "next/navigation";
 import LoadingPage from "@/components/webiste/Loading";
 import { useNotificationToast } from "@/hooks/toast";
-
-interface Product {
-  name: string;
-  SKU: string;
-  images: string[];
-  isActive: boolean;
-  price: number;
-  brand: string;
-  size: [string];
-  gender: string;
-  description: string;
-  category: string;
-  categoryId: string;
-  _id: string;
-  color: [string];
-}
-interface iProductResponse {
-  products: Product[];
-  name: string;
-  categoryImage: string;
-  description: string;
-  _id: string;
-}
+import { useOrder } from "@/context/admin/OrderContext";
+const formatDate = (dateStr: string) => {
+  return new Date(dateStr).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+};
 
 const ProductListingPage = () => {
   const showToast = useNotificationToast();
   // get category id from the url
   const { id } = useParams();
-  
 
-  const [product, setProduct] = useState<iProductResponse>();
+  //   get order list
+  const { getOrderLoading, order } = useOrder();
+
   const [loading, setLoading] = useState(false);
-
-  const getProductData = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await axiosInstence.get(`/category/${id}`);
-      setProduct(response.data.products[0]);
-    } catch (error) {
-      console.error("Error fetching product data:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [id]);
-
-  useEffect(() => {
-    getProductData();
-  }, [getProductData]);
 
   // delete product
   const handledelete = async (productId: string) => {
@@ -76,7 +45,7 @@ const ProductListingPage = () => {
         withCredentials: true,
       });
       showToast("Product deleted successfully");
-      getProductData();
+      //   getProductData();
     } catch (error) {
       console.error("Error deleting product:", error);
     } finally {
@@ -86,18 +55,16 @@ const ProductListingPage = () => {
 
   return (
     <>
-      {loading ? (
+      {getOrderLoading || loading ? (
         <LoadingPage />
       ) : (
         <div className="w-full mx-auto rounded-xl border shadow-sm bg-white">
           {/* Header Section */}
           <div className="bg-gradient-to-r  p-6 rounded-t-xl border-b flex justify-between items-center">
             <div>
-              <h2 className="text-xl font-bold text-gray-800">
-                {product?.name}
-              </h2>
+              <h2 className="text-xl font-bold text-gray-800">Orders</h2>
               <p className="text-sm text-gray-600 mt-1">
-                Manage your product inventory
+                Manage your Order inventory
               </p>
             </div>
             <div className="flex gap-3">
@@ -120,9 +87,6 @@ const ProductListingPage = () => {
           {/* Filter Bar */}
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 p-4 border-b bg-gray-50">
             {/* Category Filter */}
-            <div className="flex items-center gap-2">
-              <span className="gap-1">{product?.name}</span>
-            </div>
 
             {/* Search */}
             <div className="flex gap-2 w-full md:w-auto">
@@ -151,18 +115,21 @@ const ProductListingPage = () => {
               <thead>
                 <tr className="bg-gray-50">
                   <th className="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">
-                    <div className="flex items-center gap-1">Product</div>
+                    <div className="flex items-center gap-1">Order Id</div>
                   </th>
                   <th className="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">
-                    Status
+                    Payment Method
                   </th>
                   <th className="px-4 py-3 text-right font-medium text-gray-500 uppercase tracking-wider">
                     <div className="flex items-center justify-end gap-1">
-                      Price
+                      Amount
                     </div>
                   </th>
                   <th className="px-4 py-3 text-center font-medium text-gray-500 uppercase tracking-wider">
-                    Gender
+                    Transaction Id
+                  </th>
+                  <th className="px-4 py-3 text-center font-medium text-gray-500 uppercase tracking-wider">
+                    Quantity
                   </th>
                   <th className="px-4 py-3 text-right font-medium text-gray-500 uppercase tracking-wider">
                     Actions
@@ -170,89 +137,93 @@ const ProductListingPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {/* Product 1 */}
-                {product?.products?.map((data: Product, index: number) => (
-                  <tr className="hover:bg-gray-50" key={index}>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <div className="h-12 w-12 flex-shrink-0 rounded-md overflow-hidden">
-                          <Image
-                            src={data?.images?.[0] || ""}
-                            alt="Smartphone"
-                            width={48}
-                            height={48}
-                            className="object-cover"
-                          />
+                {/* {
+                order?.map((data, index: number) => ( */}
+                {order && order.length > 0 ? (
+                  order.map((data, index: number) => (
+                    <tr className="hover:bg-gray-50" key={index}>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <div>
+                            <p className="font-medium text-gray-800">
+                              {data?.orderId}
+                            </p>
+                            <p className="text-[10px] text-red-600 font-bold">
+                              payment status: {data?.paymentStatus}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-medium text-gray-800">
-                            {data?.name.slice(0, 50)}
-                          </p>
-                          <p className="text-xs text-gray-500">{data?.SKU}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                        {data?.isActive ? "Active" : "Inactive"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right font-medium">
-                      ${data?.price}{" "}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex justify-center">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          {data?.gender}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                          {data?.orderStatus}
                         </span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex justify-end gap-2">
-                        {/* http://localhost:3000/dashboard/category/product/view/123 */}
-                        <Link
-                          href={`/dashboard/category/product/view/${data._id}`}
-                        >
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-8 w-8 p-0 text-red-600"
+                      </td>
+                      <td className="px-4 py-3 text-right font-medium">
+                        $ {data?.totalPrice}{" "}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex justify-center">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            {data?.transactionId}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-right font-medium">
+                        {/* {data?.createdAt}{" "} */}
+                        {formatDate(data?.createdAt)}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex justify-end gap-2">
+                          {/* http://localhost:3000/dashboard/category/product/view/123 */}
+                          <Link
+                            href={`/dashboard/category/product/view/${data._id}`}
                           >
-                            <EyeIcon className="h-4 w-4" />
-                          </Button>
-                        </Link>
-                        <Link href={`/dashboard/category/product/editProduct/${data._id}`}>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-8 w-8 p-0 text-amber-600"
-                          >
-                            <PencilIcon className="h-4 w-4" />
-                          </Button>
-                        </Link>
-                        <ConfirmDialog
-                          trigger={
                             <Button
-                              // onClick={handledelete(data._id)}
                               size="sm"
                               variant="ghost"
                               className="h-8 w-8 p-0 text-red-600"
                             >
-                              <Trash2Icon className="h-4 w-4" />
+                              <EyeIcon className="h-4 w-4" />
                             </Button>
-                          }
-                          title="Delete Product"
-                          description="Are you sure you want to delete this product? This action cannot be undone."
-                          confirmText="Delete"
-                          cancelText="Cancel"
-                          onConfirm={() => {
-                            handledelete(data._id);
-                          }}
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                          </Link>
+                          <Link
+                            href={`/dashboard/category/product/editProduct/${data._id}`}
+                          >
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-8 w-8 p-0 text-amber-600"
+                            >
+                              <PencilIcon className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                          <ConfirmDialog
+                            trigger={
+                              <Button
+                                // onClick={handledelete(data._id)}
+                                size="sm"
+                                variant="ghost"
+                                className="h-8 w-8 p-0 text-red-600"
+                              >
+                                <Trash2Icon className="h-4 w-4" />
+                              </Button>
+                            }
+                            title="Delete Product"
+                            description="Are you sure you want to delete this product? This action cannot be undone."
+                            confirmText="Delete"
+                            cancelText="Cancel"
+                            onConfirm={() => {
+                              handledelete(data._id);
+                            }}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <div>No orders available.</div>
+                )}
               </tbody>
             </table>
           </div>

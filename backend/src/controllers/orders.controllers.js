@@ -11,7 +11,6 @@ const createOrder = (req, res) => {
       totalPrice,
     } = req.body;
 
-
     // Validate required fields
     if (!products || !shippingAddress || !totalPrice) {
       return res.status(400).json({ message: "All fields are required" });
@@ -119,7 +118,6 @@ const getUserAllOrders = async (req, res) => {
           },
         },
       },
-      
     ]);
 
     return res.status(200).json({ message: "All orders", orders });
@@ -129,4 +127,17 @@ const getUserAllOrders = async (req, res) => {
       .json({ message: "Server error please try again", error: error.message });
   }
 };
-export { createOrder, getUserAllOrders };
+
+// get all orders
+const getAllOrders = async (req, res) => {
+  try {
+    // const { id } = req.params;
+    const respose = await Order.find().sort({ createdAt :-1});
+    return res.status(200).json(respose);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+};
+export { createOrder, getUserAllOrders, getAllOrders };

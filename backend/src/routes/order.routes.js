@@ -4,6 +4,7 @@ const router = Router();
 import { authorize, verifyJwt } from "../middleware/auth.middleware.js";
 import {
   createOrder,
+  getAllOrders,
   getUserAllOrders,
 } from "../controllers/orders.controllers.js";
 
@@ -65,14 +66,14 @@ router.route("/delete-product/:id").delete(
   // create Product
   //   deleteProduct
 );
-// get all products
+// get all orders
 router.route("/").get(
   // verify token
-  verifyJwt,
-  // access control
-  authorize("Admin", "User")
+  // verifyJwt,
+  // // access control
+  // authorize("Admin", "User")
   // create Product
-  //   getAllproducts
+  getAllOrders
 );
 
 // productDetails
