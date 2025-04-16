@@ -5,6 +5,7 @@ import { authorize, verifyJwt } from "../middleware/auth.middleware.js";
 import {
   createOrder,
   getAllOrders,
+  getOrderDetails,
   getUserAllOrders,
 } from "../controllers/orders.controllers.js";
 
@@ -20,52 +21,6 @@ router.route("/create-order").post(
   createOrder
 );
 
-router.route("/get-user-order").get(
-  // verify token
-  verifyJwt,
-  //   // access control
-  authorize("User", "Admin"),
-  //   // upload image
-
-  // create Product
-  getUserAllOrders
-);
-
-// edit product route
-
-router.route("/update-product/:id").patch(
-  // verify token
-  verifyJwt,
-  // access control
-  authorize("Admin")
-  // upload image
-
-  // create Product
-  //   editProduct
-);
-
-// update product images
-router.route("/update-product/:productId/:imagePublicId").patch(
-  // verify token
-  verifyJwt,
-  // access control
-  authorize("Admin")
-  // upload image
-
-  // create Product
-  //   editProductImage
-);
-
-// delete product
-
-router.route("/delete-product/:id").delete(
-  // verify token
-  verifyJwt,
-  // access control
-  authorize("Admin")
-  // create Product
-  //   deleteProduct
-);
 // get all orders
 router.route("/").get(
   // verify token
@@ -77,13 +32,22 @@ router.route("/").get(
 );
 
 // productDetails
-router.route("/product-details/:id").get(
+router.route("/order-details/:id").get(
+  // verify token
+  // verifyJwt,
+  // // access control
+  // authorize("Admin", "User")
+
+  getOrderDetails
+);
+
+router.route("/get-user-order").get(
   // verify token
   verifyJwt,
-  // access control
-  authorize("Admin", "User")
+  // // access control
+  authorize("Admin", "User"),
   // create Product
-  //   productDetails
+  getUserAllOrders
 );
 
 export default router;

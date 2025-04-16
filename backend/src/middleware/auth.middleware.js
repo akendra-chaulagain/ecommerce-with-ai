@@ -6,9 +6,7 @@ const verifyJwt = async (req, res, next) => {
   //   const token = req.cookies?.accessToken;
   try {
     const token = req.cookies.accessToken;
-  
-    
-    
+
     if (!token) {
       return res.status(401).json("No token provideds");
     }
@@ -36,7 +34,7 @@ const authorize = (...roles) => {
   };
 };
 
-const verifyTemporaryToken = async (req, res,next) => {
+const verifyTemporaryToken = async (req, res, next) => {
   const tempToken = req.cookies.tempToken; // Get the token from the cookies
   // console.log(tempToken);
 

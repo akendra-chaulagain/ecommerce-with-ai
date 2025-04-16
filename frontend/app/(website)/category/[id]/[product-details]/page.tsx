@@ -67,6 +67,8 @@ const Page = () => {
   };
   // add to cart
   const handleAddToCart = async () => {
+    console.log('ak');
+    
     try {
       const response = await axiosInstence.post(
         "/cart/add-to-cart",

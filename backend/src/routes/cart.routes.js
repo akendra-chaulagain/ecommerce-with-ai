@@ -2,7 +2,12 @@ import { Router } from "express";
 const router = Router();
 
 import { authorize, verifyJwt } from "../middleware/auth.middleware.js";
-import { addToCart, deleteFromcart, getCartAccordingToLoginUser, updateCartItems } from "../controllers/cart.controllers.js";
+import {
+  addToCart,
+  deleteFromcart,
+  getCartAccordingToLoginUser,
+  updateCartItems,
+} from "../controllers/cart.controllers.js";
 
 // add to cart  route
 router.route("/add-to-cart").post(
@@ -38,6 +43,5 @@ router.route("/").get(
   authorize("User", "Admin"),
   getCartAccordingToLoginUser
 );
-
 
 export default router;
