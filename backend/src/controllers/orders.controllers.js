@@ -45,7 +45,6 @@ const getUserAllOrders = async (req, res) => {
   try {
     const userId = req.user.id;
     console.log(userId);
-    
 
     const orders = await Order.aggregate([
       {
@@ -134,7 +133,7 @@ const getUserAllOrders = async (req, res) => {
 const getAllOrders = async (req, res) => {
   try {
     // const { id } = req.params;
-    const respose = await Order.find().sort({ createdAt :-1});
+    const respose = await Order.find().sort({ createdAt: -1 });
     return res.status(200).json(respose);
   } catch (error) {
     return res
@@ -143,8 +142,8 @@ const getAllOrders = async (req, res) => {
   }
 };
 // get order details
-const getOrderDetails = async(req,res)=>{
-try {
+const getOrderDetails = async (req, res) => {
+  try {
     const orderId = req.params.id;
     const orders = await Order.aggregate([
       {
@@ -171,6 +170,23 @@ try {
           "products.details": "$productInfo",
         },
       },
+
+      // $group: {
+      //   _id: "$_id",
+      //   userId: { $first: "$userId" },
+      //   orderId: { $first: "$orderId" },
+      //   totalPrice: { $first: "$totalPrice" },
+      //   shippingAddress: { $first: "$shippingAddress" },
+      //   orderStatus: { $first: "$orderStatus" },
+      //   paymentStatus: { $first: "$paymentStatus" },
+      //   transactionId: { $first: "$transactionId" },
+      //   taxAmount: { $first: "$taxAmount" },
+      //   deliveryDate: { $first: "$deliveryDate" },
+      //   createdAt: { $first: "$createdAt" },
+      //   updatedAt: { $first: "$updatedAt" },
+
+      //   products: { $push: "$products" }, // includes details
+      // },
       {
         $group: {
           _id: "$_id",
@@ -185,10 +201,11 @@ try {
           deliveryDate: { $first: "$deliveryDate" },
           createdAt: { $first: "$createdAt" },
           updatedAt: { $first: "$updatedAt" },
-
-          products: { $push: "$products" }, // includes details
+          products: { $push: "$products" }, // product IDs, quantity, etc.
+          productDetails: { $push: "$productInfo" }, // separate top-level product details
         },
       },
+
       {
         $lookup: {
           from: "users",
@@ -214,7 +231,7 @@ try {
       {
         $project: {
           shippingAddress: 0,
-          products: 0,
+
           userDetails: {
             password: 0,
             role: 0,
@@ -223,13 +240,12 @@ try {
         },
       },
     ]);
-    return res.status(200).json({ message: "All orders", orders });
-
-} catch (error) {
-   return res.status(500)
+    return res.status(200).json({ message: "All orders", order:orders[0] });
+  } catch (error) {
+    return res
+      .status(500)
       .json({ message: "Server error please try again", error: error.message });
-}
-}
-
+  }
+};
 
 export { createOrder, getUserAllOrders, getAllOrders, getOrderDetails };

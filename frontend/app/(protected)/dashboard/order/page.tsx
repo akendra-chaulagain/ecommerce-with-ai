@@ -10,12 +10,11 @@ import {
   ShoppingBag,
   ArrowLeft,
   ArrowRight,
-  PackagePlusIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ConfirmDialog from "@/components/dashboard/dialog";
 import { axiosInstence } from "@/hooks/axiosInstence";
-import { useParams } from "next/navigation";
+
 import LoadingPage from "@/components/webiste/Loading";
 import { useNotificationToast } from "@/hooks/toast";
 import { useOrder } from "@/context/admin/OrderContext";
@@ -29,8 +28,6 @@ const formatDate = (dateStr: string) => {
 
 const ProductListingPage = () => {
   const showToast = useNotificationToast();
-  // get category id from the url
-  const { id } = useParams();
 
   //   get order list
   const { getOrderLoading, order } = useOrder();
@@ -52,6 +49,8 @@ const ProductListingPage = () => {
       setLoading(false);
     }
   };
+  console.log(order);
+  
 
   return (
     <>
@@ -60,29 +59,6 @@ const ProductListingPage = () => {
       ) : (
         <div className="w-full mx-auto rounded-xl border shadow-sm bg-white">
           {/* Header Section */}
-          <div className="bg-gradient-to-r  p-6 rounded-t-xl border-b flex justify-between items-center">
-            <div>
-              <h2 className="text-xl font-bold text-gray-800">Orders</h2>
-              <p className="text-sm text-gray-600 mt-1">
-                Manage your Order inventory
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <Link
-                // href={"/dashboard/category/addCategory/addProduct"}
-                href={`/dashboard/category/addCategory/addProduct?sub_cat_id=${id}`}
-              >
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 hover:text-white focus:outline-none "
-                >
-                  <PackagePlusIcon className="w-4 h-4" />
-                  <span className="hidden sm:inline">Add Product</span>
-                </Button>
-              </Link>
-            </div>
-          </div>
 
           {/* Filter Bar */}
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 p-4 border-b bg-gray-50">
@@ -175,9 +151,8 @@ const ProductListingPage = () => {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex justify-end gap-2">
-                          {/* http://localhost:3000/dashboard/category/product/view/123 */}
                           <Link
-                            href={`/dashboard/category/product/view/${data._id}`}
+                            href={`/dashboard/order/order-detail/${data._id}`}
                           >
                             <Button
                               size="sm"
