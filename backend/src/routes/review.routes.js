@@ -8,6 +8,7 @@ import {
   editReview,
   getAllReview,
   getAllReviewAccordingToProduct,
+  getReviewDetailsById,
 } from "../controllers/review.controllers.js";
 
 // register user
@@ -44,5 +45,7 @@ router.route("/delete-review/:id").delete(
 
 // get all review
 router.route("/").get(getAllReview);
+// for admin only
+router.route("/:id").get(getReviewDetailsById);
 
 export default router;

@@ -21,7 +21,6 @@ export default function OrdersPage() {
 
   // console.log(OrderDetails?.order?.productDetails);
 
-  ;
   // Format date for better readability
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -182,8 +181,9 @@ export default function OrdersPage() {
                   <h2 className="text-xl font-semibold mb-4">
                     Product Details
                   </h2>
-                 
-                   { OrderDetails?.order?.productDetails?.map((data, index:number) => (
+
+                  {OrderDetails?.order?.productDetails?.map(
+                    (data, index: number) => (
                       <div className="border-b pb-4" key={index}>
                         <div className="flex items-center gap-4">
                           <div className="w-16 h-16 bg-gray-200 rounded">
@@ -202,13 +202,12 @@ export default function OrdersPage() {
                             <p className="text-sm text-gray-600">
                               Size: {data.size} | Color: {data.color}
                             </p>
-                           
                           </div>
                           <div className="font-medium">${data.price}</div>
                         </div>
                       </div>
-                    ))}
-                 
+                    )
+                  )}
                 </div>
 
                 {/* Action Buttons */}

@@ -4,8 +4,6 @@ import Link from "next/link";
 import {
   EyeIcon,
   Trash2Icon,
-  PlusIcon,
-  PencilIcon,
   Search,
   ShoppingBag,
   ArrowLeft,
@@ -18,6 +16,7 @@ import { axiosInstence } from "@/hooks/axiosInstence";
 import LoadingPage from "@/components/webiste/Loading";
 import { useNotificationToast } from "@/hooks/toast";
 import { useOrder } from "@/context/admin/OrderContext";
+import { iReview, iReviewResponse } from "@/types/types";
 const formatDate = (dateStr: string) => {
   return new Date(dateStr).toLocaleDateString("en-US", {
     year: "numeric",
@@ -30,49 +29,45 @@ const ProductListingPage = () => {
   const showToast = useNotificationToast();
 
   //   get order list
-  const { getOrderLoading, order } = useOrder();
-  const [review, setReview] = useState([]);
-
-  const [loading, setLoading] = useState(false);
-
-  // delete product
-  const handledelete = async (productId: string) => {
-    setLoading(true);
-    try {
-      await axiosInstence.delete(`/product/delete-product/${productId}`, {
-        withCredentials: true,
-      });
-      showToast("Product deleted successfully");
-      //   getProductData();
-    } catch (error) {
-      console.error("Error deleting product:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { getOrderLoading } = useOrder();
+  const [review, setReview] = useState<iReview[] | null>(null);
 
   //   get review
-
+  const fetchReview = async () => {
+    try {
+      const response = await axiosInstence.get<iReviewResponse>("/review", {
+        withCredentials: true,
+      });
+      setReview(response.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
     // Define the fetchReview function inside the useEffect
-    const fetchReview = async () => {
-      try {
-        const response = await axiosInstence.get("/review", {
-          withCredentials: true,
-        });
-        setReview(response.data.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
 
     fetchReview();
   }, []);
-  console.log(review);
+
+  const handleDeleteReview = async (reviewId: string) => {
+    try {
+      const response = await axiosInstence.delete(
+        `/review/delete-review/${reviewId}`,
+        {
+          withCredentials: true,
+        }
+      );
+      showToast(response.data.message);
+      fetchReview();
+    } catch (error: unknown) {
+      console.log(error);
+      showToast("Something went wrong, try again");
+    }
+  };
 
   return (
     <>
-      {getOrderLoading || loading ? (
+      {getOrderLoading ? (
         <LoadingPage />
       ) : (
         <div className="w-full mx-auto rounded-xl border shadow-sm bg-white">
@@ -118,18 +113,16 @@ const ProductListingPage = () => {
                     <div className="flex items-center gap-1">Order Id</div>
                   </th>
                   <th className="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">
-                    Payment Method
+                    Rating
                   </th>
                   <th className="px-4 py-3 text-right font-medium text-gray-500 uppercase tracking-wider">
                     <div className="flex items-center justify-end gap-1">
-                      Amount
+                      Product Id
                     </div>
                   </th>
+
                   <th className="px-4 py-3 text-center font-medium text-gray-500 uppercase tracking-wider">
-                    Transaction Id
-                  </th>
-                  <th className="px-4 py-3 text-center font-medium text-gray-500 uppercase tracking-wider">
-                    Quantity
+                    Review Date
                   </th>
                   <th className="px-4 py-3 text-right font-medium text-gray-500 uppercase tracking-wider">
                     Actions
@@ -146,29 +139,20 @@ const ProductListingPage = () => {
                         <div className="flex items-center gap-3">
                           <div>
                             <p className="font-medium text-gray-800">
-                              {data?.orderId}
-                            </p>
-                            <p className="text-[10px] text-red-600 font-bold">
-                              payment status: {data?.paymentStatus}
+                              {data?._id}
                             </p>
                           </div>
                         </div>
                       </td>
                       <td className="px-4 py-3">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                          {data?.orderStatus}
+                          {data?.rating}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right font-medium">
-                        $ {data?.totalPrice}{" "}
+                        {data?.product}{" "}
                       </td>
-                      <td className="px-4 py-3">
-                        <div className="flex justify-center">
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            {data?.transactionId}
-                          </span>
-                        </div>
-                      </td>
+
                       <td className="px-4 py-3 text-right font-medium">
                         {/* {data?.createdAt}{" "} */}
                         {formatDate(data?.createdAt)}
@@ -176,7 +160,7 @@ const ProductListingPage = () => {
                       <td className="px-4 py-3">
                         <div className="flex justify-end gap-2">
                           <Link
-                            href={`/dashboard/order/order-detail/${data._id}`}
+                            href={`/dashboard/review/review-detail/${data._id}`}
                           >
                             <Button
                               size="sm"
@@ -186,21 +170,10 @@ const ProductListingPage = () => {
                               <EyeIcon className="h-4 w-4" />
                             </Button>
                           </Link>
-                          <Link
-                            href={`/dashboard/category/product/editProduct/${data._id}`}
-                          >
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-8 w-8 p-0 text-amber-600"
-                            >
-                              <PencilIcon className="h-4 w-4" />
-                            </Button>
-                          </Link>
+
                           <ConfirmDialog
                             trigger={
                               <Button
-                                // onClick={handledelete(data._id)}
                                 size="sm"
                                 variant="ghost"
                                 className="h-8 w-8 p-0 text-red-600"
@@ -213,7 +186,7 @@ const ProductListingPage = () => {
                             confirmText="Delete"
                             cancelText="Cancel"
                             onConfirm={() => {
-                              handledelete(data._id);
+                              handleDeleteReview(data._id);
                             }}
                           />
                         </div>
@@ -221,7 +194,9 @@ const ProductListingPage = () => {
                     </tr>
                   ))
                 ) : (
-                  <div>No orders available.</div>
+                  <div className="  text-[20px] font-semibold p-10">
+                    No Review available.
+                  </div>
                 )}
               </tbody>
             </table>
@@ -259,18 +234,11 @@ const ProductListingPage = () => {
                 <ShoppingBag className="h-12 w-12 text-gray-400" />
               </div>
               <h3 className="text-lg font-medium text-gray-800 mb-2">
-                No products found
+                No review found
               </h3>
               <p className="text-gray-500 mb-6 max-w-md">
-                You havent added any products yet or your search filters didnt
-                match any products.
+                There are no review for this product.
               </p>
-              <Link href="/dashboard/products/add-product">
-                <Button className="gap-2">
-                  <PlusIcon className="h-4 w-4" />
-                  Add Your First Product
-                </Button>
-              </Link>
             </div>
           )}
         </div>

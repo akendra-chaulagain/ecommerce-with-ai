@@ -4,7 +4,6 @@ import { sendreviewEmail } from "../utils/sendEmail.js";
 import { User } from "../models/user.models.js";
 import { Product } from "../models/product.models.js";
 
-
 // create review
 const createReview = async (req, res) => {
   try {
@@ -150,7 +149,7 @@ const getAllReviewAccordingToProduct = async (req, res) => {
     // Check if there are no reviews
     if (!allproducts[0] || allproducts[0].reviews.length === 0) {
       // Return only product details if no reviews exist
-      const details = await Product.findById(id)
+      const details = await Product.findById(id);
       return res.status(200).json({
         message: "Product found with no reviews",
         details,
@@ -198,21 +197,21 @@ const deleteReview = async (req, res) => {
   try {
     const reviewId = req.params.id;
 
-    const { userId } = req.body; // The logged-in user's ID
-
-    // Find the review by its ID
+    const user = await User.findById(req.user.id).select("-password");
     const review = await Review.findById(reviewId);
 
-    // Check if the review exists and if the logged-in user is the author
     if (!review) {
       return res.status(404).json({ message: "Review not found" });
     }
 
-    if (review.user.toString() !== userId) {
+    // Check if user is Admin or the owner of the review
+    const isOwner = review.user.toString() === user._id.toString();
+    const isAdmin = user.role === "Admin";
+
+    if (!isOwner && !isAdmin) {
       return res.status(403).json({ message: "You cannot delete this review" });
     }
 
-    // Delete the review
     await Review.findByIdAndDelete(reviewId);
 
     return res.status(200).json({ message: "Review deleted successfully" });
@@ -223,9 +222,11 @@ const deleteReview = async (req, res) => {
     });
   }
 };
+
 const getAllReview = async (req, res) => {
   try {
-    const response = await Review.find();
+    const response = await Review.find().sort({ createdAt: -1 });
+
     return res.status(200).json({
       message: "Review",
 
@@ -239,10 +240,60 @@ const getAllReview = async (req, res) => {
   }
 };
 
+// get review accordibg to the id
+const getReviewDetailsById = async (req, res) => {
+  try {
+    const reviewId = req.params.id;
+    const reviews = await Review.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(reviewId),
+        },
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "product",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      {
+        $unwind: "$productDetails",
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "userDetails",
+        },
+      },
+      {
+        $unwind: "$userDetails",
+      },
+      {
+        $project: {
+          userDetails: {
+            password: 0,
+            refreshToken: 0,
+          },
+        },
+      },
+    ]);
+    return res.status(200).json({ message: "All Review", review: reviews[0] });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Server error please try again", error: error.message });
+  }
+};
+
 export {
   createReview,
   getAllReviewAccordingToProduct,
   editReview,
   deleteReview,
   getAllReview,
+  getReviewDetailsById,
 };

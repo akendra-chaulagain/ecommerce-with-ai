@@ -111,3 +111,16 @@ export interface iOrder {
   length: number;
   orderStatus: string;
 }
+
+
+export interface iReview{
+  _id:string,
+  comment:string,
+  product:string,
+  user:string
+  
+}
+
+export interface iReviewResponse{
+  data:iReview[]
+}
