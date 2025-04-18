@@ -118,7 +118,9 @@ const Page = () => {
               </div>
             </>
           ) : (
-            <div className="text-center py-6">No categories available</div>
+            <span className="  text-[20px] font-semibold p-10">
+              No categories available
+            </span>
           )}
         </div>
       )}

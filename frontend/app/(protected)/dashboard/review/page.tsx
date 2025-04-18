@@ -81,7 +81,7 @@ const ProductListingPage = () => {
                 Review Management
               </h2>
               <p className="text-sm text-gray-600 mt-1">
-                Manage your product inventory
+                Manage your Review inventory
               </p>
             </div>
 
@@ -194,9 +194,9 @@ const ProductListingPage = () => {
                     </tr>
                   ))
                 ) : (
-                  <div className="  text-[20px] font-semibold p-10">
+                  <span className="  text-[20px] font-semibold p-10">
                     No Review available.
-                  </div>
+                  </span>
                 )}
               </tbody>
             </table>

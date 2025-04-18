@@ -141,13 +141,14 @@ const ProductListingPage = () => {
                               <EyeIcon className="h-4 w-4" />
                             </Button>
                           </Link>
-                         
                         </div>
                       </td>
                     </tr>
                   ))
                 ) : (
-                  <div>No orders available.</div>
+                  <span className="  text-[20px] font-semibold p-10">
+                    No orders available.
+                  </span>
                 )}
               </tbody>
             </table>
