@@ -38,7 +38,6 @@ const Page = () => {
       console.error("Error deleting category:", error);
     }
   };
-  
 
   return (
     <>

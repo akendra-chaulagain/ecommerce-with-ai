@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import {
   useState,
   useEffect,
@@ -15,11 +15,13 @@ interface iChildren {
 interface iUser {
   user: User | null;
   loading: boolean;
+  getLogunUser: () => Promise<void>;
 }
 
 const defaultUserValue: iUser = {
   user: null,
   loading: true,
+  getLogunUser: async () => {},
 };
 
 const AuthContext = createContext(defaultUserValue);
@@ -33,7 +35,7 @@ export const AuthProvider = ({ children }: iChildren) => {
       const res = await axiosInstence.get("users/login-user/profile", {
         withCredentials: true,
       });
-      
+
       if (res.data) {
         setUser(res.data); // Assuming res.data contains user information
       } else {
@@ -51,7 +53,7 @@ export const AuthProvider = ({ children }: iChildren) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider value={{ user, loading, getLogunUser }}>
       {children}
     </AuthContext.Provider>
   );

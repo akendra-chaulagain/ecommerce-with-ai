@@ -1,5 +1,5 @@
 "use client";
-import {  Home, Inbox, ListOrdered, Newspaper,  Settings } from "lucide-react";
+import { Home, Inbox, ListOrdered, Newspaper, Settings } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -13,6 +13,7 @@ import {
 
 import Link from "next/link";
 import Image from "next/image";
+import { useAuth } from "@/context/AuthContext";
 
 // Menu items.
 const items = [
@@ -38,12 +39,14 @@ const items = [
   },
   {
     title: "Settings",
-    url: "#",
+    url: "/dashboard/profile",
     icon: Settings,
   },
 ];
 
 export function AppSidebar() {
+  const {user} = useAuth();
+  
   return (
     <Sidebar>
       {/* Fixed width for the sidebar */}
@@ -67,7 +70,10 @@ export function AppSidebar() {
                 {items.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
-                      <a href={item.url} className="text-base font-semibold mt-[10px]">
+                      <a
+                        href={item.url}
+                        className="text-base font-semibold mt-[10px]"
+                      >
                         <item.icon />
                         <span className="text-[16px]">{item.title}</span>
                       </a>
@@ -78,8 +84,8 @@ export function AppSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
           <div className="p-5">
-            <span className="flex justify-center font-semibold">
-              akendra@gmail.com
+            <span className="flex justify-center font-semibold px-5 text-[13px]">
+              {user?.email}
             </span>
             <button className="w-full bg-black text-white py-2 px-4 rounded-xl hover:bg-gray-800 transition mt-2">
               Logout

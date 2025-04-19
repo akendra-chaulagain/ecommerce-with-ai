@@ -1,8 +1,11 @@
-import { Bell, Menu, MessageSquare, Search, User } from "lucide-react";
+import { Menu, Search, Settings } from "lucide-react";
 import React from "react";
 import { SidebarTrigger } from "../ui/sidebar";
+import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 
 const AdminNavbar = () => {
+  const { user } = useAuth();
   return (
     <>
       <nav className="w-full flex items-center justify-between bg-white shadow-md px-6 py-4">
@@ -30,18 +33,14 @@ const AdminNavbar = () => {
 
         {/* Right side of navbar - User actions */}
         <div className="flex items-center space-x-4">
-          <button className="p-2 rounded-full hover:bg-gray-100">
-            <Bell className="h-5 w-5" />
-          </button>
-          <button className="p-2 rounded-full hover:bg-gray-100">
-            <MessageSquare className="h-5 w-5" />
-          </button>
           <div className="flex items-center space-x-2">
             <button className="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100">
               <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
-                <User className="h-5 w-5" />
+                <Link href={"/dashboard/profile"}>
+                  <Settings className="h-5 w-5" />
+                </Link>
               </div>
-              <span className="hidden md:inline font-medium">Akendra</span>
+              <span className="hidden md:inline font-medium">{user?.name}</span>
             </button>
           </div>
         </div>

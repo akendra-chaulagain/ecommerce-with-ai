@@ -56,11 +56,11 @@ const Page = () => {
     }
   };
 
-  const removeExistingImage = (index: number) => {
-    const updated = [...existingImages];
-    updated.splice(index, 1);
-    setExistingImages(updated);
-  };
+  // const removeExistingImage = (index: number) => {
+  //   const updated = [...existingImages];
+  //   updated.splice(index, 1);
+  //   setExistingImages(updated);
+  // };
 
   const [product, setProduct] = useState<iProductDetails>({
     _id: "",
