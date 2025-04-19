@@ -9,6 +9,9 @@ import { OrderProvider } from "@/context/admin/OrderContext";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import SearchResults from "@/components/dashboard/search";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import LoadingPage from "@/components/webiste/Loading";
 
 export default function DashboardLayout({
   children,
@@ -38,6 +41,26 @@ export default function DashboardLayout({
 
     return () => clearTimeout(delayDebounce);
   }, [searchTerm]);
+
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  // redirect to the webiste
+  useEffect(() => {
+    if (loading) return;
+
+    if (!user || user.role !== "Admin") {
+      router.push("/login");
+    }
+  }, [user, router, loading]); // Ensure this runs when user or loading state changes
+
+  if (loading) {
+    return <LoadingPage />; // Show loading screen while fetching user data
+  }
+
+  if (!user || user.role !== "Admin") {
+    return null; // Return null if the user is not admin, blocking access to the dashboard
+  }
 
   return (
     <CategoryProvider>

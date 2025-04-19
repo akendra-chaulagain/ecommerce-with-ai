@@ -12,7 +12,7 @@ interface iResuts {
   product: iProductDetails[];
 }
 
-const SearchResults = ({ results }: { results: iResuts }) => {
+const SearchResults = ({ results }: { results: iResuts | null }) => {
   if (!results) {
     return <p className="text-center text-gray-500">Searching...</p>;
   }

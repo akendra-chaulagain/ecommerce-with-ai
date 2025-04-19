@@ -1,5 +1,5 @@
 "use client";
-import React, {  useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { EyeIcon, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -97,14 +97,13 @@ const Page = () => {
   useEffect(() => {
     getOrderData(currentPage);
   }, [currentPage]);
-  // Handle page change
+
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);
     }
   };
-  
 
   return (
     <>
@@ -231,16 +230,6 @@ const Page = () => {
 
           {/* Pagination */}
           <div className="flex justify-end gap-4 mt-6 py-6 px-10">
-            {/* First Page Button */}
-            <button
-              onClick={() => handlePageChange(1)}
-              disabled={currentPage === 1}
-              className="px-4 py-2 border rounded bg-red-600 text-white"
-            >
-              First
-            </button>
-
-            {/* Previous Page Button */}
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
@@ -248,28 +237,15 @@ const Page = () => {
             >
               Previous
             </button>
-
-            {/* Page Information */}
             <span className="px-4 py-2">
               Page {currentPage} of {totalPages}
             </span>
-
-            {/* Next Page Button */}
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
               className="px-4 py-2 border rounded bg-red-600 text-white"
             >
               Next
-            </button>
-
-            {/* Last Page Button */}
-            <button
-              onClick={() => handlePageChange(totalPages)}
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 border rounded bg-red-600 text-white"
-            >
-              Last
             </button>
           </div>
         </div>

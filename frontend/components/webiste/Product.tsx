@@ -3,23 +3,22 @@ import { ArrowRight, Eye, ShoppingCart, Star } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 import Category from "../../category.json";
-
 import Link from "next/link";
 
 const Product = () => {
   return (
     <>
-      <section className=" bg-white">
-        <div className=" mx-auto px-6">
+      <section className="bg-white">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center mb-12">
-            <h1 className=" font-semibold text-[27px] mb-[20px] tracking-wide text-[#adb5bd]">
+            <h1 className="font-semibold text-[27px] mb-[20px] tracking-wide text-[#adb5bd]">
               #OUR PRODUCTS
             </h1>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
+          <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 sm:gap-8">
             {Category.map((product) => (
-              <div key={product.id} className="group">
+              <div key={product.id} className="group flex flex-col">
                 <div className="relative overflow-hidden rounded-lg bg-gray-100">
                   <div className="relative aspect-[3/4] overflow-hidden">
                     <Image
@@ -50,8 +49,10 @@ const Product = () => {
                     </button>
                   </div>
                 </div>
-                <div className="mt-4">
-                  <h3 className="font-medium text-lg">{product.name}</h3>
+                <div className="mt-4 flex-1 flex flex-col justify-between">
+                  <h3 className="font-medium text-lg break-words">
+                    {product.name}
+                  </h3>
                   <div className="flex justify-between items-center mt-2">
                     <p className="font-bold">${product.price}</p>
                     <div className="flex items-center">
@@ -77,10 +78,10 @@ const Product = () => {
           </div>
         </div>
       </section>
-      <section className="py-16 px-6">
-        <div className=" mx-auto relative overflow-hidden rounded-lg">
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto relative overflow-hidden rounded-lg max-w-1xl">
           <div className="grid grid-cols-1 lg:grid-cols-2">
-            <div className="bg-red-600 text-white p-12 lg:p-16 flex items-center">
+            <div className="bg-red-600 text-white p-8 sm:p-12 lg:p-16 flex items-center">
               <div>
                 <span className="inline-block px-4 py-1 bg-white text-gray-900 text-sm font-bold mb-6">
                   NEW COLLECTION
@@ -101,7 +102,7 @@ const Product = () => {
                 </Link>
               </div>
             </div>
-            <div className="relative h-80 lg:h-auto">
+            <div className="relative h-64 sm:h-80 md:h-96 lg:h-auto">
               <Image
                 src="/images/slider/s2.webp"
                 alt="Feature collection"

@@ -13,9 +13,10 @@ interface iChildren {
   children: ReactNode;
 }
 interface iUser {
-  user: User | null;
+  // user: User | null;
   loading: boolean;
   getLogunUser: () => Promise<void>;
+  user: User | null;
 }
 
 const defaultUserValue: iUser = {
@@ -28,16 +29,17 @@ const AuthContext = createContext(defaultUserValue);
 
 export const AuthProvider = ({ children }: iChildren) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const getLogunUser = async () => {
+    setLoading(true);
     try {
       const res = await axiosInstence.get("users/login-user/profile", {
         withCredentials: true,
       });
 
       if (res.data) {
-        setUser(res.data); // Assuming res.data contains user information
+        setUser(res.data ?? null); // Assuming res.data contains user information
       } else {
         setUser(null); // Set null if the response doesn't have user data
       }

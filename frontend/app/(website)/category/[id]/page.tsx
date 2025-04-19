@@ -49,7 +49,7 @@ const Page = () => {
                 Showing{" "}
                 <span className="font-bold mx-[5px]">
                   {" "}
-                  {category?.products.length}{" "}
+                  {category?.products?.length}{" "}
                 </span>{" "}
                 items
               </p>
