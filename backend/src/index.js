@@ -5,14 +5,16 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 dotenv.config();
 import cors from "cors";
-// middleware
+import emitter from "events";
+emitter.setMaxListeners(20);
+
 
 // for cookies
 app.use(cookieParser());
 app.use(express.json());
 
 app.use(
-  cors({
+  cors({ 
     origin: "http://localhost:3000", // Allow only requests from this origin
     credentials: true, // Allow cookies
   })
@@ -36,11 +38,12 @@ import userRoute from "../src/routes/user.routes.js"; //user routes
 import categoryRoute from "../src/routes/category.routes.js"; //category routes
 import productRoute from "../src/routes/product.routes.js"; //category routes
 import reviewRoute from "../src/routes/review.routes.js"; //review routes
-import cartRoute from "../src/routes/cart.routes.js"; //cart routes
-import shippingRoute from "../src/routes/shipping.routes.js"; //cart routes
-import paymentRoute from "../src/routes/payment.routes.js"; //cart routes
-import orderRoute from "../src/routes/order.routes.js"; //cart routes
-// import orderRoute from "../src/routes/order.routes.js"; //cart routes
+import cartRoute from "../src/routes/cart.routes.js";
+import shippingRoute from "../src/routes/shipping.routes.js";
+import paymentRoute from "../src/routes/payment.routes.js";
+import orderRoute from "../src/routes/order.routes.js";
+import searchRoute from "../src/routes/search.routes.js";
+// import orderRoute from "../src/routes/order.routes.js";
 
 app.use("/api/v1/users", userRoute);
 app.use("/api/v1/category", categoryRoute);
@@ -50,4 +53,5 @@ app.use("/api/v1/cart", cartRoute);
 app.use("/api/v1/shipping", shippingRoute);
 app.use("/api/v1/payment", paymentRoute);
 app.use("/api/v1/order", orderRoute);
+app.use("/api/v1/search", searchRoute);
 // app.use("/api/v1/order", cartRoute);

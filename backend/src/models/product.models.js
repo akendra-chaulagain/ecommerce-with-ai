@@ -24,4 +24,16 @@ const productScheme = new mongoose.Schema(
   },
   [{ timestamps: true }]
 );
+productScheme.index({
+  name: "text",
+  description: "text",
+  category: "text",
+  price: "text",
+  brand: "text",
+  gender: "text",
+  color: "text",
+  size: "text",
+  material: "text",
+  specifications: "text",
+});
 export const Product = mongoose.model("Product", productScheme);

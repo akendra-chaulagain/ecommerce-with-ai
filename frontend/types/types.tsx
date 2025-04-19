@@ -43,6 +43,9 @@ export interface iProductDetails {
   rating: number;
   quantity: number;
   productId: number;
+  gender: string;
+  isActive: boolean;
+  SKU: number;
 }
 
 export interface iReview {

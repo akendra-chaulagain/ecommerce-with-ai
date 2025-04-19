@@ -3,11 +3,11 @@ import { User } from "../models/user.models.js";
 import bcrypt from "bcrypt";
 import { updatePhoto, uploadPhoto } from "../utils/cloudinary.js";
 import dotenv from "dotenv";
+dotenv.config();
 
 import { v2 as cloudinary } from "cloudinary";
 import { SentOtpWhileLogin } from "../utils/sendEmail.js";
 import { Otp } from "../models/otp.modules.js";
-dotenv.config();
 
 // register
 const registerUser = async (req, res) => {

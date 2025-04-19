@@ -45,26 +45,25 @@ const items = [
 ];
 
 export function AppSidebar() {
-  const {user} = useAuth();
-  
+  const { user } = useAuth();
+
   return (
     <Sidebar>
-      {/* Fixed width for the sidebar */}
-      <SidebarContent className="bg-gray-100 h-full">
+      <SidebarContent className="bg-gray-50 h-full shadow-xl">
         <div className="flex flex-col justify-between h-full">
           <SidebarGroup>
-            <SidebarGroupLabel className="px-5 pt-10 pb-6">
+            <SidebarGroupLabel className="px-5 pt-10 pb-6 flex items-center gap-2">
               <Link href={"/dashboard"}>
                 <Image
                   src="/images/logo.svg"
                   alt="logo"
                   width={150}
                   height={150}
-                  className="cursor-pointer"
+                  className="cursor-pointer drop-shadow-lg"
                 />
               </Link>
             </SidebarGroupLabel>
-            <hr />
+            <hr className="border-gray-200 opacity-60" />
             <SidebarGroupContent className="px-5 pt-3 pb-6">
               <SidebarMenu>
                 {items.map((item) => (
@@ -72,10 +71,12 @@ export function AppSidebar() {
                     <SidebarMenuButton asChild>
                       <a
                         href={item.url}
-                        className="text-base font-semibold mt-[10px]"
+                        className="flex items-center gap-3 text-base font-semibold mt-[10px] px-3 py-2 rounded-lg transition-all hover:bg-gray-100  group"
                       >
-                        <item.icon />
-                        <span className="text-[16px]">{item.title}</span>
+                        <item.icon className="h-5 w-5 text-gray-500 group- transition" />
+                        <span className="text-[16px] group-">
+                          {item.title}
+                        </span>
                       </a>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -84,10 +85,10 @@ export function AppSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
           <div className="p-5">
-            <span className="flex justify-center font-semibold px-5 text-[13px]">
+            <span className="flex justify-center font-semibold px-5 text-[13px] text-gray-500">
               {user?.email}
             </span>
-            <button className="w-full bg-black text-white py-2 px-4 rounded-xl hover:bg-gray-800 transition mt-2">
+            <button className="w-full bg-white border border-red-600 text-red-600 py-2 px-4 rounded-xl font-bold hover:bg-red-600 hover:text-white transition mt-2 shadow">
               Logout
             </button>
           </div>

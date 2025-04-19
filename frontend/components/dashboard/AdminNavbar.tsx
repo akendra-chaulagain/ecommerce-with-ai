@@ -4,8 +4,16 @@ import { SidebarTrigger } from "../ui/sidebar";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 
-const AdminNavbar = () => {
+type Props = {
+  setSearchTerm: (value: string) => void;
+};
+const AdminNavbar = ({ setSearchTerm }: Props) => {
   const { user } = useAuth();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
   return (
     <>
       <nav className="w-full flex items-center justify-between bg-white shadow-md px-6 py-4">
@@ -23,6 +31,7 @@ const AdminNavbar = () => {
         <div className="hidden md:flex items-center flex-1 max-w-xl mx-4">
           <div className="w-full relative">
             <input
+              onChange={handleChange}
               type="text"
               placeholder="Search..."
               className="w-full py-2 pl-10 pr-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
