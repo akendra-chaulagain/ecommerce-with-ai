@@ -48,10 +48,10 @@ router.route("/delete-product/:id").delete(
 );
 // get all products
 router.route("/").get(
-  // verify token
-  verifyJwt,
-  // access control
-  authorize("Admin", "User"),
+  // // verify token
+  // verifyJwt,
+  // // access control
+  // authorize("Admin", "User"),
   // create Product
   getAllproducts
 );

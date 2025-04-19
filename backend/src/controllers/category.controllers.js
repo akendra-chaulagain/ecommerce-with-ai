@@ -158,35 +158,6 @@ const deleteCategory = async (req, res) => {
 
 // get all categories
 const getAllCategories = async (req, res) => {
-  // try {
-  //   // for pagination
-  //   const page = parseInt(req.query.page) || 1; // default page is 1
-  //   const limit = parseInt(req.query.limit) || 7; // default limit is 10
-  //   const skip = (page - 1) * limit; // calculate skip value
-  //   const totalCategories = await Category.countDocuments(); // get total number of categories
-
-  //   const cetegories = await Category.find()
-  //     .skip(skip)
-  //     .limit(limit)
-  //     .sort({ createdAt: -1 });
-
-  //   return res.status(200).json({
-  //     success: true,
-  //     message: "All categories",
-  //     data: cetegories,
-  //     pagination: {
-  //       currentPage: page,
-  //       totalPages: Math.ceil(totalCategories / limit),
-  //       totalItems: totalCategories,
-  //     },
-  //   });
-  // } catch (error) {
-  //   res.status(501).json({
-  //     success: false,
-  //     message: "Something went wrong! try again later",
-  //     error: error.message,
-  //   });
-  // }
   try {
     const categories = await Category.find();
     res.status(200).json(categories);
@@ -266,21 +237,19 @@ const categoryDetails = async (req, res) => {
 const getProductsAcoordingToCategory = async (req, res) => {
   try {
     const id = req.params.id;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
 
     const checkCategory = await Category.findById(id);
-
     if (!checkCategory) {
-      return res.status(404).json({ message: "Category doesnot exist" });
+      return res.status(404).json({ message: "Category does not exist" });
     }
 
-    const products = await Category.aggregate([
+    // Fetch all products for this category
+    const result = await Category.aggregate([
       {
-        $match: {
-          _id: new mongoose.Types.ObjectId(id),
-          // $match: { product: new mongoose.Types.ObjectId(id) }, // Match reviews based on product ID
-        },
+        $match: { _id: new mongoose.Types.ObjectId(id) },
       },
-
       {
         $lookup: {
           from: "products",
@@ -289,17 +258,37 @@ const getProductsAcoordingToCategory = async (req, res) => {
           as: "products",
         },
       },
-      // {
-      //   $unwind: "$products", // Optional: to avoid array of category
-      // },
+      {
+        $project: {
+          products: 1,
+        },
+      },
     ]);
 
-    return res
-      .status(200)
-      .json({ message: "products according to category", products });
+    const allProducts = result[0]?.products || [];
+
+    // Apply pagination manually
+    const totalProducts = allProducts.length;
+    const totalPages = Math.ceil(totalProducts / limit);
+    const start = (page - 1) * limit;
+    const paginatedProducts = allProducts.slice(start, start + limit);
+
+    return res.status(200).json({
+      message: "Products according to category",
+      products: paginatedProducts,
+      name: checkCategory.name,
+      categoryImage: checkCategory.image,
+      description: checkCategory.description,
+      _id: checkCategory._id,
+      pagination: {
+        totalProducts,
+        totalPages,
+        currentPage: page,
+      },
+    });
   } catch (error) {
-    return res.status(401).json({
-      message: "Something went wrong! try again later",
+    return res.status(500).json({
+      message: "Something went wrong! Try again later",
       error: error.message,
     });
   }
@@ -307,28 +296,45 @@ const getProductsAcoordingToCategory = async (req, res) => {
 
 const categoryTree = async (req, res) => {
   try {
+    const { page = 1, limit = 5 } = req.query;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    // Get all categories first
     const allCategories = await Category.find().lean();
-    // recursive function to build the tree
 
-    const buildTree = (categories, parentId = null) => {
-      // Filter categories that belong to the current parent
-      const filtered = categories.filter((cat) => {
-        if (!parentId) return !cat.parentCategory;
-        return cat.parentCategory?.toString() === parentId.toString();
-      });
+    // Get only root categories for pagination
+    const rootCategories = allCategories.filter((cat) => !cat.parentCategory);
 
-      // Map filtered categories into nested objects
-      return filtered.map((cat) => ({
-        _id: cat._id,
-        name: cat.name,
-        slug: cat.slug,
-        description: cat.description,
-        categoryImage: cat.categoryImage,
-        children: buildTree(categories, cat._id), // Recursively find children
-      }));
+    const paginatedRoots = rootCategories.slice(skip, skip + parseInt(limit));
+
+    // Recursive function to build tree from a specific root
+    const buildTreeFromRoot = (root, all) => {
+      const children = all.filter(
+        (cat) => cat.parentCategory?.toString() === root._id.toString()
+      );
+      return {
+        _id: root._id,
+        name: root.name,
+        slug: root.slug,
+        description: root.description,
+        categoryImage: root.categoryImage,
+        children: children.map((child) => buildTreeFromRoot(child, all)),
+      };
     };
-    const tree = buildTree(allCategories, null);
-    res.status(200).json({ success: true, data: tree });
+
+    // Build tree only from paginated root categories
+    const tree = paginatedRoots.map((root) =>
+      buildTreeFromRoot(root, allCategories)
+    );
+
+    const totalPages = Math.ceil(rootCategories.length / limit);
+
+    res.status(200).json({
+      success: true,
+      data: tree,
+      currentPage: parseInt(page),
+      totalPages,
+    });
   } catch (error) {
     console.error("Error fetching category tree:", error);
     return res.status(500).json({

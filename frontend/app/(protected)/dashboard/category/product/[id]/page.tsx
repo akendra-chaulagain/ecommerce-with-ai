@@ -7,10 +7,7 @@ import {
   Trash2Icon,
   PlusIcon,
   PencilIcon,
-  Search,
   ShoppingBag,
-  ArrowLeft,
-  ArrowRight,
   PackagePlusIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -47,27 +44,47 @@ const ProductListingPage = () => {
   const showToast = useNotificationToast();
   // get category id from the url
   const { id } = useParams();
-  
 
   const [product, setProduct] = useState<iProductResponse>();
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 8;
 
-  const getProductData = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await axiosInstence.get(`/category/${id}`);
-      setProduct(response.data.products[0]);
-    } catch (error) {
-      console.error("Error fetching product data:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [id]);
+  const getProductData = useCallback(
+    async (page: number) => {
+      setLoading(true);
+      try {
+        const response = await axiosInstence.get(
+          `/category/${id}?page=${page}&limit=${limit}`
+        );
+        const resData = response.data;
+        setProduct({
+          name: resData.name,
+          categoryImage: resData.categoryImage,
+          description: resData.description,
+          _id: resData._id,
+          products: resData.products,
+        });
+        setTotalPages(resData.pagination.totalPages);
+      } catch (error) {
+        console.error("Error fetching product data:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [id]
+  );
 
   useEffect(() => {
-    getProductData();
-  }, [getProductData]);
+    getProductData(currentPage);
+  }, [getProductData, currentPage]);
 
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
   // delete product
   const handledelete = async (productId: string) => {
     setLoading(true);
@@ -76,7 +93,7 @@ const ProductListingPage = () => {
         withCredentials: true,
       });
       showToast("Product deleted successfully");
-      getProductData();
+      getProductData(currentPage);
     } catch (error) {
       console.error("Error deleting product:", error);
     } finally {
@@ -114,34 +131,6 @@ const ProductListingPage = () => {
                   <span className="hidden sm:inline">Add Product</span>
                 </Button>
               </Link>
-            </div>
-          </div>
-
-          {/* Filter Bar */}
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 p-4 border-b bg-gray-50">
-            {/* Category Filter */}
-            <div className="flex items-center gap-2">
-              <span className="gap-1">{product?.name}</span>
-            </div>
-
-            {/* Search */}
-            <div className="flex gap-2 w-full md:w-auto">
-              <div className="relative flex-grow md:w-64">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search categories..."
-                  className="pl-9 pr-4 py-2 w-full border rounded-md text-sm  outline-none"
-                  //  value={searchTerm}
-                  //  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-              <Button
-                variant="outline"
-                className="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 hover:text-white focus:outline-none "
-              >
-                Search
-              </Button>
             </div>
           </div>
 
@@ -209,7 +198,6 @@ const ProductListingPage = () => {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-2">
-                        {/* http://localhost:3000/dashboard/category/product/view/123 */}
                         <Link
                           href={`/dashboard/category/product/view/${data._id}`}
                         >
@@ -221,7 +209,9 @@ const ProductListingPage = () => {
                             <EyeIcon className="h-4 w-4" />
                           </Button>
                         </Link>
-                        <Link href={`/dashboard/category/product/editProduct/${data._id}`}>
+                        <Link
+                          href={`/dashboard/category/product/editProduct/${data._id}`}
+                        >
                           <Button
                             size="sm"
                             variant="ghost"
@@ -257,29 +247,25 @@ const ProductListingPage = () => {
             </table>
           </div>
 
-          {/* Pagination */}
-          <div className="p-4 bg-white border-t flex flex-col sm:flex-row justify-between items-center gap-4 rounded-b-xl">
-            <span className="text-sm text-gray-600">
-              Showing <span className="font-medium">5</span> of{" "}
-              <span className="font-medium">24</span> products
+          {/* Pagination Controls */}
+          <div className="flex justify-end gap-4 mt-6 py-6 px-10">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-4 py-2 border rounded bg-red-600 text-white"
+            >
+              Previous
+            </button>
+            <span className="px-4 py-2">
+              Page {currentPage} of {totalPages}
             </span>
-            <div className="flex">
-              <div className="flex border divide-x rounded-md overflow-hidden">
-                <button className="px-3 py-1 text-gray-600 hover:bg-gray-100 flex items-center gap-1">
-                  <ArrowLeft className="w-3 h-3" />
-                  Previous
-                </button>
-                <button className="px-3 py-1 bg-red-600 text-white font-medium">
-                  1
-                </button>
-                <button className="px-3 py-1 hover:bg-gray-100">2</button>
-                <button className="px-3 py-1 hover:bg-gray-100">3</button>
-                <button className="px-3 py-1 hover:bg-red-50 text-red-600 flex items-center gap-1">
-                  Next
-                  <ArrowRight className="w-3 h-3" />
-                </button>
-              </div>
-            </div>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 border rounded bg-red-600 text-white"
+            >
+              Next
+            </button>
           </div>
 
           {/* Empty State - would show conditionally if needed */}

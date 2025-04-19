@@ -90,6 +90,7 @@ router.route("/delete_category/:id").delete(
   // get  individual category details
   deleteCategory
 );
+// router.route("/category-paginate").get(categoryPagenation);
 
 // get products according to ths categoryId
 router.route("/:id").get(getProductsAcoordingToCategory);

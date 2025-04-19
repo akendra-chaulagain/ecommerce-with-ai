@@ -6,11 +6,9 @@ import {
   EyeIcon,
   Trash2Icon,
   PlusIcon,
-  PackagePlusIcon,
   PencilIcon,
   ChevronDown,
   ChevronRight,
-  Search,
   LayoutGrid,
   Tag,
 } from "lucide-react";
@@ -184,47 +182,12 @@ const CategoryItem = ({
 };
 
 const CategoryTree = ({ categories, onDelete }: ICategoryTreeProps) => {
-  const [searchTerm, setSearchTerm] = useState("");
-
   return (
     <div className="w-full mx-auto rounded-xl border shadow-sm bg-white">
-      {/* Filter Bar */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 p-4 border-b bg-gray-50">
-        {/* Tabs */}
-        <div className="flex border rounded-md overflow-hidden bg-white shadow-sm">
-          <span
-            className={`px-4 py-2 text-sm font-medium 
-            `}
-          >
-            All Categories
-          </span>
-        </div>
-
-        {/* Search & Filter */}
-        <div className="flex gap-2 w-full md:w-auto">
-          <div className="relative flex-grow md:w-64">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search categories..."
-              className="pl-9 pr-4 py-2 w-full border rounded-md text-sm  outline-none"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <Button
-            variant="outline"
-            className="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 hover:text-white focus:outline-none "
-          >
-            Search
-          </Button>
-        </div>
-      </div>
-
       {/* Main Content */}
       <div className="p-6 bg-gray-50">
         {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div className="bg-white p-4 rounded-lg border shadow-sm">
             <div className="flex items-center justify-between">
               <div>
@@ -252,18 +215,6 @@ const CategoryTree = ({ categories, onDelete }: ICategoryTreeProps) => {
               </div>
               <div className="p-3 bg-green-100 rounded-full">
                 <LayoutGrid className="h-6 w-6 text-green-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-4 rounded-lg border shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500">Total Products</p>
-                <p className="text-2xl font-bold text-gray-800">142</p>
-              </div>
-              <div className="p-3 bg-amber-100 rounded-full">
-                <PackagePlusIcon className="h-6 w-6 text-amber-600" />
               </div>
             </div>
           </div>

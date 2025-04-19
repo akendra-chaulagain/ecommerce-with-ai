@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import Category from "../models/category.models.js";
 import { Product } from "../models/product.models.js";
+
 dotenv.config();
 
 const searchFromDatabase = async (req, res) => {
@@ -16,14 +17,20 @@ const searchFromDatabase = async (req, res) => {
         { $text: { $search: term } },
         { score: { $meta: "textScore" } }
       ).sort({ score: { $meta: "textScore" } }),
+
       Product.find(
         { $text: { $search: term } },
         { score: { $meta: "textScore" } }
       ).sort({ score: { $meta: "textScore" } }),
+
+     
+      
     ]);
     res.status(200).json({
       category: categorys,
       product: products,
+     
+      
     });
   } catch (error) {
     console.error("Search error:", error); // Log full error

@@ -1,14 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  EyeIcon,
-  Trash2Icon,
-  Search,
-  ShoppingBag,
-  ArrowLeft,
-  ArrowRight,
-} from "lucide-react";
+import { EyeIcon, Trash2Icon, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ConfirmDialog from "@/components/dashboard/dialog";
 import { axiosInstence } from "@/hooks/axiosInstence";
@@ -25,29 +18,40 @@ const formatDate = (dateStr: string) => {
   });
 };
 
-const ProductListingPage = () => {
+const Page = () => {
   const showToast = useNotificationToast();
 
   //   get order list
   const { getOrderLoading } = useOrder();
   const [review, setReview] = useState<iReview[] | null>(null);
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 8;
   //   get review
-  const fetchReview = async () => {
+  const fetchReview = async (page: number) => {
     try {
-      const response = await axiosInstence.get<iReviewResponse>("/review", {
-        withCredentials: true,
-      });
+      const response = await axiosInstence.get<iReviewResponse>(
+        `/review?page=${page}&limit=${limit}`,
+        {
+          withCredentials: true,
+        }
+      );
       setReview(response.data.data);
+      setTotalPages(response.data.totalPages);
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching reviews:", error);
     }
   };
-  useEffect(() => {
-    // Define the fetchReview function inside the useEffect
 
-    fetchReview();
-  }, []);
+  useEffect(() => {
+    fetchReview(currentPage);
+  }, [currentPage]);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
 
   const handleDeleteReview = async (reviewId: string) => {
     try {
@@ -58,7 +62,7 @@ const ProductListingPage = () => {
         }
       );
       showToast(response.data.message);
-      fetchReview();
+      fetchReview(currentPage);
     } catch (error: unknown) {
       console.log(error);
       showToast("Something went wrong, try again");
@@ -203,48 +207,29 @@ const ProductListingPage = () => {
           </div>
 
           {/* Pagination */}
-          <div className="p-4 bg-white border-t flex flex-col sm:flex-row justify-between items-center gap-4 rounded-b-xl">
-            <span className="text-sm text-gray-600">
-              Showing <span className="font-medium">5</span> of{" "}
-              <span className="font-medium">24</span> products
+          <div className="flex justify-end gap-4 mt-6 py-6 px-10">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-4 py-2 border rounded bg-red-600 text-white"
+            >
+              Previous
+            </button>
+            <span className="px-4 py-2">
+              Page {currentPage} of {totalPages}
             </span>
-            <div className="flex">
-              <div className="flex border divide-x rounded-md overflow-hidden">
-                <button className="px-3 py-1 text-gray-600 hover:bg-gray-100 flex items-center gap-1">
-                  <ArrowLeft className="w-3 h-3" />
-                  Previous
-                </button>
-                <button className="px-3 py-1 bg-red-600 text-white font-medium">
-                  1
-                </button>
-                <button className="px-3 py-1 hover:bg-gray-100">2</button>
-                <button className="px-3 py-1 hover:bg-gray-100">3</button>
-                <button className="px-3 py-1 hover:bg-red-50 text-red-600 flex items-center gap-1">
-                  Next
-                  <ArrowRight className="w-3 h-3" />
-                </button>
-              </div>
-            </div>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 border rounded bg-red-600 text-white"
+            >
+              Next
+            </button>
           </div>
-
-          {/* Empty State - would show conditionally if needed */}
-          {false && (
-            <div className="p-12 flex flex-col items-center justify-center text-center">
-              <div className="bg-gray-100 p-4 rounded-full mb-4">
-                <ShoppingBag className="h-12 w-12 text-gray-400" />
-              </div>
-              <h3 className="text-lg font-medium text-gray-800 mb-2">
-                No review found
-              </h3>
-              <p className="text-gray-500 mb-6 max-w-md">
-                There are no review for this product.
-              </p>
-            </div>
-          )}
         </div>
       )}
     </>
   );
 };
 
-export default ProductListingPage;
+export default Page;

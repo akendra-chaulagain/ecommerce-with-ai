@@ -2,7 +2,6 @@
 import { axiosInstence } from "@/hooks/axiosInstence";
 import {
   useState,
-  useEffect,
   useContext,
   createContext,
   ReactNode,
@@ -65,7 +64,7 @@ interface iOrder {
   };
 }
 interface OrderResponse {
-  order: iOrder; 
+  order: iOrder;
   productDetails: iProductDetails[];
 }
 
@@ -89,29 +88,28 @@ const OrderContext = createContext<{
 });
 
 export const OrderProvider = ({ children }: iChildren) => {
-  const [order, setOrder] = useState<iOrder[] | null>(null); // Single order, or null
-  const [getOrderLoading, setOrderLoading] = useState<boolean>(false);
-
-  const getOrderData = useCallback(async () => {
-    setOrderLoading(true);
-    try {
-      const response = await axiosInstence.get(`/order`);
-      setOrder(response.data); // Assuming response.data is a single order object
-    } catch (error) {
-      console.error("Error fetching order data:", error);
-    } finally {
-      setOrderLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    getOrderData();
-  }, [getOrderData]);
-
-  //
   const [loadingOrder, setLoadingOrder] = useState(false);
   const [OrderDetails, setOrderDetails] = useState<OrderResponse | null>(null);
 
+  const [getOrderLoading, setGetOrderLoading] = useState(false);
+  const [order, setOrder] = useState<iOrder[] | null>(null);
+
+  // Fetch all orders
+  const getOrderData = useCallback(async () => {
+    setGetOrderLoading(true);
+    try {
+      const res = await axiosInstence.get<iOrder[]>("/order", {
+        withCredentials: true,
+      });
+      setOrder(res.data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setGetOrderLoading(false);
+    }
+  }, []);
+
+  // Fetch order by ID
   const getOrderById = useCallback(async (orderId: string) => {
     setLoadingOrder(true);
     try {
@@ -132,12 +130,12 @@ export const OrderProvider = ({ children }: iChildren) => {
   return (
     <OrderContext.Provider
       value={{
-        getOrderLoading,
-        order,
-        getOrderData,
         getOrderById,
         OrderDetails,
         loadingOrder,
+        getOrderLoading,
+        order,
+        getOrderData,
       }}
     >
       {children}

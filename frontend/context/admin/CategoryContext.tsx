@@ -85,7 +85,7 @@ export const CategoryProvider = ({ children }: iChildren) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   // get all category
-  const limit = 7;
+  const limit = 5;
   const getAllCategories = async (page: number) => {
     setLoading(true);
     try {

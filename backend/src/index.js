@@ -52,6 +52,7 @@ app.use("/api/v1/review", reviewRoute);
 app.use("/api/v1/cart", cartRoute);
 app.use("/api/v1/shipping", shippingRoute);
 app.use("/api/v1/payment", paymentRoute);
+
 app.use("/api/v1/order", orderRoute);
 app.use("/api/v1/search", searchRoute);
 // app.use("/api/v1/order", cartRoute);

@@ -13,5 +13,5 @@ const reviewScheme = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
+reviewScheme.index({  comment: "text" });
 export const Review = mongoose.model("Review", reviewScheme);

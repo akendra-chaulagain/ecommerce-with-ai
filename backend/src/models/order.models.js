@@ -31,6 +31,8 @@ const orderSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+// categorySchema.index({ name: "text", description: "text" });
+
 // Set deliveryDate to 4 days after the order is created
 orderSchema.pre("save", function (next) {
   if (!this.orderDate) {
@@ -39,4 +41,5 @@ orderSchema.pre("save", function (next) {
   }
   next();
 });
+
 export const Order = mongoose.model("Order", orderSchema); // Exporting the model

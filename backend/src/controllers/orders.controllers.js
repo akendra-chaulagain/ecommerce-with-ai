@@ -132,15 +132,37 @@ const getUserAllOrders = async (req, res) => {
 // get all orders
 const getAllOrders = async (req, res) => {
   try {
-    // const { id } = req.params;
-    const respose = await Order.find().sort({ createdAt: -1 });
-    return res.status(200).json(respose);
+    const page = parseInt(req.query.page) || 1; // Default page is 1
+    const limit = parseInt(req.query.limit) || 10; // Default limit is 10
+    const skip = (page - 1) * limit; // Skip number of orders based on page
+
+    // Fetch total count for pagination
+    const totalOrders = await Order.countDocuments();
+
+    // Fetch paginated orders with sorting
+    const orders = await Order.find()
+      .sort({ createdAt: -1 }) // Sort by creation date descending
+      .skip(skip) // Skip the documents for pagination
+      .limit(limit); // Limit the number of documents fetched
+
+    return res.status(200).json({
+      success: true,
+      message: "Orders fetched successfully",
+      currentPage: page,
+      totalPages: Math.ceil(totalOrders / limit),
+      totalOrders,
+      data: orders,
+    });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Server error", error: error.message });
+    console.error("Order fetch error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while fetching orders",
+      error: error.message,
+    });
   }
 };
+
 // get order details
 const getOrderDetails = async (req, res) => {
   try {
@@ -170,7 +192,6 @@ const getOrderDetails = async (req, res) => {
           "products.details": "$productInfo",
         },
       },
-
 
       {
         $group: {
@@ -225,7 +246,7 @@ const getOrderDetails = async (req, res) => {
         },
       },
     ]);
-    return res.status(200).json({ message: "All orders", order:orders[0] });
+    return res.status(200).json({ message: "All orders", order: orders[0] });
   } catch (error) {
     return res
       .status(500)

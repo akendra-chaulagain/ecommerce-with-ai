@@ -2,14 +2,6 @@
 
 import React from "react";
 
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 
 import { Button } from "@/components/ui/button";
 import { useCategory } from "@/context/admin/CategoryContext";
@@ -38,6 +30,12 @@ const Page = () => {
       console.error("Error deleting category:", error);
     }
   };
+  
+    const handlePageChange = (newPage: number) => {
+      if (newPage >= 1 && newPage <= totalPages) {
+        setCurrentPage(newPage);
+      }
+    };
 
   return (
     <>
@@ -83,36 +81,24 @@ const Page = () => {
                 </span>
 
                 {/* Pagination Controls */}
-                <div className="flex justify-between mt-6">
-                  <Pagination>
-                    <PaginationContent>
-                      <PaginationItem>
-                        <PaginationPrevious
-                          href="#"
-                          onClick={() => setCurrentPage(currentPage - 1)}
-                          // disabled={currentPage === 1}
-                        />
-                      </PaginationItem>
-
-                      <PaginationItem>
-                        <PaginationLink
-                          href="#"
-                          onClick={() => setCurrentPage(totalPages)}
-                          isActive={currentPage === totalPages}
-                        >
-                          {totalPages}
-                        </PaginationLink>
-                      </PaginationItem>
-
-                      <PaginationItem>
-                        <PaginationNext
-                          href="#"
-                          onClick={() => setCurrentPage(currentPage + 1)}
-                          // disabled={currentPage === totalPages}
-                        />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
+                <div className="flex justify-end gap-4 mt-6 py-6 px-10">
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 border rounded bg-red-600 text-white"
+                  >
+                    Previous
+                  </button>
+                  <span className="px-4 py-2">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="px-4 py-2 border rounded bg-red-600 text-white"
+                  >
+                    Next
+                  </button>
                 </div>
               </div>
             </>

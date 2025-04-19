@@ -225,17 +225,36 @@ const deleteReview = async (req, res) => {
 
 const getAllReview = async (req, res) => {
   try {
-    const response = await Review.find().sort({ createdAt: -1 });
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    // Fetch total count for pagination
+    const totalReviews = await Review.countDocuments();
+
+    // Fetch paginated reviews with product details
+    const reviews = await Review.find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+
 
     return res.status(200).json({
-      message: "Review",
+      success: true,
+      message: "Reviews fetched successfully",
+      currentPage: page,
+      totalPages: Math.ceil(totalReviews / limit),
+      totalReviews,
 
-      data: response,
+
+      data: reviews,
     });
   } catch (error) {
-    return res.status(401).json({
-      message: "server error while fetching review",
-      message: error.message,
+    console.error("Review fetch error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while fetching reviews",
+      error: error.message,
     });
   }
 };
@@ -288,6 +307,8 @@ const getReviewDetailsById = async (req, res) => {
       .json({ message: "Server error please try again", error: error.message });
   }
 };
+
+
 
 export {
   createReview,

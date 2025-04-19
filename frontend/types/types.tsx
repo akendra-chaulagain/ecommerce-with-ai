@@ -124,6 +124,8 @@ export interface iReview{
   
 }
 
-export interface iReviewResponse{
-  data:iReview[]
+export interface iReviewResponse {
+  data: iReview[];
+  length: number;
+  totalPages:number
 }
