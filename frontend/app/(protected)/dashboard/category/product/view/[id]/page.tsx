@@ -25,7 +25,7 @@ interface iProduct {
     category: string;
     brand: string;
     color: string;
-    size: string[];
+    size: string;
     material: string;
     specifications: string[];
     status: string;
@@ -43,6 +43,7 @@ const Page = () => {
   const [product, setProduct] = useState<iProduct>();
   const [loading, setLoading] = useState(false);
 
+
   useEffect(() => {
     const getProductData = async () => {
       setLoading(true);
@@ -52,6 +53,7 @@ const Page = () => {
         );
         setProduct(response.data);
         setLoading(false);
+       
       } catch (error) {
         console.error("Error fetching product data:", error);
       } finally {
@@ -64,6 +66,10 @@ const Page = () => {
   const plugin = React.useRef(
     Autoplay({ delay: 2500, stopOnInteraction: true })
   );
+ 
+  const colorData = product?.data?.color?.split(",");
+  const sizeData = product?.data?.size?.split(",");
+ 
 
   return (
     <>
@@ -171,21 +177,23 @@ const Page = () => {
                 <div>
                   <p className="font-medium text-gray-800">Color:</p>
                   <div className="flex gap-2 mt-1">
-                    <div
-                      className="w-6 h-6 rounded-full border"
-                      style={{ backgroundColor: product?.data.color || "#000" }}
-                    />
+                    {colorData?.map((data, index) => (
+                      <span
+                        key={index}
+                        className="w-6 h-6 rounded-full border"
+                        style={{
+                          backgroundColor: data || "#000",
+                        }}
+                      ></span>
+                    ))}
                   </div>
                 </div>
                 <div className="col-span-2">
                   <p className="font-medium text-gray-800">Size:</p>
                   <div className="flex gap-2 mt-1 flex-wrap">
-                    {product?.data.size.map((size, index) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1 border rounded-md bg-gray-50"
-                      >
-                        {size}
+                    {sizeData?.map((data, index:number) => (
+                      <span key={index} className="px-3 py-1 border rounded-md bg-gray-50">
+                        {data}
                       </span>
                     ))}
                   </div>

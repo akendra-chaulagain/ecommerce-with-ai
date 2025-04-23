@@ -1,6 +1,5 @@
 "use client";
 import ConfirmDialog from "@/components/dashboard/dialog";
-import { Button } from "@/components/ui/button";
 import LoadingPage from "@/components/webiste/Loading";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { useNotificationToast } from "@/hooks/toast";
@@ -33,20 +32,16 @@ interface iProductDetails {
   gender: string;
   categoryId: string;
   images: string[];
-  newSizeOption: string;
-  newColorOption: string;
 }
 
 const Page = () => {
   const { id } = useParams();
   const showToast = useNotificationToast();
   const [productDetails, setProductDetails] = useState<iProduct>();
-  const [size, setSize] = useState<string[]>([]);
-  const [newSizeOption, setNewSizeOption] = useState("");
+
   const [existingImages, setExistingImages] = useState<string[]>([]);
   const [productImages, setProductImages] = useState<File[]>([]);
-  const [color, setColor] = useState<string[]>([]);
-  const [newColorOption, setNewColorOption] = useState("");
+
   const [loading, setLoading] = useState(false);
   // const [error, setError] = useState("");
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,12 +50,6 @@ const Page = () => {
       setProductImages([...productImages, files[0]]);
     }
   };
-
-  // const removeExistingImage = (index: number) => {
-  //   const updated = [...existingImages];
-  //   updated.splice(index, 1);
-  //   setExistingImages(updated);
-  // };
 
   const [product, setProduct] = useState<iProductDetails>({
     _id: "",
@@ -80,8 +69,6 @@ const Page = () => {
     gender: "",
     categoryId: "",
     images: [],
-    newSizeOption: "",
-    newColorOption: "",
   });
 
   const handleChange = (
@@ -111,9 +98,6 @@ const Page = () => {
       setProduct({
         ...productData,
       });
-
-      setSize([productData.size]);
-      setColor([productData.color]);
 
       setExistingImages(productData.images); // or productData.images, based on your API
     } catch (error) {
@@ -148,12 +132,13 @@ const Page = () => {
       formData.append("material", product.material);
       formData.append("discountPrice", product.discountPrice?.toString() || "");
       formData.append("specifications", product.specifications || "");
+      formData.append("size", product.size || "");
+      formData.append("color", product.color || "");
 
       // Flattened arrays as strings
-      // formData.append("size", JSON.stringify(size.flat()));
-      // formData.append("color", JSON.stringify(color.flat()));
-      size.forEach((s) => formData.append("size", s)); // For example: size = ['S', 'M']
-      color.forEach((c) => formData.append("color", c)); // For example: color = ['red', 'Black']
+
+      // size.forEach((s) => formData.append("size", s));
+      // color.forEach((c) => formData.append("color", c));
 
       // Append image files
       productImages.forEach((image) => {
@@ -168,7 +153,7 @@ const Page = () => {
       });
       setLoading(false);
       showToast("Product updated successfully");
-      // Resetting state after successful update
+
       fetchDataFromId();
     } catch (error) {
       console.log(error);
@@ -194,6 +179,7 @@ const Page = () => {
       setLoading(false);
     }
   };
+  console.log(product);
 
   return (
     <>
@@ -391,27 +377,29 @@ const Page = () => {
                   <input
                     name="size"
                     type="text"
-                    value={newSizeOption}
-                    onChange={(e) => setNewSizeOption(e.target.value)}
+                    value={product.size}
+                    onChange={handleChange}
                     className="flex-grow px-4 py-2 border border-gray-300 rounded-l-md focus:ring-red-500 focus:border-red-500"
                     placeholder="Enter size (e.g. S, M, L)"
                   />
-                  <button
+                  {/* <button
                     type="button"
                     onClick={() => {
                       // Prevent adding empty size options
-                      if (newSizeOption.trim() === "") return;
+                      if (!size.includes(newSizeOption.trim())) {
+                        setSize([...size, newSizeOption.trim()]);
+                      }
                       setSize([...size, newSizeOption]);
                       setNewSizeOption("");
                     }}
                     className="px-4 bg-red-500 text-white rounded-r-md"
                   >
                     Add
-                  </button>
+                  </button> */}
                 </div>
 
                 {/* Show added sizes */}
-                <div className="flex gap-2 flex-wrap">
+                {/* <div className="flex gap-2 flex-wrap">
                   {size.map((sz, idx) => (
                     <span
                       key={idx}
@@ -428,7 +416,7 @@ const Page = () => {
                       </button>
                     </span>
                   ))}
-                </div>
+                </div> */}
               </div>
               {/* color options */}
               <div className="mb-6">
@@ -440,12 +428,12 @@ const Page = () => {
                   <input
                     name="color"
                     type="text"
-                    value={newColorOption}
-                    onChange={(e) => setNewColorOption(e.target.value)}
+                    value={product.color}
+                    onChange={handleChange}
                     className="flex-grow px-4 py-2 border border-gray-300 rounded-l-md focus:ring-red-500 focus:border-red-500"
                     placeholder="Enter color (Red, Blue, Green, etc.)"
                   />
-                  <button
+                  {/* <button
                     className="px-4 bg-red-500 text-white rounded-r-md"
                     type="button"
                     onClick={() => {
@@ -456,9 +444,9 @@ const Page = () => {
                     }}
                   >
                     Add
-                  </button>
+                  </button> */}
                 </div>
-                <div className="flex gap-2 flex-wrap mt-3">
+                {/* <div className="flex gap-2 flex-wrap mt-3">
                   {color.map((sz, idx) => (
                     <span
                       key={idx}
@@ -475,7 +463,7 @@ const Page = () => {
                       </button>
                     </span>
                   ))}
-                </div>
+                </div> */}
               </div>
               {/* Product Images */}
               <div className="mb-6">

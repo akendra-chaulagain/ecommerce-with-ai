@@ -5,7 +5,7 @@ import Items from "../components/Items";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { useParams } from "next/navigation";
 // import Link from "next/link";
-import { iCategoryResponse, ApiResponse } from "@/types/types";
+import { iCategoryResponse } from "@/types/types";
 
 const Page = () => {
   // const router = useRouter();
@@ -16,10 +16,8 @@ const Page = () => {
   useEffect(() => {
     (async () => {
       try {
-        const response = await axiosInstence.get<ApiResponse>(
-          `/category/${id}`
-        );
-        setCategory(response.data.products[0]);
+        const response = await axiosInstence.get(`/category/${id}`);
+        setCategory(response.data);
       } catch (error) {
         setError(true);
         console.log(error);
@@ -27,6 +25,7 @@ const Page = () => {
     })();
   }, [id]);
   console.log(error);
+  console.log(category);
 
   return (
     <>

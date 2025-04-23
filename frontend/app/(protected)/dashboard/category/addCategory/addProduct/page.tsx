@@ -23,11 +23,10 @@ const AddProduct = () => {
   const [sku, setSku] = useState("");
   const [material, setMaterial] = useState("");
   const [isActive, setIsActive] = useState(true);
-  const [size, setSize] = useState<string[]>([]);
-  const [newSizeOption, setNewSizeOption] = useState("");
+  const [size, setSize] = useState("");
 
-  const [color, setColor] = useState<string[]>([]);
-  const [newColorOption, setNewColorOption] = useState("");
+  const [color, setColor] = useState('');
+ 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -61,8 +60,10 @@ const AddProduct = () => {
     formData.append("price", price);
     formData.append("discountPrice", discountPrice);
     formData.append("brand", brand);
-    formData.append("size", JSON.stringify(size));
-    formData.append("color", JSON.stringify(color));
+    // formData.append("size", JSON.stringify(size));
+    // formData.append("color", JSON.stringify(color));
+    formData.append("size", size);
+    formData.append("color", color);
 
     formData.append("sku", sku);
     formData.append("material", material);
@@ -100,10 +101,10 @@ const AddProduct = () => {
       setSku("");
       setMaterial("");
       setIsActive(true);
-      setSize([]);
-      setColor([]);
-      setNewSizeOption("");
-      setNewColorOption("");
+      setSize('');
+      setColor('');
+      setSize("");
+      
       setError("");
 
       showToast("Product added successfully");
@@ -325,12 +326,12 @@ const AddProduct = () => {
                   <input
                     name="size"
                     type="text"
-                    value={newSizeOption}
-                    onChange={(e) => setNewSizeOption(e.target.value)}
+                    value={size}
+                    onChange={(e) => setSize(e.target.value)}
                     className="flex-grow px-4 py-2 border border-gray-300 rounded-l-md focus:ring-red-500 focus:border-red-500"
                     placeholder="Enter size (e.g. S, M, L)"
                   />
-                  <button
+                  {/* <button
                     type="button"
                     onClick={() => {
                       setSize([...size, newSizeOption]);
@@ -339,11 +340,11 @@ const AddProduct = () => {
                     className="px-4 bg-red-500 text-white rounded-r-md"
                   >
                     Add
-                  </button>
+                  </button> */}
                 </div>
 
                 {/* Show added sizes */}
-                <div className="flex gap-2 flex-wrap">
+                {/* <div className="flex gap-2 flex-wrap">
                   {size.map((sz, idx) => (
                     <span
                       key={idx}
@@ -360,7 +361,7 @@ const AddProduct = () => {
                       </button>
                     </span>
                   ))}
-                </div>
+                </div> */}
               </div>
 
               {/* Color Options */}
@@ -373,12 +374,12 @@ const AddProduct = () => {
                   <input
                     name="color"
                     type="text"
-                    value={newColorOption}
-                    onChange={(e) => setNewColorOption(e.target.value)}
+                    value={color}
+                    onChange={(e) => setColor(e.target.value)}
                     className="flex-grow px-4 py-2 border border-gray-300 rounded-l-md focus:ring-red-500 focus:border-red-500"
                     placeholder="Enter color (Red, Blue, Green, etc.)"
                   />
-                  <button
+                  {/* <button
                     className="px-4 bg-red-500 text-white rounded-r-md"
                     type="button"
                     onClick={() => {
@@ -389,9 +390,9 @@ const AddProduct = () => {
                     }}
                   >
                     Add
-                  </button>
+                  </button> */}
                 </div>
-                <div className="flex gap-2 flex-wrap mt-3">
+                {/* <div className="flex gap-2 flex-wrap mt-3">
                   {color.map((sz, idx) => (
                     <span
                       key={idx}
@@ -408,7 +409,7 @@ const AddProduct = () => {
                       </button>
                     </span>
                   ))}
-                </div>
+                </div> */}
               </div>
 
               {/* Product Images */}

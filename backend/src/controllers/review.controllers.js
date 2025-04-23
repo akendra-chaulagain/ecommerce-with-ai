@@ -125,14 +125,7 @@ const getAllReviewAccordingToProduct = async (req, res) => {
                 $expr: { $eq: ["$_id", "$$productId"] },
               },
             },
-            {
-              $project: {
-                name: 1,
-                price: 1,
-                description: 1,
-                images: 1,
-              },
-            },
+           
           ],
           as: "details",
         },

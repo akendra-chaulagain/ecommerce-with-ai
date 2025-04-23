@@ -23,9 +23,14 @@ export interface iProduct {
   _id: string;
   details?: iProductDetails;
   reviews: iReview[];
-  images: [];
+  images: [0];
   price: string;
   description: string;
+  categoryId: number;
+  name: string;
+  brand: string;
+  color: string;
+  // images: string;
 }
 
 export interface apiResponse {
@@ -46,6 +51,8 @@ export interface iProductDetails {
   gender: string;
   isActive: boolean;
   SKU: number;
+  color:string
+  size:string
 }
 
 export interface iReview {
@@ -67,12 +74,33 @@ export interface iCategoryResponse {
   products: iProduct[];
   details: iProductDetails;
   length: number | null;
+  images: [0];
+  price: number;
+  categoryId: number;
+  brand:string
+  color:string
+  
 }
 
 export interface ApiResponse {
   message: string;
-  products: iCategoryResponse[]; // This is an array of CategoryResponse
+  products: iCategoryResponse; // This is an array of CategoryResponse
 }
+
+export interface ICategory {
+  _id: string;
+  name: string;
+  categoryImage: string;
+  children?: ICategory[];
+  products: iProduct[];
+}
+
+export interface ICategoryTreeResponse {
+  message: string;
+  data: ICategory[];
+
+}
+
 export interface iCartResponse {
   userId: string;
   _id: string;
@@ -115,17 +143,15 @@ export interface iOrder {
   orderStatus: string;
 }
 
-
-export interface iReview{
-  _id:string,
-  comment:string,
-  product:string,
-  user:string
-  
+export interface iReview {
+  _id: string;
+  comment: string;
+  product: string;
+  user: string;
 }
 
 export interface iReviewResponse {
   data: iReview[];
   length: number;
-  totalPages:number
+  totalPages: number;
 }

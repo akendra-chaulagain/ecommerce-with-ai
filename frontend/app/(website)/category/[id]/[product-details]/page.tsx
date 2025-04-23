@@ -67,8 +67,6 @@ const Page = () => {
   };
   // add to cart
   const handleAddToCart = async () => {
-    console.log('ak');
-    
     try {
       const response = await axiosInstence.post(
         "/cart/add-to-cart",
@@ -83,6 +81,10 @@ const Page = () => {
       console.log(error);
     }
   };
+
+  const colorData = product?.details?.color?.split(",");
+  const sizeData = product?.details?.size?.split(",");
+  
 
   return (
     <>
@@ -158,33 +160,46 @@ const Page = () => {
                 </div>
               </div>
               <hr />
+              {/* price */}
 
-              {/* color type */}
               <div className="my-[20px]">
                 <h1 className="text-[20px]">
-                  COLOR: <span className="font-semibold"> BLUE ICE</span>
+                  Price:{" "}
+                  <span className="font-semibold  ">
+                    {" "}
+                    ${product?.details?.price}
+                  </span>
                 </h1>
+              </div>
+              <hr />
+              {/* color type */}
+              <div className="my-[20px] flex">
+                <h1 className="text-[20px]">COLOR:</h1>
+                <div className="flex gap-2 mt-1 ml-[15px]">
+                  {colorData?.map((data, index) => (
+                    <span
+                      key={index}
+                      className="w-6 h-6 rounded-full border"
+                      style={{
+                        backgroundColor: data || "#000",
+                      }}
+                    ></span>
+                  ))}
+                </div>
               </div>
               <hr />
               {/* size */}
               <div className="my-[20px]">
                 <h1 className="text-[20px] mb-[10px]">SIZE</h1>
-                <div className="flex gap-2">
-                  <Button className="bg-white text-black border-2 hover:text-white">
-                    S
-                  </Button>
-                  <Button className="bg-white text-black border-2 hover:text-white">
-                    X
-                  </Button>
-                  <Button className="bg-white text-black border-2 hover:text-white">
-                    XL
-                  </Button>
-                  <Button className="bg-white text-black border-2 hover:text-white">
-                    XXL
-                  </Button>
-                  <Button className="bg-white text-black border-2 hover:text-white">
-                    XXXL
-                  </Button>
+                <div className="flex gap-2 mt-1 flex-wrap">
+                  {sizeData?.map((data, index: number) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 border rounded-md bg-gray-50"
+                    >
+                      {data}
+                    </span>
+                  ))}
                 </div>
               </div>
               <hr />
