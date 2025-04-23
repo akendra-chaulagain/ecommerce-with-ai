@@ -15,47 +15,45 @@ interface iChildren {
 interface iUser {
   // user: User | null;
   loading: boolean;
-  getLogunUser: () => Promise<void>;
+  getLoginUser: () => Promise<void>;
   user: User | null;
 }
 
 const defaultUserValue: iUser = {
   user: null,
   loading: true,
-  getLogunUser: async () => {},
+  getLoginUser: async () => {},
 };
 
 const AuthContext = createContext(defaultUserValue);
 
 export const AuthProvider = ({ children }: iChildren) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
 
-  const getLogunUser = async () => {
-    setLoading(true);
-    try {
-      const res = await axiosInstence.get("users/login-user/profile", {
-        withCredentials: true,
-      });
+const [loading, setLoading] = useState<boolean>(true); 
 
-      if (res.data) {
-        setUser(res.data ?? null); // Assuming res.data contains user information
-      } else {
-        setUser(null); // Set null if the response doesn't have user data
-      }
-    } catch (error) {
-      setUser(null);
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-  useEffect(() => {
-    getLogunUser();
-  }, []);
+const getLoginUser = async () => {
+  setLoading(true);
+  try {
+    const res = await axiosInstence.get("users/login-user/profile", {
+      withCredentials: true,
+    });
+    setUser(res.data ?? null);
+  } catch (error) {
+    setUser(null);
+    console.error("Error fetching user", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+useEffect(() => {
+  getLoginUser();
+}, []);
+
 
   return (
-    <AuthContext.Provider value={{ user, loading, getLogunUser }}>
+    <AuthContext.Provider value={{ user, loading, getLoginUser }}>
       {children}
     </AuthContext.Provider>
   );
