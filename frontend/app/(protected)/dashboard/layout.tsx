@@ -42,8 +42,8 @@ export default function DashboardLayout({
     return () => clearTimeout(delayDebounce);
   }, [searchTerm]);
 
-  const { user, loading } = useAuth();
-  const router = useRouter();
+  const { user } = useAuth();
+
 
   // redirect to the webiste
   // useEffect(() => {
@@ -65,7 +65,7 @@ export default function DashboardLayout({
 
   const isAdmin = user?.role === "Admin";
   if (!isAdmin) {
-    router.push("/");
+  return <LoadingPage/>
   }
 
   return (

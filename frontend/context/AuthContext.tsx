@@ -30,10 +30,10 @@ const AuthContext = createContext(defaultUserValue);
 export const AuthProvider = ({ children }: iChildren) => {
   const [user, setUser] = useState<User | null>(null);
 
-const [loading, setLoading] = useState<boolean>(true); 
+const [loading, setLoading] = useState<boolean>(false); 
 
 const getLoginUser = async () => {
-  setLoading(true);
+  // setLoading(true);
   try {
     const res = await axiosInstence.get("users/login-user/profile", {
       withCredentials: true,
