@@ -46,20 +46,26 @@ export default function DashboardLayout({
   const router = useRouter();
 
   // redirect to the webiste
-  useEffect(() => {
-    if (loading) return;
+  // useEffect(() => {
+  //   if (loading) return;
 
-    if (!user || user.role !== "Admin") {
-      router.push("/login");
-    }
-  }, [user, router, loading]); // Ensure this runs when user or loading state changes
+  //   if (user?.role !== "Admin") {
+  //     router.push("/login");
+  //   }
+  // }, [user, router, loading]);
 
-  if (loading) {
-    return <LoadingPage />; // Show loading screen while fetching user data
-  }
+  // if (loading) {
+  //   return <LoadingPage />;
+  // }
 
-  if (!user || user.role !== "Admin") {
-    return null; // Return null if the user is not admin, blocking access to the dashboard
+  // if (user?.role !== "Admin") {
+  //   return null;
+  // }
+  // const user = await currentUser();
+
+  const isAdmin = user?.role === "Admin";
+  if (!isAdmin) {
+    router.push("/");
   }
 
   return (
