@@ -31,7 +31,6 @@ const Items = ({ category, colorData }: ItemsProps) => {
       console.log(error);
     }
   };
-  console.log(colorData);
 
   return (
     <>

@@ -243,27 +243,72 @@ const productDetails = async (req, res) => {
     });
   }
 };
-const getAllUniqueColors = async (req, res) => {
+const getAllUniqueAttributes = async (req, res) => {
   try {
-    const products = await Product.find({}, { color: 1 });
+    const products = await Product.find(
+      {},
+      { color: 1, size: 1, material: 1, brand: 1 }
+    );
 
-    const allColors = products.flatMap((product) => {
-      if (!product.color) return []; // skip if color is undefined/null
-      return product.color
-        .split(",")
-        .map((c) => c.trim().toLowerCase())
-        .filter((c) => c.length > 0); // ignore empty strings
+    const allColors = [];
+    const allSizes = [];
+    const allMaterials = [];
+    const allBrands = [];
+
+    products.forEach((product) => {
+      if (product.color) {
+        const colors = product.color
+          .split(",")
+          .map((c) => c.trim().toLowerCase())
+          .filter((c) => c.length > 0);
+        allColors.push(...colors);
+      }
+
+      if (product.size) {
+        const sizes = product.size
+          .split(",")
+          .map((s) => s.trim().toLowerCase())
+          .filter((s) => s.length > 0);
+        allSizes.push(...sizes);
+      }
+
+      if (product.material) {
+        const materials = product.material
+          .split(",")
+          .map((m) => m.trim().toLowerCase())
+          .filter((m) => m.length > 0);
+        allMaterials.push(...materials);
+      }
+
+      if (product.brand) {
+        allBrands.push(product.brand.trim().toLowerCase());
+      }
     });
-
-    const uniqueColors = [...new Set(allColors)];
 
     return res.status(200).json({
       success: true,
-      colors: uniqueColors,
+      filters: [
+        {
+          name: "Color",
+          values: [...new Set(allColors)],
+        },
+        {
+          name: "Size",
+          values: [...new Set(allSizes)],
+        },
+        {
+          name: "Material",
+          values: [...new Set(allMaterials)],
+        },
+        {
+          name: "Brand",
+          values: [...new Set(allBrands)],
+        },
+      ],
     });
   } catch (error) {
     return res.status(500).json({
-      message: "Error fetching colors",
+      message: "Error fetching product attributes",
       error: error.message,
     });
   }
@@ -280,16 +325,15 @@ const getProductsByCategoryAndColor = async (req, res) => {
   }
 
   try {
-    
     const products = await Product.find({
-      categoryId, 
+      categoryId,
       color: { $regex: new RegExp(`\\b${color}\\b`, "i") }, // case-insensitive
     });
 
     return res.status(200).json({
       success: true,
       products,
-      color
+      color,
     });
   } catch (error) {
     return res.status(500).json({
@@ -299,31 +343,68 @@ const getProductsByCategoryAndColor = async (req, res) => {
   }
 };
 
-const getAllUniqueMaterials = async (req, res) => {
-  try {
-    const products = await Product.find({}, { material: 1 });
+const getProductsByCategoryAndFilters = async (req, res) => {
+  const { categoryId, color, material, size, brand } = req.query;
 
-    const allMaterial = products.flatMap((product) => {
-      if (!product.material) return []; // skip if material is undefined/null
-      return product.material
-        .split(",")
-        .map((c) => c.trim().toLowerCase())
-        .filter((c) => c.length > 0); // ignore empty strings
+  if (!categoryId) {
+    return res.status(400).json({
+      message: "Category ID is required",
     });
+  }
 
-    const uniqueMaterial = [...new Set(allMaterial)];
+  try {
+    // Build dynamic match stage based on provided filters
+    const matchStage = {
+      categoryId: new mongoose.Types.ObjectId(categoryId),
+    };
+
+    if (color) {
+      matchStage.color = { $regex: new RegExp(`\\b${color}\\b`, "i") }; // case-insensitive regex for color
+    }
+
+    if (material) {
+      matchStage.material = { $regex: new RegExp(`\\b${material}\\b`, "i") }; // case-insensitive regex for material
+    }
+
+    if (size) {
+      matchStage.size = { $regex: new RegExp(`\\b${size}\\b`, "i") };
+    }
+
+    if (brand) {
+      matchStage.brand = {
+        $regex: new RegExp(`\\b${brand}\\b`, "i"),
+      }; // case-insensitive regex for material
+    }
+
+    const products = await Product.aggregate([
+      { $match: matchStage }, // Apply filters dynamically
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          categoryId: 1,
+          color: 1,
+          material: 1,
+          size: 1,
+          price: 1,
+          brand: 1,
+          // You can add more fields as needed
+        },
+      },
+    ]);
 
     return res.status(200).json({
       success: true,
-      materials: uniqueMaterial,
+      products,
     });
   } catch (error) {
     return res.status(500).json({
-      message: "Error fetching materials",
+      message: "Error fetching products",
       error: error.message,
     });
   }
 };
+
 export {
   createProduct,
   editProduct,
@@ -332,6 +413,6 @@ export {
   productDetails,
   deleteImgae,
   getProductsByCategoryAndColor,
-  getAllUniqueColors,
-  getAllUniqueMaterials,
+  getAllUniqueAttributes,
+  getProductsByCategoryAndFilters,
 };

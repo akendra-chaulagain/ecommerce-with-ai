@@ -9,9 +9,9 @@ import {
   deleteProduct,
   editProduct,
   getAllproducts,
-  getAllUniqueColors,
-  getAllUniqueMaterials,
+  getAllUniqueAttributes,
   getProductsByCategoryAndColor,
+  getProductsByCategoryAndFilters,
   productDetails,
 } from "../controllers/product.controllers.js";
 
@@ -80,13 +80,13 @@ router
   .route("/get-product-according-to-color")
   .get(getProductsByCategoryAndColor);
 
-router.route("/get-color").get(getAllUniqueColors);
+router.route("/get-filter").get(getAllUniqueAttributes);
 
-router.route("/get-material").get(
+router.route("/filter").get(
   // verify token
 
   // create Product
-  getAllUniqueMaterials
+  getProductsByCategoryAndFilters
 );
 
 export default router;

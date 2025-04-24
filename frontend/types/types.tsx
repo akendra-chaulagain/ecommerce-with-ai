@@ -159,4 +159,5 @@ export interface iReviewResponse {
 export interface iColor {
   color: string;
   products: iProduct[];
+  length:number
 }
