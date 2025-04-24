@@ -91,7 +91,7 @@ export interface ICategory {
   _id: string;
   name: string;
   categoryImage: string;
-  children?: ICategory[];
+  children: ICategory[] ;
   products: iProduct[];
 }
 

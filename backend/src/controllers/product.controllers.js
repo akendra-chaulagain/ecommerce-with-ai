@@ -244,6 +244,21 @@ const productDetails = async (req, res) => {
   }
 };
 
+// get poduct according to the product
+const getProductAccordingToColor = async (req, res) => {
+  const {color}= req.body
+  console.log(color);
+  
+  try {
+
+  } catch (error) {
+    return res.status(401).json({
+      message: "server error while fetching product",
+      message: error.message,
+    });
+  }
+};
+
 export {
   createProduct,
   editProduct,
@@ -251,4 +266,5 @@ export {
   getAllproducts,
   productDetails,
   deleteImgae,
+  getProductAccordingToColor,
 };
