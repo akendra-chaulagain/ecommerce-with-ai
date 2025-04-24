@@ -9,7 +9,9 @@ import {
   deleteProduct,
   editProduct,
   getAllproducts,
-  getProductAccordingToColor,
+  getAllUniqueColors,
+  getAllUniqueMaterials,
+  getProductsByCategoryAndColor,
   productDetails,
 } from "../controllers/product.controllers.js";
 
@@ -74,11 +76,17 @@ router.route("/delete-image/:id").delete(
   deleteImgae
 );
 
-router.route("/get-product-ccording-to-color").get(
+router
+  .route("/get-product-according-to-color")
+  .get(getProductsByCategoryAndColor);
+
+router.route("/get-color").get(getAllUniqueColors);
+
+router.route("/get-material").get(
   // verify token
 
   // create Product
-  getProductAccordingToColor
+  getAllUniqueMaterials
 );
 
 export default router;

@@ -243,22 +243,87 @@ const productDetails = async (req, res) => {
     });
   }
 };
-
-// get poduct according to the product
-const getProductAccordingToColor = async (req, res) => {
-  const {color}= req.body
-  console.log(color);
-  
+const getAllUniqueColors = async (req, res) => {
   try {
+    const products = await Product.find({}, { color: 1 });
 
+    const allColors = products.flatMap((product) => {
+      if (!product.color) return []; // skip if color is undefined/null
+      return product.color
+        .split(",")
+        .map((c) => c.trim().toLowerCase())
+        .filter((c) => c.length > 0); // ignore empty strings
+    });
+
+    const uniqueColors = [...new Set(allColors)];
+
+    return res.status(200).json({
+      success: true,
+      colors: uniqueColors,
+    });
   } catch (error) {
-    return res.status(401).json({
-      message: "server error while fetching product",
-      message: error.message,
+    return res.status(500).json({
+      message: "Error fetching colors",
+      error: error.message,
     });
   }
 };
 
+// get poduct according to the color
+const getProductsByCategoryAndColor = async (req, res) => {
+  const { categoryId, color } = req.query;
+
+  if (!categoryId || !color) {
+    return res.status(400).json({
+      message: "Category ID and Color are required",
+    });
+  }
+
+  try {
+    
+    const products = await Product.find({
+      categoryId, 
+      color: { $regex: new RegExp(`\\b${color}\\b`, "i") }, // case-insensitive
+    });
+
+    return res.status(200).json({
+      success: true,
+      products,
+      color
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error fetching products",
+      error: error.message,
+    });
+  }
+};
+
+const getAllUniqueMaterials = async (req, res) => {
+  try {
+    const products = await Product.find({}, { material: 1 });
+
+    const allMaterial = products.flatMap((product) => {
+      if (!product.material) return []; // skip if material is undefined/null
+      return product.material
+        .split(",")
+        .map((c) => c.trim().toLowerCase())
+        .filter((c) => c.length > 0); // ignore empty strings
+    });
+
+    const uniqueMaterial = [...new Set(allMaterial)];
+
+    return res.status(200).json({
+      success: true,
+      materials: uniqueMaterial,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error fetching materials",
+      error: error.message,
+    });
+  }
+};
 export {
   createProduct,
   editProduct,
@@ -266,5 +331,7 @@ export {
   getAllproducts,
   productDetails,
   deleteImgae,
-  getProductAccordingToColor,
+  getProductsByCategoryAndColor,
+  getAllUniqueColors,
+  getAllUniqueMaterials,
 };

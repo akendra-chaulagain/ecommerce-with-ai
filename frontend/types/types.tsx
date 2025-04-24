@@ -155,3 +155,8 @@ export interface iReviewResponse {
   length: number;
   totalPages: number;
 }
+
+export interface iColor {
+  color: string;
+  products: iProduct[];
+}

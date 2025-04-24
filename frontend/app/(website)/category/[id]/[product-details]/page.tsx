@@ -86,6 +86,7 @@ const Page = () => {
   const sizeData = product?.details?.size?.split(",");
   
 
+
   return (
     <>
       <div className="mt-[30px]">
