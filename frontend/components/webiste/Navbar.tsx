@@ -8,6 +8,7 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import { axiosInstence } from "@/hooks/axiosInstence";
+
 import { ICategory } from "@/types/types";
 const Navbar = () => {
   const [category, setCategory] = useState<ICategory[]>([]);
@@ -25,6 +26,8 @@ const Navbar = () => {
   useEffect(() => {
     getAllCategories();
   }, []);
+  // console.log(category);
+  
   return (
     <div className="mt-8 px-8 text-[15px] font-semibold hidden sm:hidden lg:block">
       <ul className="flex justify-between gap-8 items-center">

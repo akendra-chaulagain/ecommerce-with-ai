@@ -1,9 +1,13 @@
+
 import Navbar from "@/components/webiste/Navbar";
 import Logobar from "@/components/webiste/Logobar";
 import Topbar from "@/components/webiste/Topbar";
 import { Toaster } from "@/components/ui/toaster";
 
 import Footer from "@/components/webiste/Footer";
+// import ResponsiveNavBar from "@/components/webiste/ResposnsiveNavbar.jsx";
+import React from "react";
+import ResponsiveNavBar from "@/components/webiste/ResposnsiveNavbar";
 
 export default async function DashboardLayout({
   children,
@@ -20,9 +24,11 @@ export default async function DashboardLayout({
   return (
     <div className="website">
       <header>
-        <Topbar />
-        <Logobar />
-        <Navbar />
+        <ResponsiveNavBar>
+          <Topbar />
+          <Logobar />
+          <Navbar />
+        </ResponsiveNavBar>
       </header>
       {children}
       <footer>

@@ -1,80 +1,137 @@
 "use client";
-import { ArrowRight, Eye, ShoppingCart, Star } from "lucide-react";
+import { ArrowRight, Eye, ShoppingCart } from "lucide-react";
 import Image from "next/image";
-import React from "react";
-import Category from "../../category.json";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { iProduct } from "@/types/types";
+import { axiosInstence } from "@/hooks/axiosInstence";
 
 const Product = () => {
+  const [product, setproduct] = useState<iProduct[]>([]);
+  const [error, setError] = useState<boolean>(false);
+  console.log(error);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await axiosInstence.get("/product/home-product");
+        setproduct(response.data.data); // Only 6 items
+      } catch (error) {
+        setError(true);
+        console.log(error);
+      }
+    })();
+  }, []);
+
   return (
     <>
       <section className="bg-white">
         <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center mb-12">
-            <h1 className="font-semibold text-[27px] mb-[20px] tracking-wide text-[#adb5bd]">
-              #OUR PRODUCTS
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold tracking-wide text-[#555] mb-3">
+              #OUR LATEST PRODUCTS
             </h1>
           </div>
 
-          <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 sm:gap-8">
-            {Category.map((product) => (
-              <div key={product.id} className="group flex flex-col">
-                <div className="relative overflow-hidden rounded-lg bg-gray-100">
-                  <div className="relative aspect-[3/4] overflow-hidden">
+          <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6 sm:gap-8">
+            {product?.map((product) => (
+              <div
+                key={product._id}
+                className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1"
+              >
+                {/* Image Container */}
+                <div className="relative aspect-square overflow-hidden">
+                  <Link
+                    href={`/category/${product.categoryId}/product-details-${product._id}`}
+                    className="block h-full"
+                  >
                     <Image
-                      src={product.photo}
+                      src={product.images?.[0] || "/placeholder-product.jpg"}
                       alt={product.name}
                       fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="object-cover transition-transform duration-300 group-hover:scale-110"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 60vw, 30vw"
                     />
-                  </div>
-                  <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </Link>
+
+                  {/* Quick Action Buttons */}
+                  <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <button
-                      className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
-                      aria-label="Add to wishlist"
-                    >
-                      <ShoppingCart className="h-5 w-5" />
-                    </button>
-                    <button
-                      className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
+                      // onClick={() => handleAddToCart(product._id)}
+                      className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-red-600 hover:text-white"
                       aria-label="Quick view"
                     >
-                      <Eye className="h-5 w-5" />
-                    </button>
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform">
-                    <button className="w-full bg-black text-white py-3 font-medium flex items-center justify-center">
-                      <ShoppingCart className="h-5 w-5 mr-2" />
-                      Add to Cart
+                      <Link
+                        href={`/category/${product.categoryId}/product-details-${product._id}`}
+                      >
+                        <Eye className="w-5 h-5" />
+                      </Link>
                     </button>
                   </div>
                 </div>
-                <div className="mt-4 flex-1 flex flex-col justify-between">
-                  <h3 className="font-medium text-lg break-words">
-                    {product.name}
-                  </h3>
-                  <div className="flex justify-between items-center mt-2">
-                    <p className="font-bold">${product.price}</p>
-                    <div className="flex items-center">
-                      <Star className="h-4 w-4 text-red-600 fill-red-600" />
-                      <Star className="h-4 w-4 text-red-600 fill-red-600" />
-                      <Star className="h-4 w-4 text-red-600 fill-red-600" />
-                      <Star className="h-4 w-4 text-red-600 fill-red-600" />
-                      <Star className="h-4 w-4 text-red-600 fill-red-600" />
+
+                {/* Product Info */}
+                <div className="p-4 space-y-3">
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-1">
+                      {product.brand && (
+                        <span className="text-xs font-semibold text-red-600 uppercase tracking-wide">
+                          {product.brand}
+                        </span>
+                      )}
+                      <Link
+                        href={`/category/${product.categoryId}/product-details-${product._id}`}
+                        className="block"
+                      >
+                        <h3 className="text-lg font-bold text-gray-900 hover:text-red-600 transition-colors line-clamp-2">
+                          {product.name}
+                        </h3>
+                      </Link>
                     </div>
+                  </div>
+
+                  <p className="text-sm text-gray-600 line-clamp-3">
+                    {product.description}
+                  </p>
+
+                  {/* Color Swatches */}
+                  {product.color && (
+                    <div className="flex gap-2">
+                      {product.color.split(",").map((clr, i) => (
+                        <span
+                          key={i}
+                          className="w-5 h-5 rounded-full border-2 border-gray-200 shadow-sm"
+                          style={{ backgroundColor: clr.trim() }}
+                          aria-label={`Color option: ${clr.trim()}`}
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Price & Add to Cart */}
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-xl font-bold text-red-600">
+                        ${product.discountPrice || product.price}
+                      </span>
+                      {product.discountPrice && (
+                        <span className="text-sm text-gray-400 line-through">
+                          ${product.price}
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      // onClick={() => handleAddToCart(product._id)}
+                      className="p-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-all duration-300 hover:scale-110 shadow-md hover:shadow-red-300"
+                      aria-label="Add to cart"
+                    >
+                      <ShoppingCart className="w-5 h-5" />
+                    </button>
                   </div>
                 </div>
               </div>
             ))}
-          </div>
-          <div className="flex justify-end mt-10">
-            <Link
-              href="/products"
-              className="text-gray-900 font-medium inline-flex items-center hover:underline"
-            >
-              View All
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
           </div>
         </div>
       </section>
@@ -83,7 +140,7 @@ const Product = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2">
             <div className="bg-red-600 text-white p-8 sm:p-12 lg:p-16 flex items-center">
               <div>
-                <span className="inline-block px-4 py-1 bg-white text-gray-900 text-sm font-bold mb-6">
+                <span className="inline-block px-4 py-1  text-white-900 text-sm font-bold mb-6">
                   NEW COLLECTION
                 </span>
                 <h2 className="text-3xl md:text-4xl font-bold mb-6">
@@ -94,7 +151,7 @@ const Product = () => {
                   the modern lifestyle.
                 </p>
                 <Link
-                  href="/collections/featured"
+                  href="/products"
                   className="inline-flex items-center bg-white text-gray-900 px-8 py-4 font-medium hover:bg-gray-200 transition-colors"
                 >
                   Discover More

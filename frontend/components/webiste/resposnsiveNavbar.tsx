@@ -1,185 +1,164 @@
-import React from "react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+"use client";
 
+import React, { useEffect, useState, PropsWithChildren } from "react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { MapPin, Menu, Search, ShoppingCart, User } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { ICategory } from "@/types/types";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { axiosInstence } from "@/hooks/axiosInstence";
+import { useRouter } from "next/navigation";
 
-const resposnsiveBar = () => {
+const ResponsiveNavBar: React.FC<PropsWithChildren> = ({ children }) => {
+  const [category, setCategory] = useState<ICategory[]>([]);
+  const router = useRouter();
+  const [searchtext, setSearchText] = useState("");
+
+  const handleClick = () => {
+    router.push(`/search?q=${searchtext}`);
+  };
+
+  const getAllCategories = async () => {
+    try {
+      const res = await axiosInstence.get(`/category/tree`, {
+        withCredentials: true,
+      });
+      setCategory(res.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getAllCategories();
+  }, []);
+  
+
   return (
     <>
-      {/* offer on top of the screen  */}
-
-      <div className=" bg-black h-auto  w-auto text-white text-[14px]  lg:hidden">
-        {/* <div className="flex justify -center items-center p-1.5 sm:flex sm:justify-start"> */}
-        <div className=" items-center sm:flex sm:justify-center md:flex md:justify-center grid  justify-center p-1.5">
-          <div className="cursor-pointer pr-[14px] ">
+      {/* Mobile Top Offer Banner */}
+      <div className="bg-black text-white text-[14px] lg:hidden">
+        <div className="items-center sm:flex sm:justify-center md:flex md:justify-center grid justify-center p-1.5">
+          <div className="cursor-pointer pr-[14px]">
             25% DISCOUNT ON SCOTIA CREDIT CARD!
           </div>
-          <div className=" flex justify-center cursor-pointer text-[#c1c1c1]">
+          <div className="flex justify-center cursor-pointer text-[#c1c1c1]">
             <Link
-              href="/category"
+              href="/products"
               className="underline mr-[7px] hover:text-white"
             >
               SHOP NOW
-            </Link>
-            <span className="mr-[7px] ">|</span>
-            <Link href="/category/1" className="underline hover:text-white">
-              DETAILS
             </Link>
           </div>
         </div>
       </div>
 
+      {/* Mobile Sheet Menu */}
       <Sheet>
-        <SheetTrigger className="w-full lg:hidden mt-[10px] pr-[6px] pl-[6px] ">
-          {/* <SheetTrigger className="grid grid-cols-7 items-center lg:hidden"> */}
+        <SheetTrigger className="w-full lg:hidden mt-[10px] px-[6px]">
           <div className="grid grid-cols-7 items-center">
-            {/* menu button */}
             <Menu size={30} />
-
-            {/* location icon */}
             <div className="flex justify-start cursor-pointer">
               <MapPin />
             </div>
-            {/* logo */}
-            <div className=" col-span-3">
-              <Link href={"/"}>
-                {" "}
+            <div className="col-span-3">
+              <Link href="/">
                 <Image
                   src="/images/logo.svg"
                   alt="logo"
                   width={180}
                   height={60}
-                  className="flex justify-center cursor-pointer"
+                  className="cursor-pointer"
                 />
               </Link>
             </div>
-
-            {/* login icons */}
             <div>
               <Link
                 href="/register"
                 className="flex justify-end cursor-pointer"
               >
-                <span>
-                  <User />
-                </span>
+                <User />
               </Link>
             </div>
-            {/* cart */}
             <div>
-              <Link
-                href="/register"
-                className="flex justify-end cursor-pointer"
-              >
-                <span>
-                  <ShoppingCart />
-                </span>
+              <Link href="/cart" className="flex justify-end cursor-pointer">
+                <ShoppingCart />
                 <span className="mr-[7px] hover:underline">(0)</span>
               </Link>
             </div>
           </div>
         </SheetTrigger>
 
-        {/* search bar */}
-
-        <div className="relative mt-[10px] lg:hidden ">
-          <span>
-            <input
-              type="text"
-              placeholder="Enter text..."
-              className="pr-8 pl-4 py-2 border  w-full outline-none"
-            />
-          </span>
-          <span className="absolute inset-y-0 right-2 flex items-center ">
-            <Search />
+        {/* Search Bar */}
+        <div className="relative mt-[10px] lg:hidden">
+          <input
+            onChange={(e) => setSearchText(e.target.value)}
+            type="text"
+            placeholder="Search"
+            className="pr-8 pl-4 py-2 border w-full outline-none"
+          />
+          <span className="absolute inset-y-0 right-2 flex items-center">
+            <Search onClick={handleClick} className="cursor-pointer" />
           </span>
         </div>
 
+        {/* Mobile Sheet Content */}
         <SheetContent>
           <div>
-            <h1 className="text-[17px] font-bold mb-[10px]">MENU</h1>
-            <div>
-              <hr />
-              <div className="my-[12px]">
-                <Link href="/" className=" font-bold text-[13px]">
-                  Home
-                </Link>
-              </div>
-              <hr />
-              <div className="my-[12px]">
-                <Link href="/category" className=" font-bold text-[13px]">
-                  New Arrivals
-                </Link>
-              </div>
-              <hr />
-              <div className="my-[12px]">
-                <Link href="/category" className=" font-bold text-[13px]">
-                  Clothing
-                </Link>
-              </div>
-              <hr />{" "}
-              <div className="my-[12px]">
-                <Link href="/category" className=" font-bold text-[13px]">
-                  Shoes
-                </Link>
-              </div>
-              <hr />{" "}
-              <div className="my-[12px]">
-                <Link href="/category" className=" font-bold text-[13px]">
-                  Accessories
-                </Link>
-              </div>
-              <hr />
-              <div className="my-[12px]">
-                <Link href="/category" className=" font-bold text-[13px]">
-                  Petite
-                </Link>
-              </div>
-              <hr />{" "}
-              <div className="my-[12px]">
-                <Link href="/category" className=" font-bold text-[13px]">
-                  Plus
-                </Link>
-              </div>
-              <hr />{" "}
-              <div className="my-[12px]">
-                <Link href="/category" className=" font-bold text-[13px]">
-                  T By Talbots
-                </Link>
-              </div>
-              <hr />{" "}
-              <div className="my-[12px]">
-                <Link href="/category" className=" font-bold text-[13px]">
-                  Haven well Within
-                </Link>
-              </div>
-              <hr />
-              <div className="my-[12px]">
-                <Link href="/category" className=" font-bold text-[13px]">
-                  The Edit
-                </Link>
-              </div>
-              <hr />{" "}
-              <div className="my-[12px]">
-                <Link href="/category" className=" font-bold text-[13px]">
-                  Sale
-                </Link>
-              </div>
-              <hr />{" "}
-              <div className="my-[12px]">
-                <Link href="/register" className=" font-bold text-[13px]">
-                  Sign In
-                </Link>
-              </div>
-              <hr />
+            <h1 className="text-[18px] font-bold mb-[10px] text-red-600">
+              MENU
+            </h1>
+            <hr />
+            <div className="my-[12px]">
+              <Link href="/" className="font-bold text-[14px] text-red-600">
+                Home
+              </Link>
             </div>
+            <hr />
+            {category.map((data, index) => (
+              <div className="my-[12px] text-red-600" key={index}>
+                {data.children && data.children.length > 0 ? (
+                  <Accordion type="single" collapsible>
+                    <AccordionItem value={`item-${index}`}>
+                      <AccordionTrigger className="text-[14px] font-bold">
+                        {data.name}
+                      </AccordionTrigger>
+                      {data.children.map((subdata, subIndex) => (
+                        <AccordionContent key={subIndex}>
+                          <Link href={`/category/${subdata._id}`}>
+                            - {subdata.name}
+                          </Link>
+                        </AccordionContent>
+                      ))}
+                    </AccordionItem>
+                  </Accordion>
+                ) : (
+                  <>
+                    <Link
+                      href={`/category/${data._id}`}
+                      className="block text-[14px] font-bold mt-4 mb-4"
+                    >
+                      {data.name}
+                    </Link>
+                    <hr />
+                  </>
+                )}
+              </div>
+            ))}
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* Desktop Navbar */}
+      <div className="hidden lg:block">{children}</div>
     </>
   );
 };
 
-export default resposnsiveBar;
+export default ResponsiveNavBar;
