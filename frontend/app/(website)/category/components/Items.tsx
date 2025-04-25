@@ -25,14 +25,13 @@ const Items = ({ category, colorData }: ItemsProps) => {
         },
         { withCredentials: true }
       );
-      window.location.reload();
+      // Update cart state or trigger a toast notification directly
       showToast(response.data.message);
+      // Optionally, update cart state here to reflect changes in UI
     } catch (error) {
       console.log(error);
     }
   };
-  console.log(colorData);
-  
 
   return (
     <>
@@ -44,7 +43,7 @@ const Items = ({ category, colorData }: ItemsProps) => {
                 className="cursor-pointer border-2 border-[#f2f2f2] p-4 rounded"
               >
                 <Link
-                  href={`/category/${category?._id}/product-details-${product._id}`}
+                  href={`/category/${category?._id}/product-details-${product?._id}`}
                 >
                   <Image
                     src={product.images?.[0] || "/images/default.png"}
@@ -66,7 +65,7 @@ const Items = ({ category, colorData }: ItemsProps) => {
                       <span className="text-sm">
                         Brand:
                         <span className="font-semibold ml-2 text-red-600">
-                          {product.brand}
+                          {product?.brand}
                         </span>
                       </span>
                     </div>
@@ -95,14 +94,14 @@ const Items = ({ category, colorData }: ItemsProps) => {
             ))
           : category?.products?.map((product, index) => (
               <div
-                key={product._id || index}
+                key={product?._id || index}
                 className="cursor-pointer border-2 border-[#f2f2f2] p-4 rounded"
               >
                 <Link
                   href={`/category/${category._id}/product-details-${product._id}`}
                 >
                   <Image
-                    src={product.images[0] || "/images/default.png"}
+                    src={product?.images[0] || "/images/default.png"}
                     alt={product.details?.name || "Product"}
                     width={300}
                     height={200}
@@ -121,7 +120,7 @@ const Items = ({ category, colorData }: ItemsProps) => {
                       <span className="text-sm">
                         Brand:
                         <span className="font-semibold ml-2 text-red-600">
-                          {product.brand}
+                          {product?.brand}
                         </span>
                       </span>
                     </div>

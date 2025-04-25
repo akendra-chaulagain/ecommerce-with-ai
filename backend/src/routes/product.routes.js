@@ -10,7 +10,7 @@ import {
   editProduct,
   getAllproducts,
   getAllUniqueAttributes,
-  getProductsByCategoryAndColor,
+  
   getProductsByCategoryAndFilters,
   productDetails,
 } from "../controllers/product.controllers.js";
@@ -70,22 +70,15 @@ router.route("/product-details/:id").get(
 // delete image
 
 router.route("/delete-image/:id").delete(
-  // verify token
 
-  // create Product
   deleteImgae
 );
 
-router
-  .route("/get-product-according-to-color")
-  .get(getProductsByCategoryAndColor);
 
 router.route("/get-filter").get(getAllUniqueAttributes);
 
 router.route("/filter").get(
-  // verify token
 
-  // create Product
   getProductsByCategoryAndFilters
 );
 

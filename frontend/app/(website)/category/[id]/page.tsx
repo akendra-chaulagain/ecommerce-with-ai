@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Items from "../components/Items";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { useParams } from "next/navigation";
@@ -31,7 +31,6 @@ const Page = () => {
   const { id } = useParams();
   const [category, setCategory] = useState<iCategoryResponse | null>(null);
   const [error, setError] = useState<boolean>(false);
-  console.log(error);
 
   const [loading, setLoading] = useState<boolean>(true);
   const [colorLoading, setColorLoading] = useState<boolean>(false);
@@ -133,10 +132,14 @@ const Page = () => {
 
     setOpenFilterSections(newOpenSections);
   }, [selectedFilters, openFilterSections]);
-
-  useEffect(() => {
-    const fetchFilteredProducts = async () => {
-      try {
+  const fetchFilteredProducts = useCallback(async () => {
+    try {
+      if (
+        selectedFilters.color ||
+        selectedFilters.size ||
+        selectedFilters.brand ||
+        selectedFilters.material
+      ) {
         setColorLoading(true);
         const { color, size, brand, material } = selectedFilters;
         const response = await axiosInstence.get("/product/filter", {
@@ -149,25 +152,19 @@ const Page = () => {
           },
         });
         setcolorData(response.data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setColorLoading(false);
+      } else {
+        setcolorData(null); // Reset when no filters are selected
       }
-    };
-
-    // Only call if any of the filters are applied
-    if (
-      selectedFilters.color ||
-      selectedFilters.size ||
-      selectedFilters.brand ||
-      selectedFilters.material
-    ) {
-      fetchFilteredProducts();
-    } else {
-      setcolorData(null);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setColorLoading(false);
     }
-  }, [selectedFilters, id]);
+  }, [selectedFilters, id]); // Ensure these dependencies are only those that need to trigger the effect
+
+  useEffect(() => {
+    fetchFilteredProducts();
+  }, [selectedFilters, id, fetchFilteredProducts]);
 
   // function to get all filter option
   const [filter, setFilter] = useState<iFilter[] | null>();
@@ -188,6 +185,8 @@ const Page = () => {
   if (loading || colorLoading) {
     return <LoadingPage />;
   }
+
+  console.log(colorData);
 
   return (
     <div className="bg-gray-50 min-h-screen">

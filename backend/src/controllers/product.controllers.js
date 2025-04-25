@@ -314,34 +314,6 @@ const getAllUniqueAttributes = async (req, res) => {
   }
 };
 
-// get poduct according to the color
-const getProductsByCategoryAndColor = async (req, res) => {
-  const { categoryId, color } = req.query;
-
-  if (!categoryId || !color) {
-    return res.status(400).json({
-      message: "Category ID and Color are required",
-    });
-  }
-
-  try {
-    const products = await Product.find({
-      categoryId,
-      color: { $regex: new RegExp(`\\b${color}\\b`, "i") }, // case-insensitive
-    });
-
-    return res.status(200).json({
-      success: true,
-      products,
-      color,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error fetching products",
-      error: error.message,
-    });
-  }
-};
 
 const getProductsByCategoryAndFilters = async (req, res) => {
   const { categoryId, color, material, size, brand } = req.query;
@@ -413,7 +385,6 @@ export {
   getAllproducts,
   productDetails,
   deleteImgae,
-  getProductsByCategoryAndColor,
   getAllUniqueAttributes,
   getProductsByCategoryAndFilters,
 };
