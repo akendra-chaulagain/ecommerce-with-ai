@@ -31,6 +31,8 @@ const Items = ({ category, colorData }: ItemsProps) => {
       console.log(error);
     }
   };
+  console.log(colorData);
+  
 
   return (
     <>
@@ -45,7 +47,7 @@ const Items = ({ category, colorData }: ItemsProps) => {
                   href={`/category/${category?._id}/product-details-${product._id}`}
                 >
                   <Image
-                    src={product.images[0] || "/images/default.png"}
+                    src={product.images?.[0] || "/images/default.png"}
                     alt={product.details?.name || "Product"}
                     width={300}
                     height={200}

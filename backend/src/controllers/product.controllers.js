@@ -388,6 +388,7 @@ const getProductsByCategoryAndFilters = async (req, res) => {
           size: 1,
           price: 1,
           brand: 1,
+          images:1
           // You can add more fields as needed
         },
       },
