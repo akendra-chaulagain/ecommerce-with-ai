@@ -30,6 +30,7 @@ export interface iProduct {
   name: string;
   brand: string;
   color: string;
+  discountPrice: number;
   // images: string;
 }
 
@@ -51,8 +52,8 @@ export interface iProductDetails {
   gender: string;
   isActive: boolean;
   SKU: number;
-  color:string
-  size:string
+  color: string;
+  size: string;
 }
 
 export interface iReview {
@@ -77,9 +78,8 @@ export interface iCategoryResponse {
   images: [0];
   price: number;
   categoryId: number;
-  brand:string
-  color:string
-  
+  brand: string;
+  color: string;
 }
 
 export interface ApiResponse {
@@ -91,14 +91,13 @@ export interface ICategory {
   _id: string;
   name: string;
   categoryImage: string;
-  children: ICategory[] ;
+  children: ICategory[];
   products: iProduct[];
 }
 
 export interface ICategoryTreeResponse {
   message: string;
   data: ICategory[];
-
 }
 
 export interface iCartResponse {
@@ -159,5 +158,5 @@ export interface iReviewResponse {
 export interface iColor {
   color: string;
   products: iProduct[];
-  length:number
+  length: number;
 }

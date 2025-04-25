@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   CreditCard,
   LucidePackageOpen,
@@ -8,16 +8,21 @@ import {
   Settings,
   ShoppingCart,
   User,
-  
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContent";
+import { useRouter } from "next/navigation";
 
 const Logobar = () => {
+  const router = useRouter();
   const user = useAuth();
-  const cart = useCart(); // login user cart details
+  const cart = useCart();
+  const [searchtext, setSearchText] = useState("");
+  const handleClick = () => {
+    router.push(`/search?q=${searchtext}`); // This adds query params
+  };
 
   return (
     <>
@@ -26,11 +31,11 @@ const Logobar = () => {
           <div className="  ">
             {/* location */}
             <div className="flex">
-              <div className="flex cursor-pointer mr-[30px]">
+              <div className="flex  mr-[30px]">
                 <span>
                   <CreditCard />
                 </span>
-                <span className="ml-[5px]">Scotia Bank Card</span>
+                <span className="ml-[5px]">We Accept Paypal</span>
               </div>
               <div className="flex cursor-pointer">
                 <span className="">
@@ -61,6 +66,7 @@ const Logobar = () => {
             <div className="flex  border border-gray-500 px-[13px] py-[4px]">
               <span>
                 <input
+                  onChange={(e) => setSearchText(e.target.value)}
                   id="search"
                   name="search"
                   type="text"
@@ -70,7 +76,7 @@ const Logobar = () => {
               </span>
 
               <span className="cursor-pointer">
-                <Search />
+                <Search onClick={handleClick} />
               </span>
             </div>
 

@@ -44,7 +44,6 @@ export default function DashboardLayout({
 
   const { user } = useAuth();
 
-
   // redirect to the webiste
   // useEffect(() => {
   //   if (loading) return;
@@ -65,7 +64,7 @@ export default function DashboardLayout({
 
   const isAdmin = user?.role === "Admin";
   if (!isAdmin) {
-  return <LoadingPage/>
+    return <LoadingPage />;
   }
 
   return (

@@ -213,7 +213,7 @@ const deleteProduct = async (req, res) => {
 // get all products
 const getAllproducts = async (req, res) => {
   try {
-    const allproducts = await Product.find();
+    const allproducts = await Product.find().sort({ createdAt: -1 });
     return res.status(200).json({
       message: "all products",
 

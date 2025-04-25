@@ -1,7 +1,7 @@
-import { ShoppingCart } from "lucide-react";
+import { Eye, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import React from "react";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { iCategoryResponse, iColor } from "@/types/types";
 import { axiosInstence } from "@/hooks/axiosInstence";
@@ -39,112 +39,184 @@ const Items = ({ category, colorData }: ItemsProps) => {
         {colorData
           ? colorData.products?.map((product, index) => (
               <div
-                key={product._id || index}
-                className="cursor-pointer border-2 border-[#f2f2f2] p-4 rounded"
+                key={index}
+                className="group bg-white border-2 border-[#f2f2f2] rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300"
               >
-                <Link
-                  href={`/category/${category?._id}/product-details-${product?._id}`}
-                >
-                  <Image
-                    src={product.images?.[0] || "/images/default.png"}
-                    alt={product.details?.name || "Product"}
-                    width={300}
-                    height={200}
-                    className="object-cover rounded-t-2xl transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="mt-3 ml-[6px] flex items-center gap-2">
-                    <h3 className="text-lg font-semibold text-red-600">
-                      ${product.price}
-                    </h3>
-                  </div>
-                  <p className="text-[16px] ml-[6px]">
-                    {product?.name?.slice(0, 20)}
-                  </p>
-                  {product?.brand && (
-                    <div className="mt-2 mb-2 ml-[6px]">
-                      <span className="text-sm">
-                        Brand:
-                        <span className="font-semibold ml-2 text-red-600">
-                          {product?.brand}
-                        </span>
-                      </span>
+                {/* Product Image */}
+                <div className="relative">
+                  <Link href={`/product/${product._id}`}>
+                    <div className="h-64 overflow-hidden">
+                      <Image
+                        src={product.images[0] || "/api/placeholder/300/300"}
+                        alt={product.name}
+                        width={300}
+                        height={300}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
                     </div>
-                  )}
-                </Link>
-                <div className="flex gap-2 mt-1 ">
-                  {product?.color?.split(",").map((clr, i) => (
-                    <span
-                      key={i}
-                      className="w-4 h-4 rounded-full border"
-                      style={{
-                        backgroundColor: clr.trim().toLowerCase() || "#000",
-                      }}
-                    ></span>
-                  ))}
+                  </Link>
+
+                  {/* Wishlist Button */}
+                  <button
+                    onClick={() => handleAddToCart(product._id)}
+                    className="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  >
+                    <Eye
+                      size={18}
+                      className="text-gray-600 hover:text-red-600 transition-colors"
+                    />
+                  </button>
+
+                  {/* Discount Badge */}
                 </div>
 
-                <Button
-                  onClick={() => handleAddToCart(product._id)}
-                  variant="outline"
-                  className="w-full mt-4 bg-red-600 hover:bg-red-700 hover:text-white text-white text-sm flex items-center justify-center gap-2"
-                >
-                  Add to Cart <ShoppingCart size={16} />
-                </Button>
+                <div className="p-4">
+                  {/* Brand & Rating */}
+                  <div className="flex justify-between items-center mb-2">
+                    {product.brand && (
+                      <span className="text-xs font-semibold text-gray-500 uppercase">
+                        {product.brand}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Product Name */}
+                  <Link href={`/product/${product._id}`}>
+                    <h3 className="text-base font-semibold text-gray-800 mb-1 hover:text-red-600 transition-colors line-clamp-1">
+                      {product.name}
+                    </h3>
+                  </Link>
+
+                  {/* Description */}
+                  <p className="text-sm text-gray-500 mb-3 line-clamp-2">
+                    {product.description}
+                  </p>
+
+                  {/* Color Variants */}
+                  <div className="flex gap-1 mb-3">
+                    {product.color?.split(",").map((clr, i) => (
+                      <span
+                        key={i}
+                        className="w-5 h-5 border"
+                        style={{
+                          backgroundColor: clr.trim().toLowerCase() || "#000",
+                        }}
+                        title={clr.trim()}
+                      ></span>
+                    ))}
+                  </div>
+
+                  {/* Price & Add to Cart */}
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-end gap-2">
+                      <span className="text-lg font-bold text-red-600">
+                        ${product?.discountPrice || product.price}
+                      </span>
+                      {product?.discountPrice && (
+                        <span className="text-sm text-gray-400 line-through">
+                          ${product.price}
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => handleAddToCart(product._id)}
+                      className="bg-red-600 hover:bg-red-700 text-white p-2 rounded transition-colors duration-300"
+                    >
+                      <ShoppingCart size={18} />
+                    </button>
+                  </div>
+                </div>
               </div>
             ))
           : category?.products?.map((product, index) => (
               <div
-                key={product?._id || index}
-                className="cursor-pointer border-2 border-[#f2f2f2] p-4 rounded"
+                key={index}
+                className="group bg-white border-2 border-[#f2f2f2] rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300"
               >
-                <Link
-                  href={`/category/${category._id}/product-details-${product._id}`}
-                >
-                  <Image
-                    src={product?.images[0] || "/images/default.png"}
-                    alt={product.details?.name || "Product"}
-                    width={300}
-                    height={200}
-                    className="object-cover rounded-t-2xl transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="mt-3 ml-[6px] flex items-center gap-2">
-                    <h3 className="text-lg font-semibold text-red-600">
-                      ${product.price}
-                    </h3>
-                  </div>
-                  <p className="text-[16px] ml-[6px]">
-                    {product?.name?.slice(0, 20)}
-                  </p>
-                  {product?.brand && (
-                    <div className="mt-2 mb-2 ml-[6px]">
-                      <span className="text-sm">
-                        Brand:
-                        <span className="font-semibold ml-2 text-red-600">
-                          {product?.brand}
-                        </span>
-                      </span>
+                {/* Product Image */}
+                <div className="relative">
+                  <Link href={`/product/${product._id}`}>
+                    <div className="h-64 overflow-hidden">
+                      <Image
+                        src={product.images[0] || "/api/placeholder/300/300"}
+                        alt={product.name}
+                        width={300}
+                        height={300}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
                     </div>
-                  )}
-                </Link>
-                <div className="flex gap-2 mt-1 ">
-                  {product?.color?.split(",").map((clr, i) => (
-                    <span
-                      key={i}
-                      className="w-4 h-4 rounded-full border"
-                      style={{
-                        backgroundColor: clr.trim().toLowerCase() || "#000",
-                      }}
-                    ></span>
-                  ))}
+                  </Link>
+
+                  {/* Wishlist Button */}
+                  <button
+                    onClick={() => handleAddToCart(product._id)}
+                    className="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  >
+                    <Eye
+                      size={18}
+                      className="text-gray-600 hover:text-red-600 transition-colors"
+                    />
+                  </button>
+
+                  {/* Discount Badge */}
                 </div>
 
-                <Button
-                  onClick={() => handleAddToCart(product._id)}
-                  variant="outline"
-                  className="w-full mt-4 bg-red-600 hover:bg-red-700 hover:text-white text-white text-sm flex items-center justify-center gap-2"
-                >
-                  Add to Cart <ShoppingCart size={16} />
-                </Button>
+                <div className="p-4">
+                  {/* Brand & Rating */}
+                  <div className="flex justify-between items-center mb-2">
+                    {product.brand && (
+                      <span className="text-xs font-semibold text-gray-500 uppercase">
+                        {product.brand}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Product Name */}
+                  <Link href={`/product/${product._id}`}>
+                    <h3 className="text-base font-semibold text-gray-800 mb-1 hover:text-red-600 transition-colors line-clamp-1">
+                      {product.name}
+                    </h3>
+                  </Link>
+
+                  {/* Description */}
+                  <p className="text-sm text-gray-500 mb-3 line-clamp-2">
+                    {product.description}
+                  </p>
+
+                  {/* Color Variants */}
+                  <div className="flex gap-1 mb-3">
+                    {product.color?.split(",").map((clr, i) => (
+                      <span
+                        key={i}
+                        className="w-5 h-5 border"
+                        style={{
+                          backgroundColor: clr.trim().toLowerCase() || "#000",
+                        }}
+                        title={clr.trim()}
+                      ></span>
+                    ))}
+                  </div>
+
+                  {/* Price & Add to Cart */}
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-end gap-2">
+                      <span className="text-lg font-bold text-red-600">
+                        ${product?.discountPrice || product.price}
+                      </span>
+                      {product?.discountPrice && (
+                        <span className="text-sm text-gray-400 line-through">
+                          ${product.price}
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => handleAddToCart(product._id)}
+                      className="bg-red-600 hover:bg-red-700 text-white p-2 rounded transition-colors duration-300"
+                    >
+                      <ShoppingCart size={18} />
+                    </button>
+                  </div>
+                </div>
               </div>
             ))}
       </div>
