@@ -22,7 +22,7 @@ const productScheme = new mongoose.Schema(
     images: [{ type: String, default: false }], // Array of image URLs
     // reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
   },
-  [{ timestamps: true }]
+  { timestamps: true }
 );
 productScheme.index({
   name: "text",

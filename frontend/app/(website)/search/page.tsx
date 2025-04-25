@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import LoadingPage from "@/components/webiste/Loading";
 
 interface Product {
   _id: string;
@@ -17,6 +18,7 @@ interface Product {
   description?: string;
   discountPrice?: number;
   category?: string;
+  categoryId: string;
 }
 
 const ProductsPage = () => {
@@ -29,12 +31,15 @@ const ProductsPage = () => {
   const showToast = useNotificationToast();
 
   useEffect(() => {
+    if (!query) return;
     const fetchSearchResults = async () => {
       setLoading(true);
       try {
         // In a real app, you would pass query and filters to this API call
-        const response = await axiosInstence.get("/product");
-        setProducts(response.data.data);
+        const response = await axiosInstence.get(
+          `search/search-product?term=${query}`
+        );
+        setProducts(response.data.product);
       } catch (error) {
         console.error(error);
       } finally {
@@ -60,141 +65,165 @@ const ProductsPage = () => {
       console.error(error);
     }
   };
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Banner */}
+    <>
+      {loading ? (
+        <LoadingPage />
+      ) : (
+        <div className="min-h-screen bg-gray-50">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {/* Search Header */}
+            <div className="text-center py-12 space-y-2">
+              <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
+                Results for{" "}
+                <span className="text-red-600">&quot;{query}&quot;</span>
+              </h1>
+              <p className="text-gray-500 text-lg">
+                {products?.length} {products?.length === 1 ? "item" : "items"}{" "}
+                found
+              </p>
+            </div>
 
-      {/* Products Section */}
-      <div className="container mx-auto px-4 py-8">
-        <h2 className="text-3xl font-bold text-gray-800 flex justify-center py-12">
-          SEARCH RESULTS
-        </h2>
-        <div className="flex justify-end items-center mb-8">
-          <p className="text-gray-600">{products.length} items</p>
-        </div>
-
-        {loading ? (
-          <div className="flex justify-center items-center py-20">
-            <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {products?.map((product, index) => (
-              <div
-                key={index}
-                className="group bg-white border-2 border-[#f2f2f2] rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300"
-              >
-                {/* Product Image */}
-                <div className="relative">
-                  <Link href={`/product/${product._id}`}>
-                    <div className="relative aspect-[3.8/4] overflow-hidden">
-                      <Image
-                        src={product.images?.[0] || "/api/placeholder/300/300"}
-                        alt={product.name}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    </div>
-                  </Link>
-
-                  {/* Wishlist Button */}
-                  <button
-                    onClick={() => handleAddToCart(product._id)}
-                    className="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  >
-                    <Eye
-                      size={18}
-                      className="text-gray-600 hover:text-red-600 transition-colors"
+            {/* Products Grid */}
+            {products.length === 0 ? (
+              <div className="text-center py-24 space-y-4">
+                <div className="text-red-600 mx-auto w-16 h-16 mb-4">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
                     />
-                  </button>
-
-                  {/* Discount Badge */}
+                  </svg>
                 </div>
-
-                <div className="p-4">
-                  {/* Brand & Rating */}
-                  <div className="flex justify-between items-center mb-2">
-                    {product.brand && (
-                      <span className="text-xs font-semibold text-gray-500 uppercase">
-                        {product.brand}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Product Name */}
-                  <Link href={`/product/${product._id}`}>
-                    <h3 className="text-base font-semibold text-gray-800 mb-1 hover:text-red-600 transition-colors line-clamp-1">
-                      {product.name}
-                    </h3>
-                  </Link>
-
-                  {/* Description */}
-                  <p className="text-sm text-gray-500 mb-3 line-clamp-2">
-                    {product.description}
-                  </p>
-
-                  {/* Color Variants */}
-                  <div className="flex gap-1 mb-3">
-                    {product.color?.split(",").map((clr, i) => (
-                      <span
-                        key={i}
-                        className="w-5 h-5 border"
-                        style={{
-                          backgroundColor: clr.trim().toLowerCase() || "#000",
-                        }}
-                        title={clr.trim()}
-                      ></span>
-                    ))}
-                  </div>
-
-                  {/* Price & Add to Cart */}
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-end gap-2">
-                      <span className="text-lg font-bold text-red-600">
-                        ${product?.discountPrice || product.price}
-                      </span>
-                      {product?.discountPrice && (
-                        <span className="text-sm text-gray-400 line-through">
-                          ${product.price}
-                        </span>
-                      )}
-                    </div>
-                    <button
-                      onClick={() => handleAddToCart(product._id)}
-                      className="bg-red-600 hover:bg-red-700 text-white p-2 rounded transition-colors duration-300"
-                    >
-                      <ShoppingCart size={18} />
-                    </button>
-                  </div>
-                </div>
+                <p className="text-xl text-gray-700">No matching products</p>
               </div>
-            ))}
-          </div>
-        )}
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                {products?.map((product) => (
+                  <div
+                    key={product._id}
+                    className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1"
+                  >
+                    {/* Image Container */}
+                    <div className="relative aspect-square overflow-hidden">
+                      <Link
+                        href={`/category/${product.categoryId}/product-details-${product._id}`}
+                        className="block h-full"
+                      >
+                        <Image
+                          src={
+                            product.images?.[0] || "/placeholder-product.jpg"
+                          }
+                          alt={product.name}
+                          fill
+                          className="object-cover transition-transform duration-300 group-hover:scale-110"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      </Link>
 
-        {/* Page Navigation */}
-        <div className="flex justify-center mt-12">
-          <div className="inline-flex rounded-md shadow-sm" role="group">
-            <button className="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 focus:z-10 focus:text-red-600">
-              Previous
-            </button>
-            <button className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-red-600">
-              1
-            </button>
-            <button className="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 focus:z-10 focus:text-red-600">
-              2
-            </button>
-            <button className="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 focus:z-10 focus:text-red-600">
-              3
-            </button>
-            <button className="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 focus:z-10 focus:text-red-600">
-              Next
-            </button>
+                      {/* Quick Action Buttons */}
+                      <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <button
+                          onClick={() => handleAddToCart(product._id)}
+                          className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-red-600 hover:text-white"
+                          aria-label="Quick view"
+                        >
+                          <Eye className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Product Info */}
+                    <div className="p-4 space-y-3">
+                      <div className="flex justify-between items-start">
+                        <div className="space-y-1">
+                          {product.brand && (
+                            <span className="text-xs font-semibold text-red-600 uppercase tracking-wide">
+                              {product.brand}
+                            </span>
+                          )}
+                          <Link
+                            href={`/category/${product.categoryId}/product-details-${product._id}`}
+                            className="block"
+                          >
+                            <h3 className="text-lg font-bold text-gray-900 hover:text-red-600 transition-colors line-clamp-2">
+                              {product.name}
+                            </h3>
+                          </Link>
+                        </div>
+                      </div>
+
+                      <p className="text-sm text-gray-600 line-clamp-3">
+                        {product.description}
+                      </p>
+
+                      {/* Color Swatches */}
+                      {product.color && (
+                        <div className="flex gap-2">
+                          {product.color.split(",").map((clr, i) => (
+                            <span
+                              key={i}
+                              className="w-5 h-5 rounded-full border-2 border-gray-200 shadow-sm"
+                              style={{ backgroundColor: clr.trim() }}
+                              aria-label={`Color option: ${clr.trim()}`}
+                            />
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Price & Add to Cart */}
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-xl font-bold text-red-600">
+                            ${product.discountPrice || product.price}
+                          </span>
+                          {product.discountPrice && (
+                            <span className="text-sm text-gray-400 line-through">
+                              ${product.price}
+                            </span>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => handleAddToCart(product._id)}
+                          className="p-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-all duration-300 hover:scale-110 shadow-md hover:shadow-red-300"
+                          aria-label="Add to cart"
+                        >
+                          <ShoppingCart className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Pagination */}
+            {/* <div className="flex justify-center mt-12">
+              <nav className="flex gap-1">
+                <button className="px-4 py-2 text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-red-50 hover:border-red-200">
+                  Previous
+                </button>
+                <button className="px-4 py-2 text-white bg-red-600 border border-red-600 rounded-lg">
+                  1
+                </button>
+                <button className="px-4 py-2 text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-red-50 hover:border-red-200">
+                  2
+                </button>
+                <button className="px-4 py-2 text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-red-50 hover:border-red-200">
+                  3
+                </button>
+                <button className="px-4 py-2 text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-red-50 hover:border-red-200">
+                  Next
+                </button>
+              </nav>
+            </div> */}
           </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 

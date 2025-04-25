@@ -11,7 +11,6 @@ const searchFromDatabase = async (req, res) => {
     return res.status(400).json({ message: "Search term is required" });
   }
   try {
-    // rull search on category and products
     const [categorys, products] = await Promise.all([
       Category.find(
         { $text: { $search: term } },
@@ -22,15 +21,10 @@ const searchFromDatabase = async (req, res) => {
         { $text: { $search: term } },
         { score: { $meta: "textScore" } }
       ).sort({ score: { $meta: "textScore" } }),
-
-     
-      
     ]);
     res.status(200).json({
       category: categorys,
       product: products,
-     
-      
     });
   } catch (error) {
     console.error("Search error:", error); // Log full error
@@ -38,4 +32,28 @@ const searchFromDatabase = async (req, res) => {
   }
 };
 
-export { searchFromDatabase };
+// search for product only
+
+const searchProduct = async (req, res) => {
+  const { term } = req.query;
+
+  if (!term) {
+    return res.status(400).json({ message: "Search term is required" });
+  }
+  try {
+    const [products] = await Promise.all([
+      Product.find(
+        { $text: { $search: term } },
+        { score: { $meta: "textScore" } }
+      ).sort({ score: { $meta: "textScore" } }),
+    ]);
+    res.status(200).json({
+      product: products,
+    });
+  } catch (error) {
+    console.error("Search error:", error); // Log full error
+    res.status(500).json({ message: "Server error while searching" });
+  }
+};
+
+export { searchFromDatabase, searchProduct };
