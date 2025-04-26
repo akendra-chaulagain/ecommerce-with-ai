@@ -1,11 +1,10 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { useNotificationToast } from "@/hooks/toast";
-import { ShoppingCart } from "lucide-react";
+import { Eye, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 interface Product {
   _id: string;
@@ -17,26 +16,40 @@ interface Product {
   description?: string;
   discountPrice?: number;
   data: [];
+  categoryId: string;
 }
 
 const ProductsPage = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
   const showToast = useNotificationToast();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 15;
+
+  const fetchProducts = useCallback(async (page: number) => {
+    try {
+      setLoading(true); // set loading to true when fetching
+      const response = await axiosInstence.get(
+        `/product?page=${page}&limit=${limit}`
+      );
+     
+      
+      const resData = response.data;
+      console.log(resData);
+      
+      setProducts(response.data.data); 
+       setTotalPages(response.data.totalPages);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false); 
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axiosInstence.get("/product");
-        setProducts(response.data.data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProducts();
-  }, []);
+    fetchProducts(currentPage); 
+  }, [fetchProducts, currentPage]);
 
   const handleAddToCart = async (productId: string) => {
     try {
@@ -54,12 +67,33 @@ const ProductsPage = () => {
     }
   };
 
+ const handlePageChange = (newPage: number) => {
+   if (newPage >= 1 && newPage <= totalPages) {
+     setCurrentPage(newPage);
+   }
+ };
+
   return (
     <div className="min-h-screen bg-gray-50 py-16">
+      <div className="bg-white shadow-sm">
+        <div className="container mx-auto px-4 py-3">
+          <nav className="flex text-sm">
+            <Link
+              href="/"
+              className="text-gray-500 hover:text-red-600 transition-colors"
+            >
+              Home
+            </Link>
+
+            <span className="mx-2 text-gray-400">/</span>
+            <span className="font-medium text-gray-800">Products</span>
+          </nav>
+        </div>
+      </div>
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+        <div className="text-center mb-12 mt-14">
+          <h1 className="text-4xl sm:text-4xl font-bold text-gray-900 mb-6">
             Our Premium Products
           </h1>
           <div className="w-24 h-1 bg-red-600 mx-auto mb-6"></div>
@@ -69,8 +103,6 @@ const ProductsPage = () => {
           </p>
         </div>
 
-        {/* Categories Quick Filter */}
-
         {/* Product Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {loading ? (
@@ -78,82 +110,74 @@ const ProductsPage = () => {
               <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
             </div>
           ) : (
-            products?.map((product) => (
+            products?.map((product, index) => (
               <div
-                key={product._id}
-                className="group cursor-pointer border-2 border-[#f2f2f2] bg-white p-4 rounded hover:shadow-lg transition-shadow duration-300"
+                key={index}
+                className="group bg-white border-2 border-[#f2f2f2] rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300"
               >
-                <Link href={`/product/${product._id}`}>
-                  <div className="overflow-hidden rounded-t-2xl">
-                    <Image
-                      src={product.images?.[0] || "/images/default.png"}
-                      alt={product.name}
-                      width={300}
-                      height={200}
-                      className="object-cover rounded-t-2xl transition-transform duration-500 group-hover:scale-105"
-                    />
-                  </div>
-
-                  <div className="mt-3 ml-[6px] flex items-center gap-2">
-                    <h3 className="text-lg font-semibold text-red-600">
-                      ${product.discountPrice || product.price}
-                    </h3>
-                    {product.discountPrice && (
-                      <span className="text-sm text-gray-500 line-through">
-                        ${product.price}
-                      </span>
-                    )}
-                  </div>
-
-                  <p className="text-[16px] ml-[6px] text-gray-800 mt-1 font-medium line-clamp-1">
-                    {product.name}
-                  </p>
-
-                  {/* Simple description preview */}
-                  <p className="text-sm text-gray-500 ml-[6px] mt-1 line-clamp-1">
-                    {product.description?.slice(0, 40) ||
-                      "No description available"}
-                  </p>
-
-                  {product.brand && (
-                    <div className="mt-2 mb-2 ml-[6px]">
-                      <span className="text-sm">
-                        Brand:
-                        <span className="font-semibold ml-2 text-red-600">
-                          {product.brand}
-                        </span>
-                      </span>
+                {/* Product Image */}
+                <div className="relative">
+                  <Link
+                    href={`/category/${product.categoryId}/product-details-${product._id}`}
+                  >
+                    <div className="h-80 overflow-hidden">
+                      <Image
+                        src={product.images[0] || "/api/placeholder/300/300"}
+                        alt={product.name}
+                        fill
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
                     </div>
-                  )}
-                </Link>
+                  </Link>
 
-                {/* Color options */}
-                <div className="flex gap-2 mt-1 ml-[6px]">
-                  {product.color?.split(",").map((clr, i) => (
-                    <span
-                      key={i}
-                      className="w-4 h-4 rounded-full border"
-                      style={{
-                        backgroundColor: clr.trim().toLowerCase() || "#000",
-                      }}
-                      title={clr.trim()}
-                    ></span>
-                  ))}
+                  {/* Wishlist Button */}
+                  <button
+                    onClick={() => handleAddToCart(product._id)}
+                    className="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  >
+                    <Eye
+                      size={18}
+                      className="text-gray-600 hover:text-red-600 transition-colors"
+                    />
+                  </button>
                 </div>
 
-                <Button
-                  onClick={() => handleAddToCart(product._id)}
-                  variant="outline"
-                  className="w-full mt-4 bg-red-600 hover:bg-red-700 hover:text-white text-white text-sm py-2 flex items-center justify-center gap-2"
-                >
-                  Add to Cart <ShoppingCart size={16} />
-                </Button>
+                <div className="p-4">
+                  {/* Product Name */}
+                  <Link
+                    href={`/category/${product?.categoryId}/product-details-${product._id}`}
+                  >
+                    <h3 className="text-base font-semibold text-gray-800 mb-1 hover:text-red-600 transition-colors line-clamp-1">
+                      {product.name}
+                    </h3>
+                  </Link>
+
+                  {/* Price & Add to Cart */}
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-end gap-2">
+                      <span className=" text-red-600 text-[16px] font-bold">
+                        $ {product.discountPrice || product.price}.00
+                      </span>
+                      {product.discountPrice && (
+                        <span className="text-sm text-gray-400 line-through">
+                          ${product.price}.00
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => handleAddToCart(product._id)}
+                      className="bg-red-600 hover:bg-red-700 text-white p-2 rounded transition-colors duration-300"
+                    >
+                      <ShoppingCart size={18} />
+                    </button>
+                  </div>
+                </div>
               </div>
             ))
           )}
         </div>
 
-        {/* Empty state */}
+        {/* Empty State */}
         {!loading && (!products || products.length === 0) && (
           <div className="text-center py-16 bg-white rounded-lg shadow-sm">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -168,17 +192,26 @@ const ProductsPage = () => {
           </div>
         )}
 
-        {/* Load more button */}
-        {!loading && products?.length > 0 && (
-          <div className="text-center mt-12">
-            <Button
-              variant="outline"
-              className="border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-medium px-8 py-3 rounded-full"
-            >
-              Load More Products
-            </Button>
-          </div>
-        )}
+        {/* Pagination */}
+        <div className="flex justify-end gap-4 mt-6 py-6 px-10">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-4 py-2 border rounded bg-red-600 text-white"
+          >
+            Previous
+          </button>
+          <span className="px-4 py-2">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 border rounded bg-red-600 text-white"
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );

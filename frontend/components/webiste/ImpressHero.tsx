@@ -6,7 +6,7 @@ import Link from "next/link";
 
 const MothersDayHero = () => {
   return (
-    <section className="relative h-[60vh] w-full overflow-hidden">
+    <section className="relative h-[55vh] w-full overflow-hidden mb-[45px]">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <Image

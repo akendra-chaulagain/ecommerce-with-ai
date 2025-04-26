@@ -1,10 +1,7 @@
 import mongoose from "mongoose";
 import { Product } from "../models/product.models.js";
 import { v2 as cloudinary } from "cloudinary";
-import {
-  updatePhoto,
-  uploadMultipleImagesToCloudinary,
-} from "../utils/cloudinary.js";
+import { uploadMultipleImagesToCloudinary } from "../utils/cloudinary.js";
 
 const createProduct = async (req, res) => {
   // console.log(req.body);
@@ -95,8 +92,6 @@ const editProduct = async (req, res) => {
       size,
       color,
     } = req.body;
-    // const size = JSON.parse(req.body.size);
-    // const color = JSON.parse(req.body.color);
 
     const { id } = req.params;
 
@@ -211,21 +206,6 @@ const deleteProduct = async (req, res) => {
 };
 
 // get all products
-const getAllproducts = async (req, res) => {
-  try {
-    const allproducts = await Product.find().sort({ createdAt: -1 });
-    return res.status(200).json({
-      message: "all products",
-
-      data: allproducts,
-    });
-  } catch (error) {
-    return res.status(401).json({
-      message: "server error while fetching product",
-      message: error.message,
-    });
-  }
-};
 
 // get product details
 const productDetails = async (req, res) => {
@@ -314,7 +294,6 @@ const getAllUniqueAttributes = async (req, res) => {
   }
 };
 
-
 const getProductsByCategoryAndFilters = async (req, res) => {
   const { categoryId, color, material, size, brand } = req.query;
 
@@ -360,7 +339,7 @@ const getProductsByCategoryAndFilters = async (req, res) => {
           size: 1,
           price: 1,
           brand: 1,
-          images:1
+          images: 1,
           // You can add more fields as needed
         },
       },
@@ -378,6 +357,70 @@ const getProductsByCategoryAndFilters = async (req, res) => {
   }
 };
 
+const getNineProductForHomePage = async (req, res) => {
+  try {
+    const products = await Product.find().sort({ createdAt: -1 }).limit(8); // Mongoose method
+    return res.status(200).json({
+      success: true,
+      data: products,
+    });
+  } catch (error) {
+    return res.status(501).json({
+      success: false,
+      message: "Something went wrong! try again later",
+      error: error.message,
+    });
+  }
+};
+
+// const getAllproducts = async (req, res) => {
+//   try {
+
+//     const allproducts = await Product.find().sort({ createdAt: -1 });
+//     return res.status(200).json({
+//       message: "all products",
+
+//       data: allproducts,
+//     });
+//   } catch (error) {
+//     return res.status(401).json({
+//       message: "server error while fetching product",
+//       message: error.message,
+//     });
+//   }
+// };
+
+const getAllproducts = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 15;
+    const skip = (page - 1) * limit;
+
+    const totalProducts = await Product.countDocuments();
+
+    const allproducts = await Product.find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+    // Sort by creation date (descending)
+
+    return res.status(200).json({
+      success: true,
+      message: "products fetched successfully",
+      currentPage: page,
+      totalPages: Math.ceil(totalProducts / limit),
+      totalProducts,
+      data: allproducts,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error occurred while fetching products",
+      error: error.message,
+      stack: process.env.NODE_ENV === "production" ? null : error.stack, // Hide stack trace in production
+    });
+  }
+};
+
 export {
   createProduct,
   editProduct,
@@ -387,4 +430,5 @@ export {
   deleteImgae,
   getAllUniqueAttributes,
   getProductsByCategoryAndFilters,
+  getNineProductForHomePage,
 };

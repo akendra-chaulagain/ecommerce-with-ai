@@ -10,7 +10,7 @@ import {
   editProduct,
   getAllproducts,
   getAllUniqueAttributes,
-  
+  getNineProductForHomePage,
   getProductsByCategoryAndFilters,
   productDetails,
 } from "../controllers/product.controllers.js";
@@ -69,17 +69,13 @@ router.route("/product-details/:id").get(
 
 // delete image
 
-router.route("/delete-image/:id").delete(
-
-  deleteImgae
-);
-
+router.route("/delete-image/:id").delete(deleteImgae);
 
 router.route("/get-filter").get(getAllUniqueAttributes);
 
-router.route("/filter").get(
+router.route("/filter").get(getProductsByCategoryAndFilters);
 
-  getProductsByCategoryAndFilters
-);
+// get data for home page
+router.route("/home-product").get(getNineProductForHomePage);
 
 export default router;

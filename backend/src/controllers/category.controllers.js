@@ -194,7 +194,10 @@ const getSubCategories = async (req, res) => {
 
 const getFiveDataForHomeScreen = async (req, res) => {
   try {
-    const categories = await Category.find().limit(6); // Mongoose method
+   const categories = await Category.find({
+     parentCategory: { $ne: null },
+   }).limit(6);
+
     return res.status(200).json({
       success: true,
       message: "All categories",
