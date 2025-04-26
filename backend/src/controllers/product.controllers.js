@@ -392,8 +392,8 @@ const getNineProductForHomePage = async (req, res) => {
 
 const getAllproducts = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 15;
+    const page = parseInt(req.query.page) ;
+    const limit = parseInt(req.query.limit) ;
     const skip = (page - 1) * limit;
 
     const totalProducts = await Product.countDocuments();
@@ -412,11 +412,12 @@ const getAllproducts = async (req, res) => {
       totalProducts,
       data: allproducts,
     });
+    
   } catch (error) {
     return res.status(500).json({
       message: "Error occurred while fetching products",
       error: error.message,
-      stack: process.env.NODE_ENV === "production" ? null : error.stack, // Hide stack trace in production
+      stack: process.env.NODE_ENV === "production" ? null : error.stack, 
     });
   }
 };

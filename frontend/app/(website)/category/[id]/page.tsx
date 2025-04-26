@@ -133,7 +133,7 @@ const Page = () => {
     });
 
     setOpenFilterSections(newOpenSections);
-  }, [selectedFilters, openFilterSections]);
+  }, [selectedFilters]);
   const fetchFilteredProducts = useCallback(async () => {
     try {
       if (

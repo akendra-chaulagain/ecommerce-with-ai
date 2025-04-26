@@ -25,7 +25,7 @@ const ProductsPage = () => {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const limit = 15;
+  const limit = 25;
 
   const fetchProducts = useCallback(async (page: number) => {
     try {
@@ -73,6 +73,8 @@ const ProductsPage = () => {
    }
  };
 
+ 
+
   return (
     <div className="min-h-screen bg-gray-50 py-16">
       <div className="bg-white shadow-sm">
@@ -113,62 +115,96 @@ const ProductsPage = () => {
             products?.map((product, index) => (
               <div
                 key={index}
-                className="group bg-white border-2 border-[#f2f2f2] rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1"
               >
-                {/* Product Image */}
-                <div className="relative">
+                {/* Image Container */}
+                <div className="relative aspect-square overflow-hidden">
                   <Link
                     href={`/category/${product.categoryId}/product-details-${product._id}`}
+                    className="block h-full"
                   >
-                    <div className="h-80 overflow-hidden">
-                      <Image
-                        src={product.images[0] || "/api/placeholder/300/300"}
-                        alt={product.name}
-                        fill
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    </div>
+                    <Image
+                      src={product.images?.[0] || "/placeholder-product.jpg"}
+                      alt={product.name}
+                      fill
+                      className="object-cover transition-transform duration-300 group-hover:scale-110"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 60vw, 30vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </Link>
 
-                  {/* Wishlist Button */}
-                  <button
-                    onClick={() => handleAddToCart(product._id)}
-                    className="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  >
-                    <Eye
-                      size={18}
-                      className="text-gray-600 hover:text-red-600 transition-colors"
-                    />
-                  </button>
+                  {/* Quick Action Buttons */}
+                  <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <button
+                      // onClick={() => handleAddToCart(product._id)}
+                      className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-red-600 hover:text-white"
+                      aria-label="Quick view"
+                    >
+                      <Link
+                        href={`/category/${product.categoryId}/product-details-${product._id}`}
+                      >
+                        <Eye className="w-5 h-5" />
+                      </Link>
+                    </button>
+                  </div>
                 </div>
 
-                <div className="p-4">
-                  {/* Product Name */}
-                  <Link
-                    href={`/category/${product?.categoryId}/product-details-${product._id}`}
-                  >
-                    <h3 className="text-base font-semibold text-gray-800 mb-1 hover:text-red-600 transition-colors line-clamp-1">
-                      {product.name}
-                    </h3>
-                  </Link>
+                {/* Product Info */}
+                <div className="p-4 space-y-3">
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-1">
+                      {product.brand && (
+                        <span className="text-xs font-semibold text-red-600 uppercase tracking-wide">
+                          {product.brand}
+                        </span>
+                      )}
+                      <Link
+                        href={`/category/${product.categoryId}/product-details-${product._id}`}
+                        className="block"
+                      >
+                        <h3 className="text-lg font-bold text-gray-900 hover:text-red-600 transition-colors line-clamp-2">
+                          {product.name}
+                        </h3>
+                      </Link>
+                    </div>
+                  </div>
+
+                  <p className="text-sm text-gray-600 line-clamp-3">
+                    {product.description}
+                  </p>
+
+                  {/* Color Swatches */}
+                  {product.color && (
+                    <div className="flex gap-2">
+                      {product.color.split(",").map((clr, i) => (
+                        <span
+                          key={i}
+                          className="w-5 h-5 rounded-full border-2 border-gray-200 shadow-sm"
+                          style={{ backgroundColor: clr.trim() }}
+                          aria-label={`Color option: ${clr.trim()}`}
+                        />
+                      ))}
+                    </div>
+                  )}
 
                   {/* Price & Add to Cart */}
                   <div className="flex justify-between items-center">
-                    <div className="flex items-end gap-2">
-                      <span className=" text-red-600 text-[16px] font-bold">
-                        $ {product.discountPrice || product.price}.00
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-xl font-bold text-red-600">
+                        ${product.discountPrice || product.price}
                       </span>
                       {product.discountPrice && (
                         <span className="text-sm text-gray-400 line-through">
-                          ${product.price}.00
+                          ${product.price}
                         </span>
                       )}
                     </div>
                     <button
-                      onClick={() => handleAddToCart(product._id)}
-                      className="bg-red-600 hover:bg-red-700 text-white p-2 rounded transition-colors duration-300"
+                      // onClick={() => handleAddToCart(product._id)}
+                      className="p-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-all duration-300 hover:scale-110 shadow-md hover:shadow-red-300"
+                      aria-label="Add to cart"
                     >
-                      <ShoppingCart size={18} />
+                      <ShoppingCart className="w-5 h-5" />
                     </button>
                   </div>
                 </div>
