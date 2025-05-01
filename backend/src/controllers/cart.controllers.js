@@ -3,15 +3,10 @@ import { User } from "../models/user.models.js";
 import { Product } from "../models/product.models.js";
 import mongoose from "mongoose";
 
-// Helper function to calculate total price
-const calculateTotalPrice = (items) => {
-  return items.reduce((total, item) => total + item.quantity * item.price, 0);
-};
-
 // get all product in the cart section of the user
 const addToCart = async (req, res) => {
   try {
-    const { productId, quantity } = req.body;
+    const { productId, quantity, color, size } = req.body;
 
     const user = await User.findById(req.user.id).select("-password"); // Exclude
     const userId = user._id;
@@ -37,6 +32,8 @@ const addToCart = async (req, res) => {
       // Create new cart only if it doesn't exist
       cart = new Cart({
         userId: userId,
+        size,
+        color,
         items: [{ productId, quantity }],
         totalPrice: product.price * quantity,
       });
@@ -270,6 +267,8 @@ const getCartAccordingToLoginUser = async (req, res) => {
           _id: "$_id",
           userId: { $first: "$userId" },
           totalPrice: { $first: "$totalPrice" },
+          size: { $first: "$size" },
+          color: { $first: "$color" },
           items: {
             $push: {
               productId: "$items.product._id",
@@ -278,6 +277,7 @@ const getCartAccordingToLoginUser = async (req, res) => {
               image: { $arrayElemAt: ["$items.product.images", 0] },
               price: "$items.product.price",
               quantity: "$items.quantity",
+
               totalItemPrice: {
                 $multiply: ["$items.quantity", "$items.product.price"],
               },

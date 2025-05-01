@@ -35,6 +35,8 @@ const Page = () => {
   const [rating, setRating] = useState(0);
   const [quantity, setQuantity] = useState<number>(1);
   const showToast = useNotificationToast(); // Use the custom hook
+  const [color, setColor] = useState("");
+  const [size, setsize] = useState("");
   console.log(error);
 
   // get product details
@@ -69,13 +71,25 @@ const Page = () => {
     setQuantity((prev) => Math.max(1, prev + change));
   };
 
+  // size and color
+  const colorData = product?.details?.color?.split(",");
+  const sizeData = product?.details?.size?.split(",");
+
+  // handle add to cart
   const handleAddToCart = async () => {
     try {
+      if (!size || !color) {
+        showToast("Please select size and color before adding to cart.");
+        return;
+      }
+
       const response = await axiosInstence.post(
         "/cart/add-to-cart",
         {
           productId: lastId,
           quantity: 1,
+          size,
+          color,
         },
         { withCredentials: true }
       );
@@ -85,9 +99,6 @@ const Page = () => {
       console.error(error);
     }
   };
-
-  const colorData = product?.details?.color?.split(",");
-  const sizeData = product?.details?.size?.split(",");
 
   return (
     <>
@@ -181,8 +192,11 @@ const Page = () => {
                 <div className="flex gap-2 mt-1 ml-[15px]">
                   {colorData?.map((data, index) => (
                     <span
+                      onClick={() => setColor(data)}
                       key={index}
-                      className="w-6 h-6 rounded-full border"
+                      className={`w-6 h-6 border cursor-pointer ${
+                        color === data ? "ring-2 ring-black" : ""
+                      }`}
                       style={{
                         backgroundColor: data || "#000",
                       }}
@@ -197,10 +211,14 @@ const Page = () => {
                 <div className="flex gap-2 mt-1 flex-wrap">
                   {sizeData?.map((data, index: number) => (
                     <span
+                      onClick={() => setsize(data)}
                       key={index}
-                      className="px-3 py-1 border rounded-md bg-gray-50"
+                      // className=" px-3 py-1 border rounded-md bg-gray-50 cursor-pointer"
+                      className={`px-3 py-1 border rounded-md bg-gray-50 cursor-pointer ${
+                        size === data ? "ring-1 ring-black" : ""
+                      }`}
                     >
-                      {data}
+                      {data.toUpperCase()}
                     </span>
                   ))}
                 </div>

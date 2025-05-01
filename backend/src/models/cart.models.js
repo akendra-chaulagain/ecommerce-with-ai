@@ -16,9 +16,11 @@ const cartSchema = new mongoose.Schema(
           required: true,
         }, // Reference to Product
         quantity: { type: Number, required: true, min: 1 }, // Must be at least 1
-        itemTotalPrice: { type: Number, required: true ,default:0},
+        itemTotalPrice: { type: Number, required: true, default: 0 },
       },
     ],
+    size: String,
+    color: String,
 
     updatedAt: { type: Date, default: Date.now }, // Track last update time
     totalPrice: { type: Number, default: 0 },

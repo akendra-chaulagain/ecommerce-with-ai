@@ -190,7 +190,7 @@ const Page = () => {
     return <LoadingPage />;
   }
 
-  console.log(colorData);
+
 
   return (
     <div className="bg-gray-50 min-h-screen">

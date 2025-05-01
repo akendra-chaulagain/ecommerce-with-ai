@@ -552,9 +552,9 @@ const CheckoutPage = () => {
                       />
                     </div>
                     <div className="flex-grow">
-                      <h3 className="font-medium">{data.name}</h3>
-                      <p className="text-sm text-gray-600">
-                        Size: Medium | Color: Blue
+                      <h3 className="font-medium">{data.name.slice(0,100)}...</h3>
+                      <p className="text-sm text-red-600">
+                        Size: {cart?.cart?.size.toUpperCase()} | Color: {cart?.cart?.color.toUpperCase()}
                       </p>
                       <p className="text-[12px] font-semibold">
                         quantity; {data.quantity}

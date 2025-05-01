@@ -107,6 +107,8 @@ export interface iCartResponse {
   items: CartItem[];
   cartDetails: CartItem[];
   productId: string;
+  size:string,
+  color:string
 }
 
 export interface CartItem {

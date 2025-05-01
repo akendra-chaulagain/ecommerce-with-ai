@@ -10,6 +10,8 @@ const orderSchema = new mongoose.Schema(
         quantity: { type: Number, required: true },
       },
     ],
+    size: String,
+    color: String,
     totalPrice: { type: Number, required: true },
     shippingAddress: { type: mongoose.Schema.Types.ObjectId, ref: "Shipping" },
 
