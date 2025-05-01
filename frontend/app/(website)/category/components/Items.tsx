@@ -1,11 +1,11 @@
 import { Eye, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import React from "react";
-// import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { iCategoryResponse, iColor } from "@/types/types";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { useNotificationToast } from "@/hooks/toast";
+import { useCart } from "@/context/CartContent";
 
 interface ItemsProps {
   category: iCategoryResponse | null;
@@ -15,20 +15,21 @@ interface ItemsProps {
 const Items = ({ category, colorData }: ItemsProps) => {
   const showToast = useNotificationToast();
 
-  const handleAddToCart = async (lastId: string) => {
+  const { refreshCart } = useCart();
+  const handleAddToCart = async (productId: string) => {
     try {
       const response = await axiosInstence.post(
         "/cart/add-to-cart",
         {
-          productId: lastId,
+          productId,
           quantity: 1,
         },
         { withCredentials: true }
       );
-
       showToast(response.data.message);
+      await refreshCart();
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

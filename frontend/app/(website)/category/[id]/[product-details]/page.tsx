@@ -19,13 +19,16 @@ import { iProduct, iReview } from "@/types/types";
 import Review from "../../components/Review";
 import { useAuth } from "@/context/AuthContext";
 import { useNotificationToast } from "@/hooks/toast";
+import { useCart } from "@/context/CartContent";
 
 const Page = () => {
+  const { refreshCart } = useCart();
+
   const user = useAuth();
   const userId = user?.user?._id;
   const pathname = usePathname();
   const parts = pathname.split("/");
-  // Get the last part (product ID)
+
   const lastId = parts[parts.length - 1].replace("product-details-", "");
   const [product, setProduct] = useState<iProduct | null>(null);
   const [error, setError] = useState<boolean>(false);
@@ -57,35 +60,34 @@ const Page = () => {
   const plugin = React.useRef(
     Autoplay({ delay: 1500, stopOnInteraction: true })
   );
-  // get reting from the child component
+
   const handleRatingUpdate = (rating: number) => {
     setRating(rating);
   };
-  // handle quantiy
+
   const updateCartQuantity = (change: number) => {
-    setQuantity((prev) => Math.max(1, prev + change)); // Ensures quantity doesn't go below 1
+    setQuantity((prev) => Math.max(1, prev + change));
   };
-  // add to cart
+
   const handleAddToCart = async () => {
     try {
       const response = await axiosInstence.post(
         "/cart/add-to-cart",
         {
           productId: lastId,
-          quantity,
+          quantity: 1,
         },
         { withCredentials: true }
       );
       showToast(response.data.message);
+      await refreshCart();
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
   const colorData = product?.details?.color?.split(",");
   const sizeData = product?.details?.size?.split(",");
-  
-
 
   return (
     <>

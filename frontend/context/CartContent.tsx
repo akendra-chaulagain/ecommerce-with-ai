@@ -12,17 +12,22 @@ import { iCartResponse } from "@/types/types";
 interface iChildren {
   children: ReactNode;
 }
-interface iCart {
+
+interface iCartContext {
   cart: iCartResponse | null;
+  refreshCart: () => Promise<void>;
 }
 
-const defaultCartValue: iCart = {
+const defaultCartValue: iCartContext = {
   cart: null,
- 
+  refreshCart: async () => {},
 };
-const CartContext = createContext(defaultCartValue);
+
+const CartContext = createContext<iCartContext>(defaultCartValue);
+
 export const CartProvider = ({ children }: iChildren) => {
-  const [cart, setcart] = useState(null);
+  const [cart, setcart] = useState<iCartResponse | null>(null);
+
   const getCartDetails = async () => {
     try {
       const res = await axiosInstence.get("/cart", {
@@ -30,21 +35,25 @@ export const CartProvider = ({ children }: iChildren) => {
       });
 
       if (res.data) {
-        setcart(res.data.cart); // Assuming res.data contains user information
+        setcart(res.data.cart);
       } else {
-        setcart(null); // Set null if the response doesn't have user data
+        setcart(null);
       }
     } catch (error) {
       setcart(null);
       console.log(error);
     }
   };
+
   useEffect(() => {
     getCartDetails();
   }, []);
 
   return (
-    <CartContext.Provider value={{ cart }}>{children}</CartContext.Provider>
+    <CartContext.Provider value={{ cart, refreshCart: getCartDetails }}>
+      {children}
+    </CartContext.Provider>
   );
 };
+
 export const useCart = () => useContext(CartContext);

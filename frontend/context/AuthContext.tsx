@@ -30,27 +30,26 @@ const AuthContext = createContext(defaultUserValue);
 export const AuthProvider = ({ children }: iChildren) => {
   const [user, setUser] = useState<User | null>(null);
 
-const [loading, setLoading] = useState<boolean>(false); 
+  const [loading, setLoading] = useState<boolean>(false);
 
-const getLoginUser = async () => {
-  // setLoading(true);
-  try {
-    const res = await axiosInstence.get("users/login-user/profile", {
-      withCredentials: true,
-    });
-    setUser(res.data ?? null);
-  } catch (error) {
-    setUser(null);
-    console.error("Error fetching user", error);
-  } finally {
-    setLoading(false);
-  }
-};
+  const getLoginUser = async () => {
+    // setLoading(true);
+    try {
+      const res = await axiosInstence.get("users/login-user/profile", {
+        withCredentials: true,
+      });
+      setUser(res.data ?? null);
+    } catch (error) {
+      setUser(null);
+      console.error("Error fetching user", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-useEffect(() => {
-  getLoginUser();
-}, []);
-
+  useEffect(() => {
+    getLoginUser();
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, loading, getLoginUser }}>

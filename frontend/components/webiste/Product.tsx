@@ -6,6 +6,7 @@ import Link from "next/link";
 import { iProduct } from "@/types/types";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { useNotificationToast } from "@/hooks/toast";
+import { useCart } from "@/context/CartContent";
 
 const Product = () => {
   const [product, setproduct] = useState<iProduct[]>([]);
@@ -25,24 +26,24 @@ const Product = () => {
       }
     })();
   }, []);
-  
-    const handleAddToCart = async (lastId: string) => {
-      try {
-        const response = await axiosInstence.post(
-          "/cart/add-to-cart",
-          {
-            productId: lastId,
-            quantity: 1,
-          },
-          { withCredentials: true }
-        );
-  
-        showToast(response.data.message);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-  
+  const { refreshCart } = useCart();
+  const handleAddToCart = async (productId: string) => {
+    try {
+      const response = await axiosInstence.post(
+        "/cart/add-to-cart",
+        {
+          productId,
+          quantity: 1,
+        },
+        { withCredentials: true }
+      );
+      showToast(response.data.message);
+      await refreshCart();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
 
   return (
     <>

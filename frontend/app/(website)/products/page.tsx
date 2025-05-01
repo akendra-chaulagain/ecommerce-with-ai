@@ -1,4 +1,5 @@
 "use client";
+import { useCart } from "@/context/CartContent";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { useNotificationToast } from "@/hooks/toast";
 import { Eye, ShoppingCart } from "lucide-react";
@@ -46,10 +47,8 @@ const ProductsPage = () => {
   useEffect(() => {
     fetchProducts(currentPage);
   }, [fetchProducts, currentPage]);
-
+  const { refreshCart } = useCart();
   const handleAddToCart = async (productId: string) => {
-    console.log("adding");
-    
     try {
       const response = await axiosInstence.post(
         "/cart/add-to-cart",
@@ -60,6 +59,7 @@ const ProductsPage = () => {
         { withCredentials: true }
       );
       showToast(response.data.message);
+      await refreshCart();
     } catch (error) {
       console.error(error);
     }
@@ -200,10 +200,7 @@ const ProductsPage = () => {
                       className="p-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-all duration-300 hover:scale-110 shadow-md hover:shadow-red-300"
                       aria-label="Add to cart"
                     >
-                      <ShoppingCart
-                        className="w-5 h-5"
-                       
-                      />
+                      <ShoppingCart className="w-5 h-5" />
                     </button>
                   </div>
                 </div>

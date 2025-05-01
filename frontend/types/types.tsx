@@ -20,7 +20,7 @@ export interface iReview {
 }
 
 export interface iProduct {
-  _id: string;
+  _id: number;
   details?: iProductDetails;
   reviews: iReview[];
   images: [0];

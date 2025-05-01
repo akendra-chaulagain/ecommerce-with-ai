@@ -30,7 +30,7 @@ export const ShippingProvider = ({ children }: iChildren) => {
         withCredentials: true,
       });
 
-      setShippingAddress(res.data); // Assuming res.data contains user information
+      setShippingAddress(res.data); 
     } catch (error) {
       setShippingAddress(null);
       console.log(error);
