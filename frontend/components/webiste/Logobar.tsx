@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import {
   CreditCard,
-  LucidePackageOpen,
   MapPin,
   Search,
   Settings,
@@ -14,6 +13,7 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContent";
 import { useRouter } from "next/navigation";
+import { Select, SelectContent, SelectTrigger } from "@/components/ui/select";
 
 const Logobar = () => {
   const router = useRouter();
@@ -24,6 +24,11 @@ const Logobar = () => {
     router.push(`/search?q=${searchtext}`); // This adds query params
   };
 
+  const [open, setOpen] = useState(false);
+
+  const handleSelect = () => {
+    setOpen(false); // Close dropdown after selection
+  };
   return (
     <>
       <div className=" h-auto mt-[25px] px-[10px]  hidden  sm:hidden lg:block">
@@ -62,7 +67,7 @@ const Logobar = () => {
           </div>
 
           {/* search */}
-          <div className="flex justify-between">
+          <div className="flex justify-between items-center">
             <div className="flex  border border-gray-500 px-[13px] py-[4px]">
               <span>
                 <input
@@ -89,18 +94,33 @@ const Logobar = () => {
               </Link>
             ) : (
               <Link href="/order" className="flex cursor-pointer">
-                <span>
-                  <LucidePackageOpen />
-                </span>
                 <span className="ml-[7px] hover:underline">Orders</span>
               </Link>
             )}
-            <Link href="/profile" className="flex cursor-pointer">
-              <span>
-                <Settings />
-              </span>
-              <span className="ml-[7px] hover:underline"> </span>
-            </Link>
+            {/* <Link href="/profile" className="flex cursor-pointer"> */}
+            <div className="relative">
+              <Select open={open} onOpenChange={setOpen}>
+                <SelectTrigger className="focus:outline-none focus:ring-0 border-none p-0">
+                  <Settings className="  cursor-pointer" />
+                </SelectTrigger>
+
+                <SelectContent className="w-40 bg-white shadow-lg rounded-md p-2">
+                  <Link href="/profile" onClick={handleSelect}>
+                    <span className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded cursor-pointer">
+                      Profile
+                    </span>
+                  </Link>
+                  <Link href="/logout" onClick={handleSelect}>
+                    <span className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded cursor-pointer">
+                      Log out
+                    </span>
+                  </Link>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <span className="ml-[7px] hover:underline"> </span>
+            {/* </Link> */}
             <Link href="/cart" className="flex cursor-pointer">
               <span>
                 <ShoppingCart />
