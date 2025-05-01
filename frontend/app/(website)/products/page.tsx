@@ -25,7 +25,7 @@ const ProductsPage = () => {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const limit = 25;
+  const limit = 15;
 
   const fetchProducts = useCallback(async (page: number) => {
     try {
@@ -33,25 +33,23 @@ const ProductsPage = () => {
       const response = await axiosInstence.get(
         `/product?page=${page}&limit=${limit}`
       );
-     
-      
-      const resData = response.data;
-      console.log(resData);
-      
-      setProducts(response.data.data); 
-       setTotalPages(response.data.totalPages);
+
+      setProducts(response.data.data);
+      setTotalPages(response.data.totalPages);
     } catch (error) {
       console.error(error);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchProducts(currentPage); 
+    fetchProducts(currentPage);
   }, [fetchProducts, currentPage]);
 
   const handleAddToCart = async (productId: string) => {
+    console.log("adding");
+    
     try {
       const response = await axiosInstence.post(
         "/cart/add-to-cart",
@@ -67,13 +65,11 @@ const ProductsPage = () => {
     }
   };
 
- const handlePageChange = (newPage: number) => {
-   if (newPage >= 1 && newPage <= totalPages) {
-     setCurrentPage(newPage);
-   }
- };
-
- 
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-16">
@@ -200,11 +196,14 @@ const ProductsPage = () => {
                       )}
                     </div>
                     <button
-                      // onClick={() => handleAddToCart(product._id)}
+                      onClick={() => handleAddToCart(product._id)}
                       className="p-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-all duration-300 hover:scale-110 shadow-md hover:shadow-red-300"
                       aria-label="Add to cart"
                     >
-                      <ShoppingCart className="w-5 h-5" />
+                      <ShoppingCart
+                        className="w-5 h-5"
+                       
+                      />
                     </button>
                   </div>
                 </div>

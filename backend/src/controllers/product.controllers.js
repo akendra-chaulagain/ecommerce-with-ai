@@ -413,11 +413,12 @@ const getAllproducts = async (req, res) => {
       data: allproducts,
     });
     
+    
   } catch (error) {
     return res.status(500).json({
       message: "Error occurred while fetching products",
       error: error.message,
-      stack: process.env.NODE_ENV === "production" ? null : error.stack, 
+    
     });
   }
 };

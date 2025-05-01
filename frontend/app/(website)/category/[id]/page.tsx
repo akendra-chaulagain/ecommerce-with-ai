@@ -33,6 +33,8 @@ const Page = () => {
   const { id } = useParams();
   const [category, setCategory] = useState<iCategoryResponse | null>(null);
   const [error, setError] = useState<boolean>(false);
+  console.log(error);
+  
 
   const [loading, setLoading] = useState<boolean>(true);
   const [colorLoading, setColorLoading] = useState<boolean>(false);

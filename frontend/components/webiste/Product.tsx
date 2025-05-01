@@ -5,10 +5,13 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { iProduct } from "@/types/types";
 import { axiosInstence } from "@/hooks/axiosInstence";
+import { useNotificationToast } from "@/hooks/toast";
 
 const Product = () => {
   const [product, setproduct] = useState<iProduct[]>([]);
   const [error, setError] = useState<boolean>(false);
+  const showToast = useNotificationToast();
+
   console.log(error);
 
   useEffect(() => {
@@ -22,6 +25,24 @@ const Product = () => {
       }
     })();
   }, []);
+  
+    const handleAddToCart = async (lastId: string) => {
+      try {
+        const response = await axiosInstence.post(
+          "/cart/add-to-cart",
+          {
+            productId: lastId,
+            quantity: 1,
+          },
+          { withCredentials: true }
+        );
+  
+        showToast(response.data.message);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
 
   return (
     <>
@@ -122,7 +143,7 @@ const Product = () => {
                       )}
                     </div>
                     <button
-                      // onClick={() => handleAddToCart(product._id)}
+                      onClick={() => handleAddToCart(product._id)}
                       className="p-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-all duration-300 hover:scale-110 shadow-md hover:shadow-red-300"
                       aria-label="Add to cart"
                     >

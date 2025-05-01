@@ -25,9 +25,8 @@ const Items = ({ category, colorData }: ItemsProps) => {
         },
         { withCredentials: true }
       );
-      // Update cart state or trigger a toast notification directly
+
       showToast(response.data.message);
-      // Optionally, update cart state here to reflect changes in UI
     } catch (error) {
       console.log(error);
     }
@@ -44,7 +43,10 @@ const Items = ({ category, colorData }: ItemsProps) => {
               >
                 {/* Product Image */}
                 <div className="relative">
-                  <Link href={`/product/${product._id}`}>
+                  {/* http://localhost:3000/category/67d884afa83eb757e7fb12fa/product-details-67fc501c370e722fdafa949d */}
+                  <Link
+                    href={`/category/${product.categoryId}/product-details-${product._id}`}
+                  >
                     <div className="h-64 overflow-hidden">
                       <Image
                         src={product.images[0] || "/api/placeholder/300/300"}
@@ -55,7 +57,6 @@ const Items = ({ category, colorData }: ItemsProps) => {
                       />
                     </div>
                   </Link>
-
                   {/* Wishlist Button */}
                   <button
                     onClick={() => handleAddToCart(product._id)}
@@ -66,7 +67,6 @@ const Items = ({ category, colorData }: ItemsProps) => {
                       className="text-gray-600 hover:text-red-600 transition-colors"
                     />
                   </button>
-
                   {/* Discount Badge */}
                 </div>
 
@@ -81,7 +81,9 @@ const Items = ({ category, colorData }: ItemsProps) => {
                   </div>
 
                   {/* Product Name */}
-                  <Link href={`/product/${product._id}`}>
+                  <Link
+                    href={`/category/${product.categoryId}/product-details-${product._id}`}
+                  >
                     <h3 className="text-base font-semibold text-gray-800 mb-1 hover:text-red-600 transition-colors line-clamp-1">
                       {product.name}
                     </h3>
@@ -135,7 +137,9 @@ const Items = ({ category, colorData }: ItemsProps) => {
               >
                 {/* Product Image */}
                 <div className="relative">
-                  <Link href={`/product/${product._id}`}>
+                  <Link
+                    href={`/category/${product.categoryId}/product-details-${product._id}`}
+                  >
                     <div className="h-64 overflow-hidden">
                       <Image
                         src={product.images[0] || "/api/placeholder/300/300"}
@@ -172,7 +176,9 @@ const Items = ({ category, colorData }: ItemsProps) => {
                   </div>
 
                   {/* Product Name */}
-                  <Link href={`/product/${product._id}`}>
+                  <Link
+                    href={`/category/${product.categoryId}/product-details-${product._id}`}
+                  >
                     <h3 className="text-base font-semibold text-gray-800 mb-1 hover:text-red-600 transition-colors line-clamp-1">
                       {product.name}
                     </h3>
