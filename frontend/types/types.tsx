@@ -54,6 +54,7 @@ export interface iProductDetails {
   SKU: number;
   color: string;
   size: string;
+  discountPrice?:number | undefined
 }
 
 export interface iReview {
@@ -142,6 +143,7 @@ export interface iOrder {
   products: iProductDetails[];
   length: number;
   orderStatus: string;
+ 
 }
 
 export interface iReview {

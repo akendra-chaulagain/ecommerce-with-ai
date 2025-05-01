@@ -324,7 +324,7 @@ const getProductsByCategoryAndFilters = async (req, res) => {
     if (brand) {
       matchStage.brand = {
         $regex: new RegExp(`\\b${brand}\\b`, "i"),
-      }; // case-insensitive regex for material
+      };
     }
 
     const products = await Product.aggregate([
@@ -340,6 +340,9 @@ const getProductsByCategoryAndFilters = async (req, res) => {
           price: 1,
           brand: 1,
           images: 1,
+          description: 1,
+          discountPrice:1
+
           // You can add more fields as needed
         },
       },
@@ -392,8 +395,8 @@ const getNineProductForHomePage = async (req, res) => {
 
 const getAllproducts = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) ;
-    const limit = parseInt(req.query.limit) ;
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
     const skip = (page - 1) * limit;
 
     const totalProducts = await Product.countDocuments();
@@ -412,13 +415,10 @@ const getAllproducts = async (req, res) => {
       totalProducts,
       data: allproducts,
     });
-    
-    
   } catch (error) {
     return res.status(500).json({
       message: "Error occurred while fetching products",
       error: error.message,
-    
     });
   }
 };

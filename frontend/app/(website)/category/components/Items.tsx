@@ -16,7 +16,7 @@ const Items = ({ category, colorData }: ItemsProps) => {
   const showToast = useNotificationToast();
 
   const { refreshCart } = useCart();
-  const handleAddToCart = async (productId: string) => {
+  const handleAddToCart = async (productId: number) => {
     try {
       const response = await axiosInstence.post(
         "/cart/add-to-cart",
@@ -44,7 +44,6 @@ const Items = ({ category, colorData }: ItemsProps) => {
               >
                 {/* Product Image */}
                 <div className="relative">
-                  {/* http://localhost:3000/category/67d884afa83eb757e7fb12fa/product-details-67fc501c370e722fdafa949d */}
                   <Link
                     href={`/category/${product.categoryId}/product-details-${product._id}`}
                   >
@@ -60,7 +59,7 @@ const Items = ({ category, colorData }: ItemsProps) => {
                   </Link>
                   {/* Wishlist Button */}
                   <button
-                    onClick={() => handleAddToCart(product._id)}
+                    onClick={() => handleAddToCart(product?._id)}
                     className="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   >
                     <Eye
@@ -72,7 +71,7 @@ const Items = ({ category, colorData }: ItemsProps) => {
                 </div>
 
                 <div className="p-4">
-                  {/* Brand & Rating */}
+                  {/* Brand*/}
                   <div className="flex justify-between items-center mb-2">
                     {product.brand && (
                       <span className="text-xs font-semibold text-gray-500 uppercase">
@@ -112,13 +111,19 @@ const Items = ({ category, colorData }: ItemsProps) => {
                   {/* Price & Add to Cart */}
                   <div className="flex justify-between items-center">
                     <div className="flex items-end gap-2">
-                      <span className="text-lg font-bold text-red-600">
-                        ${product?.discountPrice || product.price}
-                      </span>
-                      {product?.discountPrice && (
-                        <span className="text-sm text-gray-400 line-through">
-                          ${product.price}
-                        </span>
+                      {product?.discountPrice && product.discountPrice > 0 ? (
+                        <>
+                          <h2 className="text-2xl font-bold text-red-600">
+                            ${product.discountPrice}
+                          </h2>
+                          <span className="ml-2 text-gray-500 line-through text-lg">
+                            ${product.price}
+                          </span>
+                        </>
+                      ) : (
+                        <h2 className="text-2xl font-bold text-red-600">
+                          ${product?.price}
+                        </h2>
                       )}
                     </div>
                     <button
@@ -167,7 +172,7 @@ const Items = ({ category, colorData }: ItemsProps) => {
                 </div>
 
                 <div className="p-4">
-                  {/* Brand & Rating */}
+                  {/* Brand  */}
                   <div className="flex justify-between items-center mb-2">
                     {product.brand && (
                       <span className="text-xs font-semibold text-gray-500 uppercase">
@@ -181,13 +186,13 @@ const Items = ({ category, colorData }: ItemsProps) => {
                     href={`/category/${product.categoryId}/product-details-${product._id}`}
                   >
                     <h3 className="text-base font-semibold text-gray-800 mb-1 hover:text-red-600 transition-colors line-clamp-1">
-                      {product.name}
+                      {product.name.slice(0, 70)}
                     </h3>
                   </Link>
 
                   {/* Description */}
                   <p className="text-sm text-gray-500 mb-3 line-clamp-2">
-                    {product.description}
+                    {product.description.slice(0, 90)}
                   </p>
 
                   {/* Color Variants */}
@@ -207,13 +212,19 @@ const Items = ({ category, colorData }: ItemsProps) => {
                   {/* Price & Add to Cart */}
                   <div className="flex justify-between items-center">
                     <div className="flex items-end gap-2">
-                      <span className="text-lg font-bold text-red-600">
-                        ${product?.discountPrice || product.price}
-                      </span>
-                      {product?.discountPrice && (
-                        <span className="text-sm text-gray-400 line-through">
-                          ${product.price}
-                        </span>
+                      {product?.discountPrice && product.discountPrice > 0 ? (
+                        <>
+                          <h2 className="text-2xl font-bold text-red-600">
+                            ${product.discountPrice}
+                          </h2>
+                          <span className="ml-2 text-gray-500 line-through text-lg">
+                            ${product.price}
+                          </span>
+                        </>
+                      ) : (
+                        <h2 className="text-2xl font-bold text-red-600">
+                          ${product?.price}
+                        </h2>
                       )}
                     </div>
                     <button

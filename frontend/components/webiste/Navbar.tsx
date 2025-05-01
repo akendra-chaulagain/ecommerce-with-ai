@@ -8,10 +8,14 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import { axiosInstence } from "@/hooks/axiosInstence";
-
 import { ICategory } from "@/types/types";
+import { ChevronDown, Home, Tag } from "lucide-react";
+
 const Navbar = () => {
   const [category, setCategory] = useState<ICategory[]>([]);
+  const [openPopover, setOpenPopover] = useState<string | null>(null);
+
+  // Get all categories
   const getAllCategories = async () => {
     try {
       const res = await axiosInstence.get(`/category/tree`, {
@@ -20,86 +24,156 @@ const Navbar = () => {
       setCategory(res.data.data);
     } catch (error) {
       console.log(error);
-    } finally {
     }
   };
+
   useEffect(() => {
     getAllCategories();
   }, []);
-  // console.log(category);
-  
+
   return (
-    <div className="mt-8 px-8 text-[15px] font-semibold hidden sm:hidden lg:block">
-      <ul className="flex justify-between gap-8 items-center">
-        <Link
-          href="/"
-          className="cursor-pointer hover:underline hover:text-red-700 transition-colors"
-        >
-          Home
-        </Link>
-        {category?.map((cData, index) => (
-          <Popover key={index}>
-            <PopoverTrigger className="cursor-pointer hover:underline hover:text-red-700 transition-colors">
-              {cData.name}
-            </PopoverTrigger>
-            {cData.children && cData.children.length > 0 && (
-              <PopoverContent className="w-auto px-10 py-15 rounded-xl shadow-2xl border-0  bg-white">
-                <div className="flex">
-                  {/* Left: Main Category Image */}
-                  <div className="flex-shrink-0 flex items-center justify-center p-4 border-r border-gray-100 bg-red-50 rounded-l-xl">
-                    <Image
-                      src={cData.categoryImage || "/images/default.png"}
-                      alt={cData.name}
-                      width={200}
-                      height={130}
-                      className="object-cover rounded-lg shadow"
-                    />
-                  </div>
-                  {/* Right: Subcategories */}
-                  <div className="flex flex-col w-full p-4">
-                    <h3 className="text-base font-bold text-red-600 mb-3">
-                      Subcategories
-                    </h3>
-                    <div className="grid grid-cols-2 gap-x-6">
-                      {[0, 1].map((colIndex) => (
-                        <div key={colIndex} className="space-y-3">
-                          {cData?.children
-                            .slice(colIndex * 5, colIndex * 5 + 5)
-                            .map((subCat) => (
-                              <div key={subCat._id}>
-                                <Link
-                                  href={`/category/${subCat._id}`}
-                                  className="text-gray-800  hover:text-red-600 transition-colors "
-                                >
-                                  {subCat.name}
-                                </Link>
-                                {subCat.children &&
-                                  subCat.children.length > 0 && (
-                                    <div className="pl-3 mt-1 space-y-1">
-                                      {subCat.children.map((subSub) => (
-                                        <Link
-                                          key={subSub._id}
-                                          href={`/category/${subSub._id}`}
-                                          className="block text-sm text-gray-500 hover:text-red-500"
-                                        >
-                                          {subSub.name}
-                                        </Link>
-                                      ))}
-                                    </div>
-                                  )}
+    <div className="bg-white shadow-sm sticky top-0 z-30 mt-[20px]">
+      <div className="container mx-auto">
+        <div className="hidden lg:block">
+          <div className="flex items-center h-16">
+            <nav className="flex-1">
+              <ul className="flex justify-between items-center space-x-1">
+                <li>
+                  <Link
+                    href="/"
+                    className="flex items-center px-4 py-2 text-gray-800 hover:text-red-600 hover:bg-red-50 rounded-md transition-all duration-200"
+                  >
+                    <Home size={18} className="mr-1.5" />
+                    <span className="font-medium">Home</span>
+                  </Link>
+                </li>
+
+                {category?.map((cData, index) => (
+                  <li key={index}>
+                    <Popover
+                      open={openPopover === cData._id}
+                      onOpenChange={(open) => {
+                        if (open) {
+                          setOpenPopover(cData._id);
+                        } else {
+                          setOpenPopover(null);
+                        }
+                      }}
+                    >
+                      <PopoverTrigger asChild>
+                        <button className="flex items-center px-4 py-2 text-gray-800 hover:text-red-600 hover:bg-red-50 rounded-md transition-all duration-200">
+                          <span className="font-medium">{cData.name}</span>
+                          {cData.children && cData.children.length > 0 && (
+                            <ChevronDown
+                              size={16}
+                              className="ml-1.5 opacity-70"
+                            />
+                          )}
+                        </button>
+                      </PopoverTrigger>
+
+                      {cData.children && cData.children.length > 0 && (
+                        <PopoverContent
+                          className="w-auto p-0 rounded-lg shadow-xl border border-gray-100"
+                          align="center"
+                          sideOffset={8}
+                        >
+                          <div className="flex flex-row max-w-4xl">
+                            {/* Left: Main Category Image */}
+                            <div className="flex-shrink-0 w-64 bg-gradient-to-br from-red-50 to-white border-r border-gray-100">
+                              <div className="p-6">
+                                <div className="flex items-center mb-3">
+                                  <Tag
+                                    size={16}
+                                    className="text-red-600 mr-2"
+                                  />
+                                  <h3 className="text-base font-bold text-red-600">
+                                    {cData.name}
+                                  </h3>
+                                </div>
+                                <div className="relative h-40 w-full rounded-md overflow-hidden shadow-md">
+                                  <Image
+                                    src={
+                                      cData.categoryImage ||
+                                      "/images/default.png"
+                                    }
+                                    alt={cData.name}
+                                    fill
+                                    className="object-cover transition-transform hover:scale-105 duration-300"
+                                  />
+                                </div>
+                                {/* <div className="mt-4">
+                                  <Link
+                                    href={`/category/${cData._id}`}
+                                    className="text-sm text-red-600 hover:text-red-800 font-medium flex items-center"
+                                    onClick={() => setOpenPopover(null)}
+                                  >
+                                    Browse All
+                                    <ChevronDown
+                                      size={14}
+                                      className="ml-1 rotate-270"
+                                    />
+                                  </Link>
+                                </div> */}
                               </div>
-                            ))}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </PopoverContent>
-            )}
-          </Popover>
-        ))}
-      </ul>
+                            </div>
+
+                            {/* Right: Subcategories */}
+                            <div className="flex-1 p-6">
+                              <h3 className="text-base font-bold text-gray-800 mb-4 pb-2 border-b">
+                                Subcategories
+                              </h3>
+                              <div className="grid grid-cols-2 md:grid-cols-3 gap-x-10 gap-y-1">
+                                {cData?.children.map((subCat) => (
+                                  <div key={subCat._id} className="mb-4">
+                                    <Link
+                                      href={`/category/${subCat._id}`}
+                                      className="text-gray-800 font-medium hover:text-red-600 transition-colors block mb-2"
+                                      onClick={() => setOpenPopover(null)}
+                                    >
+                                      {subCat.name}
+                                    </Link>
+                                    {subCat.children &&
+                                      subCat.children.length > 0 && (
+                                        <div className="space-y-1.5">
+                                          {subCat.children.map((subSub) => (
+                                            <Link
+                                              key={subSub._id}
+                                              href={`/category/${subSub._id}`}
+                                              className="block text-sm text-gray-500 hover:text-red-500 hover:translate-x-0.5 transition-all duration-150"
+                                              onClick={() =>
+                                                setOpenPopover(null)
+                                              }
+                                            >
+                                              {subSub.name}
+                                            </Link>
+                                          ))}
+                                        </div>
+                                      )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </PopoverContent>
+                      )}
+                    </Popover>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
+        </div>
+
+        {/* Mobile navigation - hidden on desktop */}
+        <div className="lg:hidden text-center py-4">
+          <p className="text-sm text-gray-500">
+            Please view on a larger screen to see the navigation menu
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
+
 export default Navbar;

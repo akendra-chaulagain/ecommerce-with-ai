@@ -34,7 +34,6 @@ const Page = () => {
   const [category, setCategory] = useState<iCategoryResponse | null>(null);
   const [error, setError] = useState<boolean>(false);
   console.log(error);
-  
 
   const [loading, setLoading] = useState<boolean>(true);
   const [colorLoading, setColorLoading] = useState<boolean>(false);
@@ -190,33 +189,8 @@ const Page = () => {
     return <LoadingPage />;
   }
 
-
-
   return (
     <div className="bg-gray-50 min-h-screen">
-      {/* Breadcrumb navigation */}
-      <div className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-3">
-          <nav className="flex text-sm">
-            <Link
-              href="/"
-              className="text-gray-500 hover:text-red-600 transition-colors"
-            >
-              Home
-            </Link>
-            <span className="mx-2 text-gray-400">/</span>
-            <Link
-              href="#"
-              className="text-gray-500 hover:text-red-600 transition-colors"
-            >
-              Categories
-            </Link>
-            <span className="mx-2 text-gray-400">/</span>
-            <span className="font-medium text-gray-800">{category?.name}</span>
-          </nav>
-        </div>
-      </div>
-
       <div className="container mx-auto mt-8 px-4 sm:px-8 pb-16">
         {/* Category title */}
         <div className="mb-10 text-center">
@@ -320,7 +294,7 @@ const Page = () => {
                         >
                           <Link
                             className="font-medium text-gray-700 group-hover:text-red-600 transition-colors"
-                            href={`/category/${data._id}`}
+                            href={`#`}
                           >
                             {data.name}
                           </Link>

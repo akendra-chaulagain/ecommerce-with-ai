@@ -100,7 +100,7 @@ const ProductsPage = () => {
                 <p className="text-xl text-gray-700">No matching products</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 {products?.map((product) => (
                   <div
                     key={product._id}

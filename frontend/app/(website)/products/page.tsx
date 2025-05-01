@@ -73,21 +73,7 @@ const ProductsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-16">
-      <div className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-3">
-          <nav className="flex text-sm">
-            <Link
-              href="/"
-              className="text-gray-500 hover:text-red-600 transition-colors"
-            >
-              Home
-            </Link>
-
-            <span className="mx-2 text-gray-400">/</span>
-            <span className="font-medium text-gray-800">Products</span>
-          </nav>
-        </div>
-      </div>
+      
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12 mt-14">
@@ -102,7 +88,7 @@ const ProductsPage = () => {
         </div>
 
         {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {loading ? (
             <div className="col-span-full text-center text-xl text-gray-600 py-20">
               <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
