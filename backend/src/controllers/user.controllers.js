@@ -145,13 +145,15 @@ const verifyUserOtp = async (req, res) => {
     const options = {
       httpOnly: true, // Prevent XSS attacks
       secure: true, // Send only over HTTPS
+      sameSite: "None",
+      maxAge: 1 * 24 * 60 * 60 * 1000,
     };
     return res
       .status(200)
-      .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", refreshToken, options)
+      .cookie("refreshToken", refreshToken, cookieOptions)
       .json({
         message: "OTP verified successfully",
+        accessToken,
         loggedInUser,
       });
   } catch (error) {
@@ -162,7 +164,6 @@ const verifyUserOtp = async (req, res) => {
 };
 
 // resent otp
-
 const resentOtpAgain = async (req, res) => {
   try {
     const temporaryAccessToken = req.cookies.tempToken;
