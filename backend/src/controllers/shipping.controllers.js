@@ -6,7 +6,6 @@ const shippingdetails = async (req, res) => {
 
     const { name, contact, country, street, city, state, zip } = req.body;
 
-    
     if (!name || !contact || !street || !country) {
       return res.status(400).json({
         message: "All fields are required",
@@ -16,9 +15,9 @@ const shippingdetails = async (req, res) => {
       userId,
     });
     if (user) {
-      return res.status(400).json(
-         "User had already registered shipping address",
-      );
+      return res
+        .status(400)
+        .json("User had already registered shipping address");
     }
     const addAddress = await Shipping.create({
       name,
@@ -112,7 +111,6 @@ const deleteShippingAddress = async (req, res) => {
 const getShippingDetails = async (req, res) => {
   try {
     const id = req.user.id;
-    console.log(id);
 
     const details = await Shipping.findOne({ userId: id });
     return res.status(200).json({

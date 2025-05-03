@@ -1,39 +1,46 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import axios from "axios";
+
 import Link from "next/link";
 import { useCart } from "@/context/CartContent";
 import { useShippingAddress } from "@/context/ShippingContext";
 import LoadingPage from "@/components/webiste/Loading";
+import { useRef } from "react";
+import { axiosInstence } from "@/hooks/axiosInstence";
 
 const PaymentPage = () => {
   const searchParams = useSearchParams();
-  const token = searchParams.get("token"); // ✅ Get token from URL
+  const token = searchParams.get("token");
   const [message, setMessage] = useState("Processing payment...");
-  const [loading, setLoading] = useState(false); // Add loading state
-  const [paymentProcessed, setPaymentProcessed] = useState(false);
-
-  // cartitems
+  const [loading, setLoading] = useState(false);
   const cart = useCart();
-
   const cartItems = cart?.cart?.items;
-  // address id
   const shippingAddress = useShippingAddress();
   const adressId = shippingAddress.shippingAddress?.data._id;
   const totalPrice = Number(cart?.cart?.totalPrice);
+  const hasAttempted = useRef(false); // prevent duplicate attempt
 
   useEffect(() => {
     const processPayment = async () => {
-      if (!token || isNaN(totalPrice) || totalPrice <= 0 || paymentProcessed)
+      if (
+        !token ||
+        !adressId ||
+        !Array.isArray(cartItems) ||
+        cartItems.length === 0 ||
+        isNaN(totalPrice) ||
+        totalPrice <= 0 ||
+        hasAttempted.current
+      ) {
         return;
+      }
 
-      setPaymentProcessed(true); // ✅ Lock this first
+      hasAttempted.current = true;
       setLoading(true);
 
       try {
-        const response = await axios.post(
-          `http://localhost:5001/api/v1/payment/capture-payment?token=${token}`,
+        const response = await axiosInstence.post(
+          `/payment/capture-payment?token=${token}`,
           { cartItems, adressId, totalPrice },
           { withCredentials: true }
         );
@@ -41,28 +48,23 @@ const PaymentPage = () => {
         if (response.data.success) {
           setMessage(response.data.message);
         } else {
-          console.error("Unexpected capture response:", response.data);
-          setMessage("Something went wrong. Try again.");
-          setPaymentProcessed(false); // allow retry
+          setMessage(response.data.message);
+          hasAttempted.current = false;
         }
       } catch (error) {
         console.error("Payment processing error:", error);
         setMessage("Payment failed. Please try again.");
-        setPaymentProcessed(false); // allow retry
+        hasAttempted.current = false;
       } finally {
         setLoading(false);
       }
     };
 
-    if (token && adressId && totalPrice > 0 && !paymentProcessed) {
-      processPayment();
-    }
-  }, [token, adressId, totalPrice, paymentProcessed, cartItems]);
+    processPayment();
+  }, [token, adressId, totalPrice, cartItems]);
 
   return (
     <>
-      {/* Loading state can be handled here if needed */}
-
       {loading ? (
         <LoadingPage />
       ) : (
@@ -85,7 +87,6 @@ const PaymentPage = () => {
                   />
                 </svg>
               </div>
-              {/* <LoadingPage /> */}
             </div>
 
             <h1 className="text-2xl font-bold text-gray-800 mb-2">{message}</h1>

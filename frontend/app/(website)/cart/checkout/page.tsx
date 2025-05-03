@@ -38,6 +38,8 @@ const CheckoutPage = () => {
   const tax = 0.13 * subtotal;
   const totalPrice = (subtotal + shippingCost + tax).toFixed(2);
 
+  
+
   // for paypal handle payment
   const handlePayment = () => {
     setShowPaypal(true); // Show PayPal button on click
@@ -65,9 +67,8 @@ const CheckoutPage = () => {
     shippingAddress?.shippingAddress?.data?.zip || " "
   );
 
-  // add shipping address
 
-  // hande edit\
+  // hande edit eddress
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -103,8 +104,6 @@ const CheckoutPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    // Submit the form data (for example, send it to your backend)
-
     try {
       await axiosInstence.post(
         "/shipping/add-shipping-details",
@@ -136,7 +135,7 @@ const CheckoutPage = () => {
         setError("Network error or server not reachable.");
       }
 
-      // console.log(error.response.data);
+     
     }
   };
 

@@ -10,80 +10,84 @@ dotenv.config();
 const PAYPAL_BASE_URL = "https://api-m.sandbox.paypal.com";
 
 const createPaypalOrder = async (req, res) => {
-  const {
-    address,
-    cartItems,
-    shippingCost = 0,
-    tax = 0,
-    discount = 0,
-  } = req.body;
+  const { address, cartItems, discount = 0 } = req.body;
 
-  const itemTotal = cartItems
-    .reduce((sum, item) => sum + item.price * item.quantity, 0)
-    .toString();
-  const totalAmount =
-    parseFloat(itemTotal) +
-    parseFloat(shippingCost) +
-    parseFloat(tax) -
-    parseFloat(discount);
+  // Constants
+  const shippingCost = 5.99;
+
+
+  // Calculate item total
+  const itemTotal = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+
+  const tax = parseFloat((itemTotal * 0.13).toFixed(2)); // 13% tax
+
+  const totalAmount = parseFloat(
+    (itemTotal + shippingCost + tax - discount).toFixed(2)
+  );
+
   try {
     const accessToken = await paypalAccesssToken();
     const response = await axios.post(
-      `${PAYPAL_BASE_URL}/v2/checkout/orders`, // PayPal endpoint for creating orders
-
+      `${PAYPAL_BASE_URL}/v2/checkout/orders`,
       {
-        intent: "CAPTURE", // Payment intent (CAPTURE means you want to capture the payment after approval)
+        intent: "CAPTURE",
         purchase_units: [
           {
             amount: {
-              currency_code: "USD", // Currency code (e.g., USD)
-              value: totalAmount.toString(), // Total total for the order
+              currency_code: "USD",
+              value: totalAmount.toFixed(2),
               breakdown: {
                 item_total: {
                   currency_code: "USD",
-                  value: cartItems
-                    .reduce((sum, item) => sum + item.price * item.quantity, 0)
-                    .toString(),
+                  value: itemTotal.toFixed(2),
+                },
+                shipping: {
+                  currency_code: "USD",
+                  value: shippingCost.toFixed(2),
+                },
+                tax_total: {
+                  currency_code: "USD",
+                  value: tax.toFixed(2),
+                },
+                discount: {
+                  currency_code: "USD",
+                  value: parseFloat(discount).toFixed(2),
                 },
               },
             },
             items: cartItems.map((item) => ({
-              name: item.name, // Item name
+              name: item.name,
               unit_amount: {
-                currency_code: "USD", // Currency code for the item
-                value: item.price.toString(), // Price per item
+                currency_code: "USD",
+                value: item.price.toFixed(2),
               },
-              quantity: item.quantity, // Quantity of the item
-              description: item.description, // Item description
-              sku: item.productId, // Unique product ID (sku)
+              quantity: item.quantity,
+              description: item.description,
+              sku: item.productId,
             })),
             shipping: {
               name: {
-                full_name: address.name, // Name of the recipient
-              },
-              address: {
-                address_line_1: address.street,
-                admin_area_2: address.city,
-                admin_area_1: address.state,
-                postal_code: address.zip.toString(),
-                country_code: address.country.trim().slice(0, 2), // Ensure valid country code (e.g., 'US')
+                full_name: address.name,
               },
             },
           },
         ],
         application_context: {
-          return_url: "http://localhost:3000/cart/checkout/success", // URL to redirect after payment approval
-          cancel_url: "http://localhost:5001/cart/checkout/cancel-order", // URL to redirect if the user cancels
-          user_action: "PAY_NOW", // This ensures the user is prompted to pay immediately
-          brand_name: "Your Store", // Your store's brand name
-          no_shipping: 1,
-          address_override: true,
+          return_url: "http://localhost:3000/cart/checkout/success",
+          cancel_url: "http://localhost:5001/cart/checkout/cancel-order",
+          user_action: "PAY_NOW",
+          brand_name: "Your Store",
+          shipping_preference: "NO_SHIPPING", // << THIS hides the address section
         },
       },
+
       {
         headers: {
-          Authorization: `Bearer ${accessToken}`, // PayPal access token for authorization
-          "Content-Type": "application/json", // Content type for JSON requests
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
         },
       }
     );
@@ -98,7 +102,6 @@ const createPaypalOrder = async (req, res) => {
         .json({ message: "Approval URL not found in PayPal response" });
     }
 
-    // Return the approval URL to the frontend
     res.json({ approvalUrl, orderID: response.data.id });
   } catch (error) {
     console.error("PayPal error:", error.response?.data || error.message);
@@ -110,7 +113,6 @@ const createPaypalOrder = async (req, res) => {
 
 const capturePaypalOrder = async (req, res) => {
   const { cartItems, adressId, totalPrice } = req.body;
-  console.log(cartItems);
 
   try {
     const token = req.query.token;

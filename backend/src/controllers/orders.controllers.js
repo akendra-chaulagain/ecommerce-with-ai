@@ -44,7 +44,6 @@ const createOrder = (req, res) => {
 const getUserAllOrders = async (req, res) => {
   try {
     const userId = req.user.id;
-    console.log(userId);
 
     const orders = await Order.aggregate([
       {

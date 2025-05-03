@@ -11,23 +11,20 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
-import { useCart } from "@/context/CartContent";
 import { useRouter } from "next/navigation";
 import { Select, SelectContent, SelectTrigger } from "@/components/ui/select";
 
 const Logobar = () => {
   const router = useRouter();
   const user = useAuth();
-  const cart = useCart();
   const [searchtext, setSearchText] = useState("");
   const handleClick = () => {
-    router.push(`/search?q=${searchtext}`); // This adds query params
+    router.push(`/search?q=${searchtext}`);
   };
 
   const [open, setOpen] = useState(false);
-
   const handleSelect = () => {
-    setOpen(false); // Close dropdown after selection
+    setOpen(false);
   };
   return (
     <>
@@ -124,10 +121,6 @@ const Logobar = () => {
             <Link href="/cart" className="flex cursor-pointer">
               <span>
                 <ShoppingCart />
-              </span>
-              <span className="ml-[7px] hover:underline">
-                {" "}
-                ({cart?.cart?.items.length})
               </span>
             </Link>
           </div>
