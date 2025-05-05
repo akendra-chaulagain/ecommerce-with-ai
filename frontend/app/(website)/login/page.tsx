@@ -109,9 +109,9 @@ const Page = () => {
       const message = response.data.message;
       showToast(message);
 
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 2000);
+      // setTimeout(() => {
+      //   window.location.href = "/";
+      // }, 2000);
     } catch (error: unknown) {
       console.log(error);
       if (axios.isAxiosError(error)) {

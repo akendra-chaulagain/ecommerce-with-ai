@@ -22,12 +22,13 @@ const verifyJwt = async (req, res, next) => {
         }
         req.user = user;
 
-        next();
+        return next();
       } catch (error) {
-        return res.status(401).json({
-          message: "invalid User or Token expired",
-          error: error.message,
-        });
+        // return res.status(401).json({
+        //   message: "invalid User or Token expired",
+        //   error: error.message,
+        // });
+        // console.log("Access token expired:", error.message);
       }
     }
 
@@ -35,7 +36,7 @@ const verifyJwt = async (req, res, next) => {
     if (refreshToken) {
       try {
         if (!refreshToken) {
-          return res.status(401).json("No token refresh token provideds");
+          return res.status(401).json("No  refresh token provideds");
         }
         const decodeToken = jwt.verify(
           refreshToken,
@@ -81,6 +82,8 @@ const authorize = (...roles) => {
 
 const verifyTemporaryToken = async (req, res, next) => {
   const tempToken = req.cookies.tempToken;
+  console.log("trmp token", tempToken);
+
   if (!tempToken) {
     return res.status(401).json({ message: "Token not found" });
   }

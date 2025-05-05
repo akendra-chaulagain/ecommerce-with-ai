@@ -148,14 +148,11 @@ const verifyUserOtp = async (req, res) => {
       sameSite: "None",
       maxAge: 1 * 24 * 60 * 60 * 1000,
     };
-    return res
-      .status(200)
-      .cookie("refreshToken", refreshToken, cookieOptions)
-      .json({
-        message: "OTP verified successfully",
-        accessToken,
-        loggedInUser,
-      });
+    return res.status(200).cookie("refreshToken", refreshToken, options).json({
+      message: "OTP verified successfully",
+      accessToken,
+      loggedInUser,
+    });
   } catch (error) {
     return res
       .status(400)
@@ -167,6 +164,7 @@ const verifyUserOtp = async (req, res) => {
 const resentOtpAgain = async (req, res) => {
   try {
     const temporaryAccessToken = req.cookies.tempToken;
+    console.log(temporaryAccessToken);
 
     if (!temporaryAccessToken) {
       return res.status(401).json({ message: "Invalid User" });
@@ -228,8 +226,8 @@ const logOutUser = async (req, res) => {
     );
 
     const options = {
-      httpOnly: true, // Prevent XSS attacks
-      secure: true, // Send only over HTTPS
+      httpOnly: true,
+      secure: true,
     };
     return res
       .status(200)
