@@ -50,7 +50,7 @@ router.route("/delete-product/:id").delete(
   deleteProduct
 );
 // get all products
-router.route("/").get(getAllproducts);
+router.route("/all-products").get(getAllproducts);
 
 // productDetails
 router.route("/product-details/:id").get(

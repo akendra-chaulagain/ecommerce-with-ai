@@ -13,8 +13,7 @@ export const verifyOrderStatus = async (orderID, accessToken) => {
       }
     );
     console.log("Order Status: ", response.data.status);
-    
-    
+
     return response.data.status;
   } catch (error) {
     console.error("Error fetching order status:", error);

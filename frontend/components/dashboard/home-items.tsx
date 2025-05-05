@@ -20,7 +20,7 @@ export default function DashboardHomePage() {
       value: "3,721",
       change: "+12%",
       trend: "up",
-      icon: <ShoppingCart className="h-8 w-8 text-blue-500" />,
+      icon: <ShoppingCart className="h-8 w-8 text-red-500" />,
       description: "Total orders received",
     },
     {
@@ -83,7 +83,7 @@ export default function DashboardHomePage() {
     <div className="space-y-8">
       {/* Dashboard Title */}
       <div className="flex items-center gap-3">
-        <TrendingUp className="h-7 w-7 text-blue-600" />
+        <TrendingUp className="h-7 w-7 text-red-600" />
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight">
             Dashboard Overview
@@ -99,7 +99,7 @@ export default function DashboardHomePage() {
         {stats.map((stat, index) => (
           <Card
             key={index}
-            className="transition-transform hover:scale-105 hover:shadow-xl bg-gradient-to-br from-white via-gray-50 to-blue-50 border-0"
+            className="transition-transform hover:scale-105 hover:shadow-xl bg-gradient-to-br from-white via-gray-50 to-red-50 border-0"
           >
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-semibold text-gray-600">
@@ -154,11 +154,11 @@ export default function DashboardHomePage() {
               >
                 <div
                   className={`w-10 h-10 rounded-full flex items-center justify-center mr-4 shadow ${
-                    item % 2 === 0 ? "bg-blue-100" : "bg-purple-100"
+                    item % 2 === 0 ? "bg-red-100" : "bg-purple-100"
                   }`}
                 >
                   {item % 2 === 0 ? (
-                    <ShoppingCart className="h-5 w-5 text-blue-600" />
+                    <ShoppingCart className="h-5 w-5 text-red-600" />
                   ) : (
                     <UserCheck className="h-5 w-5 text-purple-600" />
                   )}

@@ -71,7 +71,7 @@ const ProductReviews = () => {
   const [reviewData, setReviewData] = useState<Review | null>(null);
   const [loading, setloading] = useState(false);
   const { id } = useParams();
-  console.log(id);
+ 
 
   const getReviewById = useCallback(async () => {
     setloading(true);
@@ -90,7 +90,6 @@ const ProductReviews = () => {
     getReviewById();
   }, [getReviewById]);
 
-  console.log(reviewData);
 
   return (
     <>
@@ -132,7 +131,7 @@ const ProductReviews = () => {
                   <div className="md:w-/3">
                     <div className="bg-gray-50 rounded-lg p-4">
                       <div className="flex items-center gap-4 mb-4">
-                        <div className="w-20 h-20 bg-gray-200 rounded">
+                        <div className="w-20 h-20 bg-gray-200 rounded mb-[15px]">
                           <Image
                             src={reviewData?.productDetails?.images[0] || ""}
                             alt="Product"
@@ -152,18 +151,8 @@ const ProductReviews = () => {
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <span className="text-gray-600">Color:</span>
-                          <span className="ml-2 font-medium">
-                            {reviewData?.productDetails?.color.join(", ")}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-gray-600">Size:</span>
-                          <span className="ml-2 font-medium">
-                            {reviewData?.productDetails?.size.join(", ")}
-                          </span>
-                        </div>
+                       
+                        
                         <div>
                           <span className="text-gray-600">Material:</span>
                           <span className="ml-2 font-medium">
@@ -251,54 +240,12 @@ const ProductReviews = () => {
                   </div>
                 </div>
 
-                {/* You would map through your review data here for multiple reviews */}
 
-                {/* Review Pagination */}
-                {/* <div className="flex justify-center mt-6">
-                  <nav className="inline-flex rounded-md shadow-sm">
-                    <button
-                      className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-400 bg-white border border-r-0 border-gray-300 rounded-l-md hover:bg-gray-50"
-                      disabled
-                    >
-                      Previous
-                    </button>
-                    <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-red-600 border border-red-600">
-                      1
-                    </button>
-                    <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">
-                      2
-                    </button>
-                    <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50">
-                      3
-                    </button>
-                    <button className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-l-0 border-gray-300 rounded-r-md hover:bg-gray-50">
-                      Next
-                    </button>
-                  </nav>
-                </div> */}
+                
               </div>
             </div>
 
-            {/* Filter Controls */}
-            {/* <div className="fixed bottom-6 right-6">
-                <button className="flex items-center gap-2 bg-red-600 text-white rounded-full px-4 py-3 shadow-lg hover:bg-red-700 transition-colors">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-                    ></path>
-                  </svg>
-                  Filter Reviews
-                </button>
-              </div> */}
+           
           </div>
         </div>
       )}

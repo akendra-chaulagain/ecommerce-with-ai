@@ -10,7 +10,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export default function UserSettings() {
-  const { user, getLogunUser } = useAuth();
+  const { user, getLoginUser } = useAuth();
   const [email, setEmail] = useState<string | undefined>();
   const [contact, setContact] = useState<string | undefined>();
   const [name, setName] = useState<string | undefined>();
@@ -45,7 +45,7 @@ export default function UserSettings() {
         showToast(message);
       }
 
-       await axiosInstence.put(
+      await axiosInstence.put(
         "/users/update-user",
         {
           email,
@@ -57,7 +57,7 @@ export default function UserSettings() {
       // const message = response.data.message;
       window.location.reload();
       // showToast(message);
-      getLogunUser();
+      getLoginUser();
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const errorMessage =
@@ -92,7 +92,7 @@ export default function UserSettings() {
       window.location.reload();
 
       // showToast(message);
-      // getLogunUser();
+      // getLoginUser();
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const errorMessage =
@@ -122,16 +122,15 @@ export default function UserSettings() {
     }
   }, [avtarImage]);
 
-// protected route
+  // protected route
   useEffect(() => {
-    if (!user) {
-      window.location.href = "/login";
+    if (!loading && !user) {
+      // window.location.href = "/login";
     }
     if (user) {
-      getLogunUser();
+      getLoginUser();
     }
-  }, [getLogunUser,user]);
-
+  }, [getLoginUser, user, loading]);
 
   return (
     <>
@@ -183,9 +182,7 @@ export default function UserSettings() {
                     <div className="relative w-32 h-32 rounded-full overflow-hidden mb-4 border-4 border-red-200 shadow-lg">
                       <Image
                         src={
-                          avtarPreview ||
-                          user?.avtar ||
-                          "/default-avatar.png"
+                          avtarPreview || user?.avtar || "/default-avatar.png"
                         }
                         alt="Profile"
                         layout="fill"

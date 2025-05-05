@@ -26,28 +26,32 @@ const ProductsPage = () => {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const limit = 15;
 
-  const fetchProducts = useCallback(async (page: number) => {
-    try {
-      setLoading(true); // set loading to true when fetching
-      const response = await axiosInstence.get(
-        `/product?page=${page}&limit=${limit}`
-      );
+  const fetchProducts = useCallback(
+    async (page: number, limit: number = 25) => {
+      try {
+        setLoading(true); // set loading to true when fetching
+        const response = await axiosInstence.get(
+          `/product/all-products?page=${page}&limit=${limit}`
+        );
 
-      setProducts(response.data.data);
-      setTotalPages(response.data.totalPages);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+        setProducts(response.data.data);
+        setTotalPages(response.data.totalPages);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
     fetchProducts(currentPage);
   }, [fetchProducts, currentPage]);
+
   const { refreshCart } = useCart();
+
   const handleAddToCart = async (productId: string) => {
     try {
       const response = await axiosInstence.post(
@@ -73,7 +77,6 @@ const ProductsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-16">
-      
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12 mt-14">

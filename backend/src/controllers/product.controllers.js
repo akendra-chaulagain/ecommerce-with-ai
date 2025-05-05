@@ -4,8 +4,6 @@ import { v2 as cloudinary } from "cloudinary";
 import { uploadMultipleImagesToCloudinary } from "../utils/cloudinary.js";
 
 const createProduct = async (req, res) => {
-  // console.log(req.body);
-
   try {
     const {
       name,
@@ -205,7 +203,7 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-// get all products
+
 
 // get product details
 const productDetails = async (req, res) => {
@@ -395,8 +393,8 @@ const getNineProductForHomePage = async (req, res) => {
 
 const getAllproducts = async (req, res) => {
   try {
-    const page = parseInt(req.query.page);
-    const limit = parseInt(req.query.limit);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 25;
     const skip = (page - 1) * limit;
 
     const totalProducts = await Product.countDocuments();
