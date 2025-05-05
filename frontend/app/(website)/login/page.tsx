@@ -7,6 +7,8 @@ import axios from "axios";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { Lock, LogIn, MailCheck, ShieldAlert, RefreshCw } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 interface LoginResponse {
   message: string;
@@ -23,6 +25,7 @@ const Page = () => {
   const [timeLeft, setTimeLeft] = useState(60);
   const [isExpired, setIsExpired] = useState(false);
   const showToast = useNotificationToast();
+  const router = useRouter();
 
   // Timer countdown effect
   useEffect(() => {
@@ -47,7 +50,6 @@ const Page = () => {
       .toString()
       .padStart(2, "0")}`;
   };
-
   // login user
   const LoginUser = async () => {
     setLoading(true);
@@ -149,7 +151,6 @@ const Page = () => {
       // Reset OTP timer
       setTimeLeft(60);
       setIsExpired(false);
-    
     } catch (error: unknown) {
       console.log(error);
       if (axios.isAxiosError(error)) {
@@ -168,6 +169,14 @@ const Page = () => {
       setLoading(false);
     }
   };
+
+  const user = useAuth();
+
+  useEffect(() => {
+    if (user?.user) {
+      router.push("/");
+    }
+  }, [user, router]);
 
   return (
     <>

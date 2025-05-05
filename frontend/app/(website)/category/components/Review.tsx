@@ -17,6 +17,7 @@ import { useAuth } from "@/context/AuthContext";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { useNotificationToast } from "@/hooks/toast";
 import axios from "axios";
+import Link from "next/link";
 
 interface ReviewProps {
   reviews: iReview[];
@@ -38,11 +39,10 @@ const Review: React.FC<ReviewProps> = ({
   const showToast = useNotificationToast(); // Use the custom hook
   const averateRating = calculateAverageRating(reviews);
 
-  // sent rating to the parents
   useEffect(() => {
     if (reviews.length > 0) {
-      const avg = parseFloat(averateRating); // Parse the rating to a float
-      sendRatingToParent(avg); // Send the average rating to the parent
+      const avg = parseFloat(averateRating);
+      sendRatingToParent(avg);
     }
   }, [reviews, sendRatingToParent, averateRating]);
 
@@ -62,7 +62,6 @@ const Review: React.FC<ReviewProps> = ({
   const [loading, setloading] = useState(false);
   const user = useAuth();
   const userId = user?.user?._id;
-  // console.log(userId);
 
   // add review
   const handleAddReview = async (e: React.FormEvent) => {
@@ -97,24 +96,21 @@ const Review: React.FC<ReviewProps> = ({
       } else {
         setError(true);
       }
-
-      // console.log(error.response.data);
     } finally {
       setloading(false);
     }
   };
+
   // for review
   const clickStaredButton = (index: number) => {
-    setRatingNum(index + 1); // Update the rating
-    const updatedStars = isStarred.map((_, i) => i <= index); // All stars before and including the clicked one should be true
-    setIsStarred(updatedStars); // Update star states
-    setRatingNum(index + 1); // Update ratingNum based on star clicked
+    setRatingNum(index + 1);
+    const updatedStars = isStarred.map((_, i) => i <= index);
+    setIsStarred(updatedStars);
+    setRatingNum(index + 1);
   };
 
   // delete review
   const handleDeleteReview = async (reviewId: string) => {
-    console.log(reviewId);
-
     try {
       const response = await axiosInstence.delete(
         `/review/delete-review/${reviewId}`,
@@ -140,185 +136,260 @@ const Review: React.FC<ReviewProps> = ({
   };
 
   return (
-    <>
-      <div className="mt-[45px] mb-[40px]">
-        <hr />
-        <h1 className="text-[30px] font-semibold mt-[45px]">
-          {" "}
-          Looking for Customers Review ?
-        </h1>
+    <div className="max-w-1xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="py-12">
+        <div className="border-t border-gray-200 pt-8">
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-6">
+            Customer Reviews
+          </h2>
+        </div>
       </div>
-      {/* grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-3 */}
-      <div className="grid grid-cols-3 gap-8">
-        <div className="">
-          <hr />
 
-          <h1 className="text-[25px] font-semibold">Customer reviews</h1>
-          <div className="flex ml-[6px]">
-            <span className="flex mt-[6px] mb-[10px]">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Review Summary Section */}
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+          <h3 className="text-xl font-semibold text-gray-900 mb-4">
+            Review Summary
+          </h3>
+
+          <div className="flex items-center mb-4">
+            <div className="flex items-center">
               {Array.from({ length: 5 }).map((_, index) => (
                 <Star
                   key={index}
-                  className={`h-4 w-4 ${
-                    averateRating
-                      ? index < Math.round(parseFloat(averateRating.toString())) // Rating available
-                        ? "text-red-600 fill-red-600" // Filled star
-                        : "text-gray-400 fill-gray-400" // Empty star
-                      : "text-gray-400 fill-gray-400" // Default if no rating
+                  className={`h-5 w-5 ${
+                    index < Math.round(parseFloat(averateRating))
+                      ? "text-yellow-400 fill-yellow-400"
+                      : "text-gray-300 fill-gray-300"
                   }`}
                 />
               ))}
-              {/* <Star size={20} color="red" /> */}
+            </div>
+            <span className="ml-3 text-2xl font-medium text-gray-900">
+              {averateRating}
             </span>
-            <span className="ml-[5px] text-[20px]">
-              {averateRating} out of 5
-            </span>
-            <br />
+            <span className="ml-1 text-sm text-gray-500">out of 5</span>
           </div>
-          <p className="text-[14px] mb-[14px]">
-            {reviews.length} global rating
+
+          <p className="text-sm text-gray-500 mb-6">
+            Based on {reviews.length}{" "}
+            {reviews.length === 1 ? "review" : "reviews"}
           </p>
-          <hr />
-          <div className="mt-[14px] leading-[2.3]">
-            <h1 className="text-[25px] font-semibold">Review this product</h1>
-            <p className="text-[18px] font-semibold">
-              Share your thoughts with other customers
+
+          <div className="border-t border-gray-200 pt-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              Share your experience
+            </h3>
+            <p className="text-sm text-gray-500 mb-4">
+              Let other customers know what you think about this product
             </p>
-
-            {/*  */}
-
-            {/* add review dialog */}
 
             <Dialog>
               <DialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="bg-red-600 text-white text-[15px] mt-[10px]"
-                >
-                  Write a customer review
-                </Button>
+                {user?.user ? (
+                  <Button className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded transition-colors">
+                    Write a review
+                  </Button>
+                ) : (
+                  <Link href="/login">
+                    {" "}
+                    <Button className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded transition-colors">
+                      Write a review
+                    </Button>
+                  </Link>
+                )}
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[900px]">
+              <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
-                  <DialogTitle className="text-[25px] mb[20px]">
-                    Add Review
+                  <DialogTitle className="text-xl font-semibold mb-2">
+                    Write Your Review
                   </DialogTitle>
                   <DialogDescription>
-                    <textarea
-                      onChange={(e) => setComment(e.target.value)}
-                      name="comment"
-                      className="w-full h-[30vh] border border-gray-700 p-2 rounded-md text-[17px] text-black"
-                    ></textarea>
-                    {error && (
-                      <p className="text-red-600 mt-2 text-[15px]">{error}</p>
-                    )}
+                    <div className="mb-4">
+                      <div className="flex items-center justify-center mb-4">
+                        {isStarred.map((starred, index) => (
+                          <Star
+                            key={index}
+                            className={`h-8 w-8 mx-1 cursor-pointer transition-colors ${
+                              starred
+                                ? "text-yellow-400 fill-yellow-400"
+                                : "text-gray-300"
+                            }`}
+                            onClick={() => clickStaredButton(index)}
+                          />
+                        ))}
+                      </div>
+                      <textarea
+                        onChange={(e) => setComment(e.target.value)}
+                        name="comment"
+                        placeholder="Share your thoughts about this product..."
+                        className="w-full h-32 border border-gray-300 rounded-md p-3 text-base focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                      ></textarea>
+                      {error && (
+                        <p className="text-red-600 mt-2 text-sm">{error}</p>
+                      )}
+                    </div>
                   </DialogDescription>
                 </DialogHeader>
-
-                <div className="grid gap-4 py-4">
-                  <span className="flex mt-[6px] mb-[10px]">
-                    {isStarred.map((isStarred, index) => (
-                      <Star
-                        key={index}
-                        name="rating"
-                        className="cursor-pointer transition-all"
-                        size={25}
-                        color={isStarred ? "black" : "red"}
-                        onClick={() => {
-                          clickStaredButton(index);
-                          setRatingNum(index + 1);
-                        }}
-                      />
-                    ))}
-
-                    {/* <Star size={20} color="red" /> */}
-                  </span>
-                </div>
                 <DialogFooter>
                   <Button
                     type="submit"
                     onClick={handleAddReview}
-                    className="bg-red-600 text-white text-[15px] mt-[10px] hover:bg-slate-100 hover:text-black"
+                    className="bg-red-600 hover:bg-red-700 text-white font-medium"
+                    disabled={loading}
                   >
-                    {/* Add Review */}
-                    {loading ? "Loading..." : "Review Added"}
+                    {loading ? (
+                      <span className="flex items-center">
+                        <svg
+                          className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                        Submitting...
+                      </span>
+                    ) : (
+                      "Submit Review"
+                    )}
                   </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
-
-            {/* end add review  */}
           </div>
         </div>
-        {/* {reviews.map((data,index))} */}
 
-        <div className="col-span-2">
-          <h1 className="text-[25px] font-semibold mb-[20px]">Customers say</h1>
-          {reviews?.map((data, index) => (
-            <div className="mt-[20px]" key={index}>
-              <div className="flex  mb-[10px] ">
-                <Avatar>
-                  <AvatarImage src={data.userDetails?.avtar} alt="@shadcn" />
-                  <AvatarFallback>{data.userDetails?.rating}</AvatarFallback>
-                </Avatar>
-                <p className=" ml-[10px] font-semibold ">
-                  {data.userDetails?.name}
-                </p>
-              </div>
+        {/* Reviews List Section */}
+        <div className="lg:col-span-2">
+          <h3 className="text-xl font-semibold text-gray-900 mb-6">
+            Customer Feedback
+          </h3>
 
-              <div className="ml-[6px]">
-                <span className="flex mt-[6px] mb-[10px]">
-                  <span className="flex mt-[6px] mb-[10px]">
-                    {Array.from({ length: 5 }).map((_, index) => (
-                      <Star
-                        key={index}
-                        className={`h-4 w-4 ${
-                          averateRating
-                            ? index <
-                              Math.round(parseFloat(averateRating.toString())) // Rating available
-                              ? "text-red-600 fill-red-600" // Filled star
-                              : "text-gray-400 fill-gray-400" // Empty star
-                            : "text-gray-400 fill-gray-400" // Default if no rating
-                        }`}
-                      />
-                    ))}
-                  </span>
-                  {/* <Star size={20} color="red" /> */}
-                </span>
-                <p className="mb-[6px]">{data.comment}</p>
-                {data.userDetails?._id === userId && (
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <span className="text-[12px] bg-white text-red-600 underline cursor-pointer ">
-                        {" "}
-                        Delete Your Review
-                      </span>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
-                      <DialogHeader>
-                        <DialogTitle>
-                          {" "}
-                          Are you sure you want to delete your review.
-                        </DialogTitle>
-                      </DialogHeader>
-
-                      <DialogFooter>
-                        <Button className="text-white text-[12px] bg-red-600 cursor-pointer hover:bg-white hover:text-black  mt-[20px]">
-                          {" "}
-                          <span onClick={() => handleDeleteReview(data._id)}>
-                            Delete Your Review
-                          </span>
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                )}
-              </div>
+          {reviews.length === 0 ? (
+            <div className="text-center py-12 bg-gray-50 rounded-lg">
+              <p className="text-gray-500">
+                No reviews yet. Be the first to share your thoughts!
+              </p>
             </div>
-          ))}
+          ) : (
+            <div className="space-y-6">
+              {reviews?.map((data, index) => (
+                <div
+                  key={index}
+                  className="border-b border-gray-200 pb-6 last:border-b-0"
+                >
+                  <div className="flex items-center mb-4">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage
+                        src={data.userDetails?.avtar}
+                        alt={data.userDetails?.name || "User"}
+                      />
+                      <AvatarFallback className="bg-red-100 text-red-800">
+                        {data.userDetails?.name
+                          ? data.userDetails.name.charAt(0).toUpperCase()
+                          : "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="ml-3">
+                      <p className="text-sm font-medium text-gray-900">
+                        {data.userDetails?.name || "Anonymous"}
+                      </p>
+                      <div className="flex mt-1">
+                        {Array.from({ length: 5 }).map((_, idx) => (
+                          <Star
+                            key={idx}
+                            className={`h-4 w-4 ${
+                              idx < data.rating
+                                ? "text-yellow-400 fill-yellow-400"
+                                : "text-gray-300 fill-gray-300"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="text-gray-700 mt-2 text-base">{data.comment}</p>
+
+                  {data.userDetails?._id === userId && (
+                    <div className="mt-3 flex justify-end">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <button className="text-xs text-red-600 hover:text-red-800 font-medium flex items-center">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-4 w-4 mr-1"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                              />
+                            </svg>
+                            Delete review
+                          </button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-md">
+                          <DialogHeader>
+                            <DialogTitle className="text-lg font-medium text-gray-900">
+                              Delete Review
+                            </DialogTitle>
+                            <DialogDescription className="mt-2 text-sm text-gray-500">
+                              Are you sure you want to delete your review? This
+                              action cannot be undone.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <DialogFooter className="mt-5">
+                            <Button
+                              variant="outline"
+                              className="mr-2"
+                              onClick={() => {
+                                // Close dialog by finding the close button and clicking it
+                                const closeButton = document.querySelector(
+                                  "[data-dialog-close]"
+                                );
+                                if (closeButton instanceof HTMLElement) {
+                                  closeButton.click();
+                                }
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              className="bg-red-600 hover:bg-red-700 text-white"
+                              onClick={() => handleDeleteReview(data._id)}
+                            >
+                              Delete
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

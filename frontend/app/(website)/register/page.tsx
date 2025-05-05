@@ -1,12 +1,13 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import { AxiosError } from "axios";
 import Link from "next/link";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { useNotificationToast } from "@/hooks/toast";
 import { Lock, Mail, Phone, User } from "lucide-react";
-// import { FiUser, FiMail, FiLock, FiPhone } from "react-icons/fi"; // Add icons for inputs
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 interface ErrorResponse {
   message: string;
@@ -21,6 +22,7 @@ const Page = () => {
   const [contact, setContact] = useState<number | undefined>(undefined);
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const registerUser = async (e: FormEvent) => {
     e.preventDefault();
@@ -55,6 +57,13 @@ const Page = () => {
       setLoading(false);
     }
   };
+
+  const user = useAuth();
+  useEffect(() => {
+    if (user?.user) {
+      router.push("/");
+    }
+  }, [user, router]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">

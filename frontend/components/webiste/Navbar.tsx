@@ -32,7 +32,8 @@ const Navbar = () => {
   }, []);
 
   return (
-    <div className="bg-white shadow-sm sticky top-0 z-30 mt-[20px]">
+    // <div className="bg-white shadow-sm sticky top-0 z-50  mt-[10px] mb-[10px]">
+    <div className="bg-white shadow-sm sticky top-0 z-50">
       <div className="container mx-auto">
         <div className="hidden lg:block">
           <div className="flex items-center h-16">

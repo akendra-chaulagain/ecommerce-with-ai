@@ -3,6 +3,7 @@ import { Review } from "../models/review.models.js";
 import { sendreviewEmail } from "../utils/sendEmail.js";
 import { User } from "../models/user.models.js";
 import { Product } from "../models/product.models.js";
+import { generateReviewThankYouEmail } from "../utils/reviewtext.js";
 
 // create review
 const createReview = async (req, res) => {
@@ -35,8 +36,13 @@ const createReview = async (req, res) => {
     });
 
     // Send email notification
-    const emailSubject = "Thank You for Your Review!";
-    const emailText = `Hi ${userData.name},\n\nThank you for reviewing review. Your feedback helps us improve!\n\nReview: ${comment}\nRating: ${rating}/5\n\nBest regards,\nYour E-Commerce Team`;
+    const emailSubject = "Thank You for Your Valuable Feedback!";
+
+    const emailText = generateReviewThankYouEmail(
+      userData.name,
+      comment,
+      rating
+    );
 
     await sendreviewEmail(userData.email, emailSubject, emailText);
 
@@ -125,7 +131,6 @@ const getAllReviewAccordingToProduct = async (req, res) => {
                 $expr: { $eq: ["$_id", "$$productId"] },
               },
             },
-           
           ],
           as: "details",
         },
@@ -229,8 +234,7 @@ const getAllReview = async (req, res) => {
     const reviews = await Review.find()
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit)
-
+      .limit(limit);
 
     return res.status(200).json({
       success: true,
@@ -238,7 +242,6 @@ const getAllReview = async (req, res) => {
       currentPage: page,
       totalPages: Math.ceil(totalReviews / limit),
       totalReviews,
-
 
       data: reviews,
     });
@@ -300,8 +303,6 @@ const getReviewDetailsById = async (req, res) => {
       .json({ message: "Server error please try again", error: error.message });
   }
 };
-
-
 
 export {
   createReview,

@@ -135,7 +135,6 @@ const Page = () => {
                 <CarouselNext className="pointer-events-auto right-2 bg-white/80 hover:bg-white" />
               </div>
             </Carousel>
-
           </div>
         </div>
 
@@ -156,7 +155,7 @@ const Page = () => {
                       className={`h-4 w-4 ${
                         rating
                           ? index < Math.round(parseFloat(rating.toString()))
-                            ? "text-red-600 fill-red-600"
+                            ? "text-yellow-400 fill-yellow-400"
                             : "text-gray-300 fill-gray-300"
                           : "text-gray-300 fill-gray-300"
                       }`}
@@ -222,7 +221,6 @@ const Page = () => {
           <div className="py-4 border-b border-gray-200">
             <div className="flex justify-between items-center mb-3">
               <h3 className="font-medium text-gray-900">SIZE</h3>
-             
             </div>
             <div className="flex flex-wrap gap-2">
               {sizeData?.map((sizeValue, index) => (
@@ -268,8 +266,6 @@ const Page = () => {
                 <ShoppingBag className="h-5 w-5" />
                 <span className="font-medium">ADD TO CART</span>
               </Button>
-
-           
             </div>
           </div>
 

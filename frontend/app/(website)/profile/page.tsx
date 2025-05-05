@@ -8,6 +8,7 @@ import { useNotificationToast } from "@/hooks/toast";
 import axios from "axios";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function UserSettings() {
   const { user, getLoginUser } = useAuth();
@@ -22,6 +23,7 @@ export default function UserSettings() {
   const [error, setError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const showToast = useNotificationToast(); // Use the custom hook
+  const router = useRouter();
 
   const handleUpdateDetails = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -54,9 +56,8 @@ export default function UserSettings() {
         },
         { withCredentials: true }
       );
-      // const message = response.data.message;
-      window.location.reload();
-      // showToast(message);
+
+      showToast("Profile Updated");
       getLoginUser();
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
@@ -122,15 +123,11 @@ export default function UserSettings() {
     }
   }, [avtarImage]);
 
-  // protected route
   useEffect(() => {
-    if (!loading && !user) {
-      // window.location.href = "/login";
+    if (!user) {
+      router.push("/login"); // Redirect to login if user is not logged in
     }
-    if (user) {
-      getLoginUser();
-    }
-  }, [getLoginUser, user, loading]);
+  }, [user, router]);
 
   return (
     <>
