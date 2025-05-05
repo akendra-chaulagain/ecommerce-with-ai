@@ -59,13 +59,13 @@ export function AppSidebar() {
           withCredentials: true,
         }
       );
-
+      showToast("Logout successfully");
       setTimeout(() => {
         window.location.href = "/";
-        showToast("Logout successfully");
       }, 2000);
     } catch (error) {
       console.log(error);
+      showToast("Logout failed");
     }
   };
 

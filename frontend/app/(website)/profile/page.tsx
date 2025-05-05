@@ -122,6 +122,17 @@ export default function UserSettings() {
     }
   }, [avtarImage]);
 
+// protected route
+  useEffect(() => {
+    if (!user) {
+      window.location.href = "/login";
+    }
+    if (user) {
+      getLogunUser();
+    }
+  }, [getLogunUser,user]);
+
+
   return (
     <>
       {loading ? (

@@ -18,9 +18,9 @@ import {
 // create category route
 router.route("/create-product").post(
   // verify token
-  // verifyJwt,
+  verifyJwt,
   // // access control
-  // authorize("Admin"),
+  authorize("Admin"),
   // upload image
   upload.array("images", 5),
   // create Product
@@ -30,9 +30,9 @@ router.route("/create-product").post(
 // edit product route
 router.route("/update-product/:id").put(
   // // verify token
-  // verifyJwt,
+  verifyJwt,
   // // access control
-  // authorize("Admin"),
+  authorize("Admin"),
   // upload image
   upload.array("images", 5),
   // create Product
@@ -43,21 +43,14 @@ router.route("/update-product/:id").put(
 
 router.route("/delete-product/:id").delete(
   // // verify token
-  // verifyJwt,
-  // // access control
-  // authorize("Admin"),
+  verifyJwt,
+  // access control
+  authorize("Admin"),
   // create Product
   deleteProduct
 );
 // get all products
-router.route("/").get(
-  // // verify token
-  // verifyJwt,
-  // // access control
-  // authorize("Admin", "User"),
-  // create Product
-  getAllproducts
-);
+router.route("/").get(getAllproducts);
 
 // productDetails
 router.route("/product-details/:id").get(
@@ -68,7 +61,6 @@ router.route("/product-details/:id").get(
 );
 
 // delete image
-
 router.route("/delete-image/:id").delete(deleteImgae);
 
 router.route("/get-filter").get(getAllUniqueAttributes);

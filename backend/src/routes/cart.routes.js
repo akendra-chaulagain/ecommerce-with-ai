@@ -9,7 +9,7 @@ import {
   updateCartItems,
 } from "../controllers/cart.controllers.js";
 
-// add to cart  route
+
 router.route("/add-to-cart").post(
   // verify token
   verifyJwt,

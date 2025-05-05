@@ -41,13 +41,13 @@ const Logobar = () => {
           withCredentials: true,
         }
       );
-     
+      showToast("Logout successfully");
       setTimeout(() => {
         window.location.href = "/";
-        showToast("Logout successfully");
       }, 2000);
     } catch (error) {
       console.log(error);
+      showToast("Logout failed");
     }
   };
 
@@ -119,27 +119,33 @@ const Logobar = () => {
                 <span className="ml-[7px] hover:underline">Orders</span>
               </Link>
             )}
-            {/* <Link href="/profile" className="flex cursor-pointer"> */}
-            <div className="relative">
-              <Select open={open} onOpenChange={setOpen}>
-                <SelectTrigger className="focus:outline-none focus:ring-0 border-none p-0">
-                  <Settings className="  cursor-pointer" />
-                </SelectTrigger>
 
-                <SelectContent className="w-40 bg-white shadow-lg rounded-md p-2">
-                  <Link href="/profile" onClick={handleSelect}>
-                    <span className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded cursor-pointer">
-                      Profile
-                    </span>
-                  </Link>
-                  <Link href="" onClick={handleLogoutUser}>
-                    <span className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded cursor-pointer">
-                      Log out
-                    </span>
-                  </Link>
-                </SelectContent>
-              </Select>
-            </div>
+            {/* setting */}
+
+            {user.user === null ? (
+              ""
+            ) : (
+              <div className="relative">
+                <Select open={open} onOpenChange={setOpen}>
+                  <SelectTrigger className="focus:outline-none focus:ring-0 border-none p-0">
+                    <Settings className="  cursor-pointer" />
+                  </SelectTrigger>
+
+                  <SelectContent className="w-40 bg-white shadow-lg rounded-md p-2">
+                    <Link href="/profile" onClick={handleSelect}>
+                      <span className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded cursor-pointer">
+                        Profile
+                      </span>
+                    </Link>
+                    <Link href="" onClick={handleLogoutUser}>
+                      <span className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded cursor-pointer">
+                        Log out
+                      </span>
+                    </Link>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
             <span className="ml-[7px] hover:underline"> </span>
             {/* </Link> */}

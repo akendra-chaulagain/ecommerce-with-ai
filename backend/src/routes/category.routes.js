@@ -17,9 +17,9 @@ import { upload } from "../middleware/multer.middleware.js";
 // create category route
 router.route("/create-category").post(
   // // verify token
-  // verifyJwt,
+  verifyJwt,
   // // access control
-  // authorize("Admin"),
+  authorize("Admin"),
   // upload image
   upload.single("categoryImage"),
   // create category
@@ -29,9 +29,9 @@ router.route("/create-category").post(
 // edit category route
 router.route("/edit-category/:id").put(
   // verify token
-  // verifyJwt,
+  verifyJwt,
   // // access control
-  // authorize("Admin","User"),
+  authorize("Admin"),
   // update image
   upload.single("categoryImage"),
 
@@ -40,35 +40,13 @@ router.route("/edit-category/:id").put(
 );
 
 // get all category route
-router.route("/").get(
-  // verify token
-  // verifyJwt,
-  // access control
-  // authorize("Admin", "User"),
-
-  // get all category
-  getAllCategories
-);
+router.route("/").get(getAllCategories);
 
 // get sub category route
-router.route("/sub-category/:id").get(
-  // verify token
-  // verifyJwt,
-  // access control
-  // authorize("Admin", "User"),
-  // get all category
-  getSubCategories
-);
+router.route("/sub-category/:id").get(getSubCategories);
 
 // get category tree route
-router.route("/tree").get(
-  // verify token
-  // verifyJwt,
-  // access control
-  // authorize("Admin", "User"),
-  // get all category
-  categoryTree
-);
+router.route("/tree").get(categoryTree);
 
 // get 5 category route
 router.route("/home-category").get(
@@ -84,13 +62,11 @@ router.route("/category_details/:id").get(
 // category delete route
 router.route("/delete_category/:id").delete(
   // // verify token
-  // verifyJwt,
+  verifyJwt,
   // // access control
-  // authorize("Admin"),
-  // get  individual category details
+  authorize("Admin"),
   deleteCategory
 );
-// router.route("/category-paginate").get(categoryPagenation);
 
 // get products according to ths categoryId
 router.route("/:id").get(getProductsAcoordingToCategory);

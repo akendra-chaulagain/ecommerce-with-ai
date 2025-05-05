@@ -15,28 +15,27 @@ router.route("/create-order").post(
   verifyJwt,
   //   // access control
   authorize("User", "Admin"),
-  //   // upload image
 
-  // create Product
+  // create order
   createOrder
 );
 
 // get all orders
 router.route("/").get(
   // verify token
-  // verifyJwt,
+  verifyJwt,
   // // access control
-  // authorize("Admin", "User")
-  // create Product
+  authorize("Admin"),
+  // create order
   getAllOrders
 );
 
-// productDetails
+// orderDetails
 router.route("/order-details/:id").get(
   // verify token
-  // verifyJwt,
+  verifyJwt,
   // // access control
-  // authorize("Admin", "User")
+  authorize("Admin", "User"),
 
   getOrderDetails
 );
@@ -46,7 +45,7 @@ router.route("/get-user-order").get(
   verifyJwt,
   // // access control
   authorize("Admin", "User"),
-  // create Product
+  // create order
   getUserAllOrders
 );
 

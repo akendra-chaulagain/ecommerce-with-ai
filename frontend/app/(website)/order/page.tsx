@@ -6,6 +6,7 @@ import Image from "next/image";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import LoadingPage from "@/components/webiste/Loading";
 import { iOrder, iProductDetails } from "@/types/types";
+import { useAuth } from "@/context/AuthContext";
 const formatDate = (dateStr: string) => {
   return new Date(dateStr).toLocaleDateString("en-US", {
     year: "numeric",
@@ -17,6 +18,7 @@ const formatDate = (dateStr: string) => {
 function Page() {
   const [order, setOrder] = useState<iOrder[]>([]);
   const [loading, setLoading] = useState(true);
+  // const { user } = useAuth();
 
   const getOrderData = async () => {
     try {
@@ -30,12 +32,16 @@ function Page() {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    getOrderData();
-  }, []);
+  const { user } = useAuth();
 
-  // Usage
-  console.log(order);
+  useEffect(() => {
+    if (!user) {
+      window.location.href = "/login";
+    }
+    if (user) {
+      getOrderData();
+    }
+  }, [user]);
 
   return (
     <>
