@@ -20,12 +20,9 @@ const Page = () => {
   const [loading, setLoading] = useState(false);
   const [showOtpSection, setShowOtpSection] = useState(false);
   const [otp, setOtp] = useState<number>();
-  const [timeLeft, setTimeLeft] = useState(60); 
+  const [timeLeft, setTimeLeft] = useState(60);
   const [isExpired, setIsExpired] = useState(false);
   const showToast = useNotificationToast();
-  
-
- 
 
   // Timer countdown effect
   useEffect(() => {
@@ -109,9 +106,9 @@ const Page = () => {
       const message = response.data.message;
       showToast(message);
 
-      // setTimeout(() => {
-      //   window.location.href = "/";
-      // }, 2000);
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 2000);
     } catch (error: unknown) {
       console.log(error);
       if (axios.isAxiosError(error)) {
@@ -152,9 +149,7 @@ const Page = () => {
       // Reset OTP timer
       setTimeLeft(60);
       setIsExpired(false);
-      setTimeout(() => {
-window.location.href=("/")
-      }, 2000);
+    
     } catch (error: unknown) {
       console.log(error);
       if (axios.isAxiosError(error)) {

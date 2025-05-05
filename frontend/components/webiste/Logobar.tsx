@@ -13,6 +13,8 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { Select, SelectContent, SelectTrigger } from "@/components/ui/select";
+import { axiosInstence } from "@/hooks/axiosInstence";
+import { useNotificationToast } from "@/hooks/toast";
 
 const Logobar = () => {
   const router = useRouter();
@@ -22,10 +24,33 @@ const Logobar = () => {
     router.push(`/search?q=${searchtext}`);
   };
 
+  const showToast = useNotificationToast();
   const [open, setOpen] = useState(false);
   const handleSelect = () => {
     setOpen(false);
   };
+
+  // logout user
+  const handleLogoutUser = async () => {
+    try {
+      await axiosInstence.post(
+        "/users/logout-user",
+        {},
+
+        {
+          withCredentials: true,
+        }
+      );
+     
+      setTimeout(() => {
+        window.location.href = "/";
+        showToast("Logout successfully");
+      }, 2000);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <div className=" h-auto mt-[25px] px-[10px]  hidden  sm:hidden lg:block">
@@ -107,7 +132,7 @@ const Logobar = () => {
                       Profile
                     </span>
                   </Link>
-                  <Link href="/logout" onClick={handleSelect}>
+                  <Link href="" onClick={handleLogoutUser}>
                     <span className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded cursor-pointer">
                       Log out
                     </span>

@@ -14,6 +14,8 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
+import { axiosInstence } from "@/hooks/axiosInstence";
+import { useNotificationToast } from "@/hooks/toast";
 
 // Menu items.
 const items = [
@@ -46,6 +48,26 @@ const items = [
 
 export function AppSidebar() {
   const { user } = useAuth();
+  const showToast = useNotificationToast();
+  const handleLogoutUser = async () => {
+    try {
+      await axiosInstence.post(
+        "/users/logout-user",
+        {},
+
+        {
+          withCredentials: true,
+        }
+      );
+
+      setTimeout(() => {
+        window.location.href = "/";
+        showToast("Logout successfully");
+      }, 2000);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <Sidebar>
@@ -74,9 +96,7 @@ export function AppSidebar() {
                         className="flex items-center gap-3 text-base font-semibold mt-[10px] px-3 py-2 rounded-lg transition-all hover:bg-gray-100  group"
                       >
                         <item.icon className="h-5 w-5 text-gray-500 group- transition" />
-                        <span className="text-[16px] group-">
-                          {item.title}
-                        </span>
+                        <span className="text-[16px] group-">{item.title}</span>
                       </a>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -88,7 +108,10 @@ export function AppSidebar() {
             <span className="flex justify-center font-semibold px-5 text-[13px] text-gray-500">
               {user?.email}
             </span>
-            <button className="w-full bg-white border border-red-600 text-red-600 py-2 px-4 rounded-xl font-bold hover:bg-red-600 hover:text-white transition mt-2 shadow">
+            <button
+              onClick={handleLogoutUser}
+              className="w-full bg-white border border-red-600 text-red-600 py-2 px-4 rounded-xl font-bold hover:bg-red-600 hover:text-white transition mt-2 shadow"
+            >
               Logout
             </button>
           </div>

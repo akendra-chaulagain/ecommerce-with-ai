@@ -226,7 +226,8 @@ const logOutUser = async (req, res) => {
 
     const options = {
       httpOnly: true,
-      secure: true,
+      secure: true, 
+      sameSite: "Lax",
     };
     return res
       .status(200)

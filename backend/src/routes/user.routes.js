@@ -40,7 +40,6 @@ router.route("/login/verify-user").post(verifyUserOtp); // verify otp
 router.route("/login/resent-otp").post(resentOtpAgain); // resent otp
 // resentOtpAgain;
 
-//  authorize("admin");
-// router.route("/update-user").post(verifyJwt, authorize("Admin"), updateUser); // reset or update user routes
+
 
 export default router;
