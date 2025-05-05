@@ -20,7 +20,7 @@ const Page = () => {
   const [loading, setLoading] = useState(false);
   const [showOtpSection, setShowOtpSection] = useState(false);
   const [otp, setOtp] = useState<number>();
-  const [timeLeft, setTimeLeft] = useState(60); // 60 seconds = 1 minute
+  const [timeLeft, setTimeLeft] = useState(60); 
   const [isExpired, setIsExpired] = useState(false);
   const showToast = useNotificationToast();
   
@@ -148,7 +148,13 @@ const Page = () => {
       );
       const message = response.data.message;
       showToast(message);
-      setTimeout(() => {}, 2000);
+      setShowOtpSection(true);
+      // Reset OTP timer
+      setTimeLeft(60);
+      setIsExpired(false);
+      setTimeout(() => {
+window.location.href=("/")
+      }, 2000);
     } catch (error: unknown) {
       console.log(error);
       if (axios.isAxiosError(error)) {

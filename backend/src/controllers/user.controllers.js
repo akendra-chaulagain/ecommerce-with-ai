@@ -83,17 +83,17 @@ const loginUser = async (req, res) => {
       { email: user.email, role: user.role },
       process.env.TEMPORARY_ACCESS_JSONTOKEN,
       {
-        expiresIn: "2m",
+        expiresIn: "10m",
       }
     );
 
     // Set the temporary token as a cookie
     await SentOtpWhileLogin(email, otp);
     res.cookie("tempToken", temporaryAccessToken, {
-      httpOnly: true, // Prevent client-side JS from accessing
-      secure: true, // Use HTTPS in production
-      maxAge: 2 * 60 * 1000, // 2 minutes expiry
-      sameSite: "Strict", // Prevent cross-site request forgery
+      httpOnly: true, 
+      secure: true, 
+      maxAge: 10 * 60 * 1000, 
+      sameSite: "Strict", 
     });
 
     // Send a response to indicate success
@@ -164,7 +164,6 @@ const verifyUserOtp = async (req, res) => {
 const resentOtpAgain = async (req, res) => {
   try {
     const temporaryAccessToken = req.cookies.tempToken;
-    console.log(temporaryAccessToken);
 
     if (!temporaryAccessToken) {
       return res.status(401).json({ message: "Invalid User" });
@@ -303,7 +302,6 @@ const updateUser = async (req, res) => {
       .json({ message: "User updated successfully", user: updatedUserData });
   } catch (error) {
     // If there is an error
-    console.error("Error updating user:", error);
     return res
       .status(500)
       .json({ message: "Server error", error: error.message });
@@ -380,7 +378,6 @@ const getUser = async (req, res) => {
 // delete user
 const deleteUser = async (req, res) => {
   try {
-    console.log(`Delete request received for user ID: ${req.params.id}`);
     const user = await User.findById(req.params.id).select("-password");
 
     if (!user) {
