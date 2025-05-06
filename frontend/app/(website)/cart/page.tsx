@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import LoadingPage from "@/components/webiste/Loading";
+import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContent";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { iCartResponse } from "@/types/types";
@@ -11,13 +12,12 @@ import Link from "next/link";
 import React, { useState } from "react";
 
 const Page = () => {
-  const [cartDetails, setCartdetails] = useState<
-    iCartResponse | null | undefined
-  >(null);
+  const [setCartdetails] = useState<iCartResponse | null | undefined>(null);
   const [loading, setLoading] = useState(false);
 
   // get login user cart details
   const cart = useCart();
+  const user = useAuth();
 
   // update cart quantity
   const handleUpdateCart = async (productId: string, quantity: number) => {
@@ -242,10 +242,6 @@ const Page = () => {
                   <span>Subtotal ({cart?.cart?.items?.length ?? 0} items)</span>
                   <span>${cart?.cart?.totalPrice ?? 0}</span>
                 </div>
-                <div className="flex justify-between text-gray-600">
-                  <span>Shipping</span>
-                  <span>FREE</span>
-                </div>
               </div>
 
               <div className="border-t pt-4 mt-4">
@@ -256,17 +252,33 @@ const Page = () => {
                   </span>
                 </div>
               </div>
-
-              <Link
-                href="/cart/checkout"
-                className={`block w-full mt-6 text-center py-3 text-lg font-medium rounded ${
-                  cart?.cart?.items?.length
-                    ? "bg-red-600 hover:bg-red-700 text-white"
-                    : "bg-gray-300 text-gray-600 cursor-not-allowed pointer-events-none"
-                }`}
-              >
-                Proceed to Checkout
-              </Link>
+              {user.user ? (
+                <Link
+                  href="/cart/checkout"
+                  className={`block w-full mt-6 text-center py-3 text-lg font-medium rounded ${
+                    cart?.cart?.items?.length
+                      ? "bg-red-600 hover:bg-red-700 text-white"
+                      : "bg-gray-300 text-gray-600 cursor-not-allowed pointer-events-none"
+                  }`}
+                >
+                  Proceed to Checkout
+                </Link>
+              ) : (
+                <>
+                  <span
+                    className={` border-t block w-full mt-6 text-center py-3 text-sm font-medium rounded `}
+                  >
+                    Please log in to proceed with your order.
+                    <br />
+                    <Link
+                      className="flex justify-center underline cursor-pointer mt-[3px] text-red-600"
+                      href={"/login"}
+                    >
+                      LOGIN
+                    </Link>
+                  </span>
+                </>
+              )}
             </div>
           </div>
         </div>

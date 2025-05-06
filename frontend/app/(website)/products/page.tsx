@@ -1,4 +1,5 @@
 "use client";
+import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContent";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { useNotificationToast } from "@/hooks/toast";
@@ -26,6 +27,7 @@ const ProductsPage = () => {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const user = useAuth();
 
   const fetchProducts = useCallback(
     async (page: number, limit: number = 25) => {
@@ -53,6 +55,9 @@ const ProductsPage = () => {
   const { refreshCart } = useCart();
 
   const handleAddToCart = async (productId: string) => {
+    if (!user.user) {
+      showToast("You must be logged in to perform this action.");
+    }
     try {
       const response = await axiosInstence.post(
         "/cart/add-to-cart",

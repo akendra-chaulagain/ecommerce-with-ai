@@ -6,6 +6,7 @@ import { iCategoryResponse, iColor } from "@/types/types";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { useNotificationToast } from "@/hooks/toast";
 import { useCart } from "@/context/CartContent";
+import { useAuth } from "@/context/AuthContext";
 
 interface ItemsProps {
   category: iCategoryResponse | null;
@@ -16,7 +17,11 @@ const Items = ({ category, colorData }: ItemsProps) => {
   const showToast = useNotificationToast();
 
   const { refreshCart } = useCart();
+  const user = useAuth()
   const handleAddToCart = async (productId: number) => {
+     if (!user.user) {
+       showToast("You must be logged in to perform this action.");
+     }
     try {
       const response = await axiosInstence.post(
         "/cart/add-to-cart",
