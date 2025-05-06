@@ -1,4 +1,3 @@
-// CheckoutPage.jsx
 "use client";
 import { useCart } from "@/context/CartContent";
 
@@ -38,8 +37,6 @@ const CheckoutPage = () => {
   const tax = 0.13 * subtotal;
   const totalPrice = (subtotal + shippingCost + tax).toFixed(2);
 
-  
-
   // for paypal handle payment
   const handlePayment = () => {
     setShowPaypal(true); // Show PayPal button on click
@@ -66,7 +63,6 @@ const CheckoutPage = () => {
   const [zip, setZip] = useState(
     shippingAddress?.shippingAddress?.data?.zip || " "
   );
-
 
   // hande edit eddress
   const handleUpdate = async (e: React.FormEvent) => {
@@ -134,8 +130,6 @@ const CheckoutPage = () => {
       } else {
         setError("Network error or server not reachable.");
       }
-
-     
     }
   };
 
@@ -154,17 +148,21 @@ const CheckoutPage = () => {
                   {/* <h2 className="px-6 py-4 rounded bg-red-600 text-white font-medium"> */}
                   Shipping Address
                 </h2>
-                {/* shoing user address */}
+
+                {/* User address display */}
                 <form>
-                  <div className="grid grid-cols-1  gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1 mt-[20px]">
                         Full Name
                       </label>
                       <input
                         type="text"
-                        value={shippingAddress?.shippingAddress?.data?.name}
+                        value={
+                          shippingAddress?.shippingAddress?.data?.name || ""
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                        readOnly
                       />
                     </div>
                   </div>
@@ -175,19 +173,25 @@ const CheckoutPage = () => {
                     </label>
                     <input
                       type="tel"
-                      value={shippingAddress?.shippingAddress?.data?.contact}
+                      value={
+                        shippingAddress?.shippingAddress?.data?.contact || ""
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                      readOnly
                     />
                   </div>
+
                   <div className="mt-4">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Country
                     </label>
-
                     <input
-                      type="tel"
-                      value={shippingAddress?.shippingAddress?.data?.country}
+                      type="text"
+                      value={
+                        shippingAddress?.shippingAddress?.data?.country || ""
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                      readOnly
                     />
                   </div>
 
@@ -197,8 +201,11 @@ const CheckoutPage = () => {
                     </label>
                     <input
                       type="text"
-                      value={shippingAddress?.shippingAddress?.data?.street}
+                      value={
+                        shippingAddress?.shippingAddress?.data?.street || ""
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                      readOnly
                     />
                   </div>
 
@@ -208,9 +215,12 @@ const CheckoutPage = () => {
                         City
                       </label>
                       <input
-                        value={shippingAddress?.shippingAddress?.data?.city}
                         type="text"
+                        value={
+                          shippingAddress?.shippingAddress?.data?.city || ""
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                        readOnly
                       />
                     </div>
 
@@ -219,9 +229,12 @@ const CheckoutPage = () => {
                         State/Province
                       </label>
                       <input
-                        value={shippingAddress?.shippingAddress?.data?.state}
                         type="text"
+                        value={
+                          shippingAddress?.shippingAddress?.data?.state || ""
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                        readOnly
                       />
                     </div>
 
@@ -230,17 +243,18 @@ const CheckoutPage = () => {
                         Postal Code
                       </label>
                       <input
-                        value={shippingAddress?.shippingAddress?.data?.zip}
                         type="text"
+                        value={
+                          shippingAddress?.shippingAddress?.data?.zip || ""
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                        readOnly
                       />
                     </div>
 
-                    {/* edit shipping address */}
+                    {/* Edit shipping address */}
                     <Dialog>
                       <DialogTrigger asChild>
-                        {/* <Button variant="outline">Edit Profile</Button> */}
-
                         <span className="underline text-[14px] text-red-600 cursor-pointer">
                           Edit Address
                         </span>
@@ -253,12 +267,11 @@ const CheckoutPage = () => {
                           </DialogDescription>
                         </DialogHeader>
                         <div className="bg-white p-3 rounded-lg mb-6">
-                          <h2 className=" font-semibold mb-4 font-white">
+                          <h2 className="font-semibold mb-4">
                             Shipping Address
                           </h2>
-
                           <form>
-                            <div className="grid grid-cols-1  gap-4">
+                            <div className="grid grid-cols-1 gap-4">
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                   Full Name
@@ -268,9 +281,6 @@ const CheckoutPage = () => {
                                   type="text"
                                   value={name}
                                   onChange={(e) => setName(e.target.value)}
-                                  // placeholder={
-                                  //   shippingAddress?.shippingAddress?.data?.name
-                                  // }
                                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                                 />
                               </div>
@@ -281,31 +291,23 @@ const CheckoutPage = () => {
                                 Phone Number
                               </label>
                               <input
-                                onChange={(e) => setContact(e.target.value)}
                                 name="contact"
                                 type="tel"
                                 value={contact}
-                                // placeholder={
-                                //   shippingAddress?.shippingAddress?.data
-                                //     ?.contact
-                                // }
+                                onChange={(e) => setContact(e.target.value)}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                               />
                             </div>
+
                             <div className="mt-4">
                               <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Country
                               </label>
-
                               <input
-                                onChange={(e) => setCountry(e.target.value)}
                                 name="country"
-                                type="tel"
+                                type="text"
                                 value={country}
-                                // placeholder={
-                                //   shippingAddress?.shippingAddress?.data
-                                //     ?.country
-                                // }
+                                onChange={(e) => setCountry(e.target.value)}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                               />
                             </div>
@@ -315,13 +317,10 @@ const CheckoutPage = () => {
                                 Address
                               </label>
                               <input
-                                value={street}
-                                onChange={(e) => setStreet(e.target.value)}
                                 name="street"
                                 type="text"
-                                // placeholder={
-                                //   shippingAddress?.shippingAddress?.data?.street
-                                // }
+                                value={street}
+                                onChange={(e) => setStreet(e.target.value)}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                               />
                             </div>
@@ -332,13 +331,10 @@ const CheckoutPage = () => {
                                   City
                                 </label>
                                 <input
+                                  name="city"
+                                  type="text"
                                   value={city}
                                   onChange={(e) => setCity(e.target.value)}
-                                  name="city"
-                                  // placeholder={
-                                  //   shippingAddress?.shippingAddress?.data?.city
-                                  // }
-                                  type="text"
                                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                                 />
                               </div>
@@ -348,14 +344,10 @@ const CheckoutPage = () => {
                                   State/Province
                                 </label>
                                 <input
+                                  name="state"
+                                  type="text"
                                   value={state}
                                   onChange={(e) => setState(e.target.value)}
-                                  name="state"
-                                  // placeholder={
-                                  //   shippingAddress?.shippingAddress?.data
-                                  //     ?.state
-                                  // }
-                                  type="text"
                                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                                 />
                               </div>
@@ -365,13 +357,10 @@ const CheckoutPage = () => {
                                   Postal Code
                                 </label>
                                 <input
-                                  onChange={(e) => setZip(e.target.value)}
                                   name="zip"
-                                  value={zip}
-                                  // placeholder={
-                                  //   shippingAddress?.shippingAddress?.data?.zip
-                                  // }
                                   type="text"
+                                  value={zip}
+                                  onChange={(e) => setZip(e.target.value)}
                                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                                 />
                               </div>
@@ -383,7 +372,7 @@ const CheckoutPage = () => {
                           <Button
                             onClick={handleUpdate}
                             type="submit"
-                            className=" bg-red-500 rounded flex items-center justify-center cursor-pointer hover:bg-white hover:text-black "
+                            className="bg-red-500 rounded flex items-center justify-center cursor-pointer hover:bg-white hover:text-black"
                           >
                             Save Changes
                           </Button>
@@ -398,7 +387,6 @@ const CheckoutPage = () => {
               <>
                 <Dialog>
                   <DialogTrigger asChild>
-                    {/* <Button variant="outline">Edit Profile</Button> */}
                     <div className="h-16 bg-red-500 rounded flex items-center justify-center cursor-pointer">
                       <p className="text-center text-white font-semibold">
                         Add Shipping Address
@@ -413,12 +401,9 @@ const CheckoutPage = () => {
                       </DialogDescription>
                     </DialogHeader>
                     <div className="bg-white p-3 rounded-lg mb-6">
-                      <h2 className=" font-semibold mb-4 font-white">
-                        Shipping Address
-                      </h2>
-
+                      <h2 className="font-semibold mb-4">Shipping Address</h2>
                       <form>
-                        <div className="grid grid-cols-1  gap-4">
+                        <div className="grid grid-cols-1 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Full Name
@@ -427,7 +412,8 @@ const CheckoutPage = () => {
                               onChange={(e) => setName(e.target.value)}
                               type="text"
                               value={
-                                shippingAddress?.shippingAddress?.data?.name
+                                shippingAddress?.shippingAddress?.data?.name ||
+                                ""
                               }
                               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                             />
@@ -442,21 +428,23 @@ const CheckoutPage = () => {
                             type="tel"
                             onChange={(e) => setContact(e.target.value)}
                             value={
-                              shippingAddress?.shippingAddress?.data?.contact
+                              shippingAddress?.shippingAddress?.data?.contact ||
+                              ""
                             }
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                           />
                         </div>
+
                         <div className="mt-4">
                           <label className="block text-sm font-medium text-gray-700 mb-1">
                             Country
                           </label>
-
                           <input
-                            type="tel"
+                            type="text"
                             onChange={(e) => setCountry(e.target.value)}
                             value={
-                              shippingAddress?.shippingAddress?.data?.country
+                              shippingAddress?.shippingAddress?.data?.country ||
+                              ""
                             }
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                           />
@@ -470,7 +458,8 @@ const CheckoutPage = () => {
                             onChange={(e) => setStreet(e.target.value)}
                             type="text"
                             value={
-                              shippingAddress?.shippingAddress?.data?.street
+                              shippingAddress?.shippingAddress?.data?.street ||
+                              ""
                             }
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                           />
@@ -484,7 +473,8 @@ const CheckoutPage = () => {
                             <input
                               onChange={(e) => setCity(e.target.value)}
                               value={
-                                shippingAddress?.shippingAddress?.data?.city
+                                shippingAddress?.shippingAddress?.data?.city ||
+                                ""
                               }
                               type="text"
                               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
@@ -498,7 +488,8 @@ const CheckoutPage = () => {
                             <input
                               onChange={(e) => setState(e.target.value)}
                               value={
-                                shippingAddress?.shippingAddress?.data?.state
+                                shippingAddress?.shippingAddress?.data?.state ||
+                                ""
                               }
                               type="text"
                               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
@@ -512,7 +503,8 @@ const CheckoutPage = () => {
                             <input
                               onChange={(e) => setZip(e.target.value)}
                               value={
-                                shippingAddress?.shippingAddress?.data?.zip
+                                shippingAddress?.shippingAddress?.data?.zip ||
+                                ""
                               }
                               type="text"
                               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
@@ -525,9 +517,9 @@ const CheckoutPage = () => {
                       <Button
                         onClick={handleSubmit}
                         type="submit"
-                        className=" bg-red-500 rounded flex items-center justify-center cursor-pointer hover:bg-white hover:text-black "
+                        className="bg-red-500 rounded flex items-center justify-center cursor-pointer hover:bg-white hover:text-black"
                       >
-                        Save changes
+                        Save Changes
                       </Button>
                     </DialogFooter>
                   </DialogContent>
@@ -551,9 +543,12 @@ const CheckoutPage = () => {
                       />
                     </div>
                     <div className="flex-grow">
-                      <h3 className="font-medium">{data.name.slice(0,100)}...</h3>
+                      <h3 className="font-medium">
+                        {data.name.slice(0, 100)}...
+                      </h3>
                       <p className="text-sm text-red-600">
-                        Size: {cart?.cart?.size.toUpperCase()} | Color: {cart?.cart?.color.toUpperCase()}
+                        Size: {cart?.cart?.size.toUpperCase()} | Color:{" "}
+                        {cart?.cart?.color.toUpperCase()}
                       </p>
                       <p className="text-[12px] font-semibold">
                         quantity; {data.quantity}

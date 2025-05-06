@@ -1,4 +1,4 @@
-"use client";
+ "use client";
 import { Star } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -185,20 +185,20 @@ const Review: React.FC<ReviewProps> = ({
             </p>
 
             <Dialog>
-              <DialogTrigger asChild>
-                {user?.user ? (
+              {user?.user ? (
+                <DialogTrigger asChild>
                   <Button className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded transition-colors">
                     Write a review
                   </Button>
-                ) : (
-                  <Link href="/login">
-                    {" "}
-                    <Button className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded transition-colors">
-                      Write a review
-                    </Button>
-                  </Link>
-                )}
-              </DialogTrigger>
+                </DialogTrigger>
+              ) : (
+                <Link href="/login" passHref>
+                  <Button className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded transition-colors">
+                    Write a review
+                  </Button>
+                </Link>
+              )}
+
               <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
                   <DialogTitle className="text-xl font-semibold mb-2">
@@ -220,6 +220,7 @@ const Review: React.FC<ReviewProps> = ({
                         ))}
                       </div>
                       <textarea
+                      value={comment}
                         onChange={(e) => setComment(e.target.value)}
                         name="comment"
                         placeholder="Share your thoughts about this product..."
