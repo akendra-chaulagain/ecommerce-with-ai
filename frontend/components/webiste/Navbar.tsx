@@ -63,7 +63,14 @@ const Navbar = () => {
                     >
                       <PopoverTrigger asChild>
                         <button className="flex items-center px-4 py-2 text-gray-800 hover:text-red-600 hover:bg-red-50 rounded-md transition-all duration-200">
-                          <span className="font-medium">{cData.name}</span>
+                          {cData.children && cData.children.length > 0 ? (
+                            <span className="font-medium">{cData.name}</span>
+                          ) : (
+                            <Link href={`/category/${cData._id}`}>
+                              <span className="font-medium">{cData.name}</span>
+                            </Link>
+                          )}
+
                           {cData.children && cData.children.length > 0 && (
                             <ChevronDown
                               size={16}

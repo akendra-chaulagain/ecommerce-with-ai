@@ -1,7 +1,7 @@
 "use client";
-
 import React, { useEffect, useState, PropsWithChildren } from "react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import {
   MapPin,
   Menu,
@@ -166,6 +166,9 @@ const ResponsiveNavBar: React.FC<PropsWithChildren> = ({ children }) => {
 
         {/* Mobile Sheet Content */}
         <SheetContent side="left" className="max-w-xs w-full p-0">
+          <SheetTitle asChild>
+            <VisuallyHidden>Mobile navigation menu</VisuallyHidden>
+          </SheetTitle>
           <div className="h-full flex flex-col bg-white">
             <div className="bg-red-600 text-white p-4">
               <h2 className="text-xl font-bold">Menu</h2>

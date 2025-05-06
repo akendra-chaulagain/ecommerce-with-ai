@@ -1,4 +1,4 @@
-// "use client";
+"use client";
 import { Star } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
