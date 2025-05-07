@@ -13,9 +13,16 @@ emitter.setMaxListeners(20);
 app.use(cookieParser());
 app.use(express.json());
 
+const allowedOrigins = [
+  "https://ak-store-six.vercel.app/",
+  "https://ak-store-1fjre4jyj-akendra-chaulagains-projects-ee41311e.vercel.app/",
+  "http://localhost:3000"
+];
+
+
 app.use(
   cors({
-    origin: "https://ak-store-six.vercel.app/", // Allow only requests from this origin
+    origin: allowedOrigins, 
     credentials: true, // Allow cookies
   })
 );
