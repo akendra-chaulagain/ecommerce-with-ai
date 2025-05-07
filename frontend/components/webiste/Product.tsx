@@ -29,7 +29,7 @@ const Product = () => {
   }, []);
   const { refreshCart } = useCart();
   const user = useAuth();
-  const handleAddToCart = async (productId: string) => {
+  const handleAddToCart = async (productId: number) => {
     if (!user.user) {
       showToast("You must be logged in to perform this action.");
     }

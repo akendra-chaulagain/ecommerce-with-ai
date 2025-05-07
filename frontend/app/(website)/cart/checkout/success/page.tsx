@@ -1,25 +1,34 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
-
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+
 import { useCart } from "@/context/CartContent";
 import { useShippingAddress } from "@/context/ShippingContext";
 import LoadingPage from "@/components/webiste/Loading";
-import { useRef } from "react";
 import { axiosInstence } from "@/hooks/axiosInstence";
 
 const PaymentPage = () => {
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const [token, setToken] = useState<string | null>(null);
   const [message, setMessage] = useState("Processing payment...");
   const [loading, setLoading] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false); // 🔁
+
   const cart = useCart();
   const cartItems = cart?.cart?.items;
   const shippingAddress = useShippingAddress();
-  const adressId = shippingAddress.shippingAddress?.data._id;
+  const adressId = shippingAddress.shippingAddress?.data?._id;
   const totalPrice = Number(cart?.cart?.totalPrice);
-  const hasAttempted = useRef(false); // prevent duplicate attempt
+  const hasAttempted = useRef(false);
+
+  // ✅ Detect client-side only
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const urlToken = params.get("token");
+      setToken(urlToken);
+      setHasMounted(true); // enable render
+    }
+  }, []);
 
   useEffect(() => {
     const processPayment = async () => {
@@ -45,12 +54,7 @@ const PaymentPage = () => {
           { withCredentials: true }
         );
 
-        if (response.data.success) {
-          setMessage(response.data.message);
-        } else {
-          setMessage(response.data.message);
-          hasAttempted.current = false;
-        }
+        setMessage(response.data.message || "Payment processed.");
       } catch (error) {
         console.error("Payment processing error:", error);
         setMessage("Payment failed. Please try again.");
@@ -62,6 +66,9 @@ const PaymentPage = () => {
 
     processPayment();
   }, [token, adressId, totalPrice, cartItems]);
+
+  // ❌ Don't render on server
+  if (!hasMounted) return null;
 
   return (
     <>
@@ -113,7 +120,6 @@ const PaymentPage = () => {
                 >
                   View Order Details
                 </Link>
-
                 <Link
                   href="/"
                   className="text-red-600 hover:text-red-800 font-medium"

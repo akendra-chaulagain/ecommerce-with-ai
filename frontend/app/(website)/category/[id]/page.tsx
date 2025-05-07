@@ -127,14 +127,20 @@ const Page = () => {
   useEffect(() => {
     const newOpenSections = { ...openFilterSections };
 
+    // Update the openFilterSections state only if the filter value is not null
     Object.entries(selectedFilters).forEach(([key, value]) => {
       if (value !== null) {
         newOpenSections[key] = true;
       }
     });
 
-    setOpenFilterSections(newOpenSections);
-  }, [selectedFilters]);
+    
+    if (
+      JSON.stringify(newOpenSections) !== JSON.stringify(openFilterSections)
+    ) {
+      setOpenFilterSections(newOpenSections);
+    }
+  }, [selectedFilters, openFilterSections]); 
   const fetchFilteredProducts = useCallback(async () => {
     try {
       if (

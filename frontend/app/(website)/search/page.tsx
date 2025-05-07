@@ -5,7 +5,6 @@ import { Eye, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import LoadingPage from "@/components/webiste/Loading";
 
 interface Product {
@@ -22,20 +21,28 @@ interface Product {
 }
 
 const ProductsPage = () => {
-  const searchParams = useSearchParams();
-  const query = searchParams.get("q") || "";
-
+  const [query, setQuery] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   const showToast = useNotificationToast();
 
+  // Extract query param on the client
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get("q") || "";
+      setQuery(q);
+    }
+  }, []);
+
+  // Fetch products when query is available
   useEffect(() => {
     if (!query) return;
+
     const fetchSearchResults = async () => {
       setLoading(true);
       try {
-        // In a real app, you would pass query and filters to this API call
         const response = await axiosInstence.get(
           `search/search-product?term=${query}`
         );
@@ -65,6 +72,7 @@ const ProductsPage = () => {
       console.error(error);
     }
   };
+
   return (
     <>
       {loading ? (
@@ -101,12 +109,11 @@ const ProductsPage = () => {
               </div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                {products?.map((product) => (
+                {products.map((product) => (
                   <div
                     key={product._id}
                     className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1"
                   >
-                    {/* Image Container */}
                     <div className="relative aspect-square overflow-hidden">
                       <Link
                         href={`/category/${product.categoryId}/product-details-${product._id}`}
@@ -124,7 +131,6 @@ const ProductsPage = () => {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       </Link>
 
-                      {/* Quick Action Buttons */}
                       <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <button
                           onClick={() => handleAddToCart(product._id)}
@@ -136,7 +142,6 @@ const ProductsPage = () => {
                       </div>
                     </div>
 
-                    {/* Product Info */}
                     <div className="p-4 space-y-3">
                       <div className="flex justify-between items-start">
                         <div className="space-y-1">
@@ -160,7 +165,6 @@ const ProductsPage = () => {
                         {product.description}
                       </p>
 
-                      {/* Color Swatches */}
                       {product.color && (
                         <div className="flex gap-2">
                           {product.color.split(",").map((clr, i) => (
@@ -174,7 +178,6 @@ const ProductsPage = () => {
                         </div>
                       )}
 
-                      {/* Price & Add to Cart */}
                       <div className="flex justify-between items-center">
                         <div className="flex items-baseline gap-2">
                           <span className="text-xl font-bold text-red-600">
@@ -199,27 +202,6 @@ const ProductsPage = () => {
                 ))}
               </div>
             )}
-
-            {/* Pagination */}
-            {/* <div className="flex justify-center mt-12">
-              <nav className="flex gap-1">
-                <button className="px-4 py-2 text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-red-50 hover:border-red-200">
-                  Previous
-                </button>
-                <button className="px-4 py-2 text-white bg-red-600 border border-red-600 rounded-lg">
-                  1
-                </button>
-                <button className="px-4 py-2 text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-red-50 hover:border-red-200">
-                  2
-                </button>
-                <button className="px-4 py-2 text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-red-50 hover:border-red-200">
-                  3
-                </button>
-                <button className="px-4 py-2 text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-red-50 hover:border-red-200">
-                  Next
-                </button>
-              </nav>
-            </div> */}
           </div>
         </div>
       )}

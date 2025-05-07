@@ -5,25 +5,50 @@ import LoadingPage from "@/components/webiste/Loading";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContent";
 import { axiosInstence } from "@/hooks/axiosInstence";
-import { iCartResponse } from "@/types/types";
+// import { iCartResponse } from "@/types/types";
 import { Trash2, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
+interface CartItem {
+  productId: string;
+  quantity: number;
+  name: string;
+  price: number;
+  image: string;
+}
+
+interface CartDetails {
+  items: CartItem[];
+  totalPrice: number;
+}
+
+interface ICartResponse {
+  cart: CartDetails;
+}
 
 const Page = () => {
-  const [setCartdetails] = useState<iCartResponse | null | undefined>(null);
+  const [cartDetails, setCartdetails] = useState<CartDetails | null>(null);
   const [loading, setLoading] = useState(false);
 
   // get login user cart details
   const cart = useCart();
   const user = useAuth();
 
+  useEffect(() => {
+   
+    if (cart?.cart?.items && cart.cart.items.length > 0) {
+      setCartdetails(cart.cart);
+    }
+  }, [cart?.cart]); 
+
   // update cart quantity
   const handleUpdateCart = async (productId: string, quantity: number) => {
     try {
       setLoading(true);
-      const response = await axiosInstence.put(
+
+      const response = await axiosInstence.put<ICartResponse>(
         "/cart/update-item-from-cart",
         {
           productId,
@@ -32,23 +57,20 @@ const Page = () => {
         { withCredentials: true }
       );
 
+      // Update cart state with new data
       setCartdetails((prevCart) => {
-        if (!prevCart || !prevCart.cartDetails) return prevCart;
+        if (!prevCart) return prevCart;
 
-        const updatedItems = prevCart.cartDetails.map((item) =>
+        const updatedItems = prevCart.items.map((item) =>
           item.productId === productId ? { ...item, quantity } : item
         );
 
         return {
           ...prevCart,
-          cartDetails: {
-            ...prevCart.cartDetails,
-            items: updatedItems,
-            totalPrice: response.data.cart.totalPrice,
-          },
+          items: updatedItems,
+          totalPrice: response.data.cart.totalPrice,
         };
       });
-      window.location.reload();
     } catch (error) {
       console.log(error);
     } finally {
@@ -64,7 +86,7 @@ const Page = () => {
       });
 
       setCartdetails((prevCart) => {
-        if (!prevCart || !prevCart.cartDetails) return prevCart;
+        if (!prevCart) return prevCart;
 
         const updatedItems = prevCart.items.filter(
           (item) => item.productId !== productId
@@ -72,7 +94,7 @@ const Page = () => {
 
         return {
           ...prevCart,
-          cart: updatedItems,
+          items: updatedItems,
         };
       });
 
@@ -100,14 +122,14 @@ const Page = () => {
                 <LoadingPage />
               </div>
             </div>
-          ) : cart?.cart?.items && cart.cart.items.length > 0 ? (
+          ) : cartDetails?.items && cartDetails.items.length > 0 ? (
             <div className="bg-white rounded-lg shadow overflow-hidden">
               <div className="px-6 py-4 bg-gradient-to-r from-red-600 to-red-500 text-white font-medium flex items-center justify-between">
-                <span>Shopping Cart ({cart?.cart?.items?.length} items)</span>
+                <span>Shopping Cart ({cartDetails.items.length} items)</span>
                 <span>Price</span>
               </div>
 
-              {cart.cart.items.map((item, index) => (
+              {cartDetails.items.map((item, index) => (
                 <div
                   key={index}
                   className="p-6 border-b last:border-b-0 hover:bg-gray-50 transition-colors"
@@ -222,10 +244,6 @@ const Page = () => {
         </div>
 
         {/* Order Summary Section */}
-        {/* {
-          cart.cart?.items.length === 0
-        }
-         */}
         <div className="lg:col-span-1">
           <div className="bg-white rounded-lg shadow overflow-hidden sticky top-8">
             <div className="px-6 py-4 bg-gradient-to-r from-red-600 to-red-500 text-white font-medium">
@@ -239,8 +257,10 @@ const Page = () => {
 
               <div className="space-y-2">
                 <div className="flex justify-between text-gray-600">
-                  <span>Subtotal ({cart?.cart?.items?.length ?? 0} items)</span>
-                  <span>${cart?.cart?.totalPrice ?? 0}</span>
+                  <span>
+                    Subtotal ({cartDetails?.items?.length ?? 0} items)
+                  </span>
+                  <span>${cartDetails?.totalPrice ?? 0}</span>
                 </div>
               </div>
 
@@ -248,7 +268,7 @@ const Page = () => {
                 <div className="flex justify-between text-lg font-bold">
                   <span>Total</span>
                   <span className="text-red-600">
-                    ${cart?.cart?.totalPrice ?? 0}
+                    ${cartDetails?.totalPrice ?? 0}
                   </span>
                 </div>
               </div>
@@ -256,7 +276,7 @@ const Page = () => {
                 <Link
                   href="/cart/checkout"
                   className={`block w-full mt-6 text-center py-3 text-lg font-medium rounded ${
-                    cart?.cart?.items?.length
+                    cartDetails?.items?.length
                       ? "bg-red-600 hover:bg-red-700 text-white"
                       : "bg-gray-300 text-gray-600 cursor-not-allowed pointer-events-none"
                   }`}
@@ -264,20 +284,18 @@ const Page = () => {
                   Proceed to Checkout
                 </Link>
               ) : (
-                <>
-                  <span
-                    className={` border-t block w-full mt-6 text-center py-3 text-sm font-medium rounded `}
+                <span
+                  className={` border-t block w-full mt-6 text-center py-3 text-sm font-medium rounded `}
+                >
+                  Please log in to proceed with your order.
+                  <br />
+                  <Link
+                    className="flex justify-center underline cursor-pointer mt-[3px] text-red-600"
+                    href={"/login"}
                   >
-                    Please log in to proceed with your order.
-                    <br />
-                    <Link
-                      className="flex justify-center underline cursor-pointer mt-[3px] text-red-600"
-                      href={"/login"}
-                    >
-                      LOGIN
-                    </Link>
-                  </span>
-                </>
+                    LOGIN
+                  </Link>
+                </span>
               )}
             </div>
           </div>

@@ -10,7 +10,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export default function UserSettings() {
-  const { user, getLogunUser } = useAuth();
+  const { user, getLoginUser } = useAuth();
   const [email, setEmail] = useState<string | undefined>();
   const [contact, setContact] = useState<string | undefined>();
   const [name, setName] = useState<string | undefined>();
@@ -57,7 +57,7 @@ export default function UserSettings() {
       // const message = response.data.message;
       window.location.reload();
       // showToast(message);
-      getLogunUser();
+      getLoginUser();
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const errorMessage =
