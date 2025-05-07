@@ -12,7 +12,7 @@ import Topbar from "@/components/webiste/Topbar";
 import Logobar from "@/components/webiste/Logobar";
 import Navbar from "@/components/webiste/Navbar";
 import Footer from "@/components/webiste/Footer";
-import ResponsiveNavBar from "@/components/webiste/ResposnsiveNavbar";
+import ResponsiveNavBar from "@/components/webiste/ResponsiveNavbar";
 
 // import { usePathname } from "next/navigation";
 
@@ -44,12 +44,12 @@ export default function RootLayout({
         <AuthProvider>
           <CartProvider>
             <ShippingProvider>
+              <ResponsiveNavBar />
               {/* <ResponsiveNavBar/> */}
               <header>
                 <Topbar />
                 <Logobar />
                 <Navbar />
-                <ResponsiveNavBar />
               </header>
               {children}
               <footer>

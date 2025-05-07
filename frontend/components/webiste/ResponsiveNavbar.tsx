@@ -29,7 +29,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useNotificationToast } from "@/hooks/toast";
 
-const ResponsiveNavBar: React.FC<PropsWithChildren> = ({ children }) => {
+const ResponsiveNavbar: React.FC<PropsWithChildren> = ({ children }) => {
   const [category, setCategory] = useState<ICategory[]>([]);
   const showToast = useNotificationToast();
   const router = useRouter();
@@ -254,4 +254,4 @@ const ResponsiveNavBar: React.FC<PropsWithChildren> = ({ children }) => {
   );
 };
 
-export default ResponsiveNavBar;
+export default ResponsiveNavbar;
