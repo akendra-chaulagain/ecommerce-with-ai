@@ -76,8 +76,9 @@ const createPaypalOrder = async (req, res) => {
           },
         ],
         application_context: {
-          return_url: "http://localhost:3000/cart/checkout/success",
-          cancel_url: "http://localhost:5001/cart/checkout/cancel-order",
+          return_url: "https://ak-store-pi.vercel.app/cart/checkout/success",
+          cancel_url:
+            "https://ak-store-pi.vercel.app/cart/checkout/cancel-order",
           user_action: "PAY_NOW",
           brand_name: "Your Store",
           shipping_preference: "NO_SHIPPING", // << THIS hides the address section

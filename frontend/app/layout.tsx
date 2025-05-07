@@ -8,6 +8,11 @@ import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContent";
 import { ShippingProvider } from "@/context/ShippingContext";
+import ResponsiveNavBar from "@/components/webiste/ResposnsiveNavbar";
+import Topbar from "@/components/webiste/Topbar";
+import Logobar from "@/components/webiste/Logobar";
+import Navbar from "@/components/webiste/Navbar";
+import Footer from "@/components/webiste/Footer";
 
 // import { usePathname } from "next/navigation";
 
@@ -34,13 +39,22 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased website`}
       >
         <AuthProvider>
           <CartProvider>
             <ShippingProvider>
+              <header>
+                <ResponsiveNavBar>
+                  <Topbar />
+                  <Logobar />
+                  <Navbar />
+                </ResponsiveNavBar>
+              </header>
               {children}
-
+              <footer>
+                <Footer />
+              </footer>
               <Toaster />
             </ShippingProvider>
           </CartProvider>

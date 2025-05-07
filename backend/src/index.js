@@ -14,8 +14,8 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use(
-  cors({ 
-    origin: "http://localhost:3000", // Allow only requests from this origin
+  cors({
+    origin: "https://ak-store-pi.vercel.app/", // Allow only requests from this origin
     credentials: true, // Allow cookies
   })
 );
