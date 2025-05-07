@@ -12,7 +12,9 @@ import Topbar from "@/components/webiste/Topbar";
 import Logobar from "@/components/webiste/Logobar";
 import Navbar from "@/components/webiste/Navbar";
 import Footer from "@/components/webiste/Footer";
-import ResponsiveNavBar from "@/components/webiste/ResposnsiveNavbar";
+// import ResponsiveNavBar from "@/components/webiste/ResposnsiveNavbar";
+import ResponsiveNavBar from "@/components/webiste/ResposnsiveNavbar"
+
 
 
 // import { usePathname } from "next/navigation";
