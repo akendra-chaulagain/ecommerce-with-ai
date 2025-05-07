@@ -104,7 +104,7 @@ const Page = () => {
 
   // Active filter badges
   const activeFilters = Object.entries(selectedFilters).filter(
-    ([_, value]) => value !== null
+    ([, value]) => value !== null
   );
 
   const clearFilter = (filterType: string) => {

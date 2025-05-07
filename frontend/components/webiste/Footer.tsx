@@ -77,7 +77,7 @@ const Footer = () => {
                   href="/category/women"
                   className="hover:text-white transition-colors"
                 >
-                  Women's Collection
+                  Women&apos;s Collection
                 </Link>
               </li>
               <li>
@@ -85,7 +85,7 @@ const Footer = () => {
                   href="/category/men"
                   className="hover:text-white transition-colors"
                 >
-                  Men's Collection
+                  Men&apos;s Collection
                 </Link>
               </li>
               <li>

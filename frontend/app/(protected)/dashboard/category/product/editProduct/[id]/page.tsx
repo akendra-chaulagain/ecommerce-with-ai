@@ -4,7 +4,7 @@ import LoadingPage from "@/components/webiste/Loading";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { useNotificationToast } from "@/hooks/toast";
 
-import { PlusCircle, Trash2, X } from "lucide-react";
+import { PlusCircle, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -37,7 +37,9 @@ interface iProductDetails {
 const Page = () => {
   const { id } = useParams();
   const showToast = useNotificationToast();
-  const [productDetails, setProductDetails] = useState<iProduct>();
+  // const [productDetails, setProductDetails] = useState<iProduct>();
+
+  
 
   const [existingImages, setExistingImages] = useState<string[]>([]);
   const [productImages, setProductImages] = useState<File[]>([]);
@@ -93,7 +95,7 @@ const Page = () => {
         }
       );
       setLoading(false);
-      setProductDetails(response.data);
+      // setProductDetails(response.data);
       const productData = response.data.data;
       setProduct({
         ...productData,

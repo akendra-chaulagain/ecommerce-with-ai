@@ -9,7 +9,7 @@ import { axiosInstence } from "@/hooks/axiosInstence";
 // Sample cart data for PayPal integration
 
 const Paypal = ({ totalPrice }) => {
-  const [paypalClientId, setPaypalClientId] = useState("");
+  // const [paypalClientId, setPaypalClientId] = useState("");
   const [loading, setLoading] = useState(false);
 
   const user = useAuth();
@@ -28,7 +28,7 @@ const Paypal = ({ totalPrice }) => {
       console.error("PayPal Client ID is missing!");
       return;
     }
-    setPaypalClientId(clientId);
+    // setPaypalClientId(clientId);
   }, []);
 
   // handle order

@@ -10,7 +10,7 @@ import { axiosInstence } from "@/hooks/axiosInstence";
 import SearchResults from "@/components/dashboard/search";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
+
 import LoadingPage from "@/components/webiste/Loading";
 
 export default function DashboardLayout({

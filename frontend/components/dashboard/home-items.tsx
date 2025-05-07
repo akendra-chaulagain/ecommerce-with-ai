@@ -10,8 +10,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useEffect, useState } from "react";
-import { axiosInstence } from "@/hooks/axiosInstence";
+
 
 export default function DashboardHomePage() {
   const stats = [
@@ -49,35 +48,7 @@ export default function DashboardHomePage() {
     },
   ];
 
-  const [orders, setOrders] = useState<any[]>([]);
-  const [monthlyOrders, setMonthlyOrders] = useState<number>(0);
 
-  useEffect(() => {
-    const getOrderData = async () => {
-      try {
-        const response = await axiosInstence.get(`/order`, {
-          withCredentials: true,
-        });
-        const orderData = response.data.data;
-        setOrders(orderData);
-
-        // Filter orders for the current month
-        const currentMonth = new Date().getMonth(); // 0-11 (January to December)
-        const currentYear = new Date().getFullYear();
-        const currentMonthOrders = orderData.filter((order: any) => {
-          const orderDate = new Date(order.createdAt); // Assuming "createdAt" is the order date
-          return (
-            orderDate.getMonth() === currentMonth &&
-            orderDate.getFullYear() === currentYear
-          );
-        });
-        setMonthlyOrders(currentMonthOrders.length); // Set the total count for the current month
-      } catch (error) {
-        console.error("Error fetching order data:", error);
-      }
-    };
-    getOrderData();
-  }, []);
 
   return (
     <div className="space-y-8">
@@ -111,7 +82,7 @@ export default function DashboardHomePage() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-extrabold text-gray-800">
-                {stat.title === "Total Orders" ? monthlyOrders : stat.value}
+                {/* {stat.title === "Total Orders" ? monthlyOrders : stat.value} */}
               </div>
               {/* Uncomment below if you want to display change in stats */}
               <div className="flex items-center text-sm mt-2">
