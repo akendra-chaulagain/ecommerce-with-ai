@@ -38,11 +38,26 @@ const createReview = async (req, res) => {
     // Send email notification
     const emailSubject = "Thank You for Your Valuable Feedback!";
 
-    const emailText = generateReviewThankYouEmail(
-      userData.name,
-      comment,
-      rating
-    );
+    // const emailText = generateReviewThankYouEmail(
+    //   userData.name,
+    //   comment,
+    //   rating
+    // );
+
+    const emailText = `Dear ${userData.name},
+
+Thank you for taking the time to share your review with us. We truly appreciate your feedback, as it helps us continually improve our products and services.
+
+Here’s a summary of your review:
+----------------------------------------
+Review: "${comment}"
+Rating: ${rating} out of 5
+----------------------------------------
+
+We’re grateful for your support and hope to continue serving you with excellence.
+
+Warm regards,  
+The E-Commerce Team`;
 
     await sendreviewEmail(userData.email, emailSubject, emailText);
 

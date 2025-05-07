@@ -1,4 +1,4 @@
-// utils/emailTemplates.js
+
 
 export const generateReviewThankYouEmail = (userName, comment, rating) => {
   return `Dear ${userName},
