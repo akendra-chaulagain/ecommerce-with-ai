@@ -1,6 +1,11 @@
 "use client";
 import React, { useEffect, useState, PropsWithChildren } from "react";
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import {
   MapPin,
@@ -58,8 +63,6 @@ const ResponsiveNavBar: React.FC<PropsWithChildren> = ({ children }) => {
   }, []);
 
   const user = useAuth();
-  
-  
 
   // handle logout
   const handleLogoutUser = async () => {
