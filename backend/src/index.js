@@ -15,7 +15,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: "https://ak-store-pi.vercel.app/", // Allow only requests from this origin
+    origin: "https://ak-store-six.vercel.app/", // Allow only requests from this origin
     credentials: true, // Allow cookies
   })
 );
