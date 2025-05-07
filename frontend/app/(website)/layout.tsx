@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 
 import Footer from "@/components/webiste/Footer";
 import React from "react";
-import ResponsiveNavBar from "@/components/webiste/ResposnsiveNavbar";
+import ResponsiveNavBar from "@/components/webiste/resposnsiveNavbar";
 
 export default async function DashboardLayout({
   children,

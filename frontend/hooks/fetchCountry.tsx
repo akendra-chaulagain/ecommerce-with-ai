@@ -12,10 +12,10 @@ const useCountries = () => {
       try {
         const response = await axios.get("https://restcountries.com/v3.1/all");
         const countryNames = response.data.map(
-          (country) => country.name.common
+          (country: any) => country.name.common
         );
         setCountries(countryNames.sort());
-      } catch (err) {
+      } catch (err: any) {
         setError(err.message);
       } finally {
         setLoading(false);
