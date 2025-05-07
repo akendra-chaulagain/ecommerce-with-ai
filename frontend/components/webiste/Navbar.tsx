@@ -174,11 +174,7 @@ const Navbar = () => {
         </div>
 
         {/* Mobile navigation - hidden on desktop */}
-        <div className="lg:hidden text-center py-4">
-          <p className="text-sm text-gray-500">
-            Please view on a larger screen to see the navigation menu
-          </p>
-        </div>
+       
       </div>
     </div>
   );
