@@ -16,6 +16,7 @@ app.use(express.json());
 const allowedOrigins = [
   "https://ak-store-six.vercel.app",
   "https://ak-store-1fjre4jyj-akendra-chaulagains-projects-ee41311e.vercel.app",
+  "ak-store-git-master-akendra-chaulagains-projects-ee41311e.vercel.app",
   "http://localhost:3000"
 ];
 
