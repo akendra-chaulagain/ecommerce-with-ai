@@ -83,7 +83,10 @@ const Page = () => {
         showToast("Please select size and color before adding to cart.");
         return;
       }
-
+      if (user.user === null) {
+        showToast("Please Login to perform this action.");
+        return;
+      }
       const response = await axiosInstence.post(
         "/cart/add-to-cart",
         {
@@ -100,7 +103,6 @@ const Page = () => {
       console.error(error);
     }
   };
-  console.log(product);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -201,7 +203,7 @@ const Page = () => {
                 <button
                   key={index}
                   onClick={() => setColor(colorValue)}
-                  className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+                  className={`w-6 h-6  flex items-center justify-center transition-all ${
                     color === colorValue
                       ? "ring-2 ring-offset-2 ring-red-600"
                       : "hover:ring-1 hover:ring-gray-300"
@@ -209,7 +211,7 @@ const Page = () => {
                   aria-label={`Color: ${colorValue}`}
                 >
                   <span
-                    className="w-8 h-8 rounded-full"
+                    className="w-6 h-6 "
                     style={{ backgroundColor: colorValue || "#000" }}
                   ></span>
                 </button>

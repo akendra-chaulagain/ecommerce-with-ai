@@ -1,11 +1,11 @@
 "use client";
 import { axiosInstence } from "@/hooks/axiosInstence";
-
 import { Eye } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import LoadingPage from "@/components/webiste/Loading";
+import { useSearchParams } from "next/navigation";
 
 interface Product {
   _id: string;
@@ -21,32 +21,24 @@ interface Product {
 }
 
 const ProductsPage = () => {
-  const [query, setQuery] = useState("");
+  const searchParams = useSearchParams();
+  const query = searchParams.get("q") || "";
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Extract query param on the client
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const q = params.get("q") || "";
-      setQuery(q);
-    }
-  }, []);
-
-  // Fetch products when query is available
   useEffect(() => {
     if (!query) return;
 
     const fetchSearchResults = async () => {
       setLoading(true);
       try {
+        
         const response = await axiosInstence.get(
           `search/search-product?term=${query}`
         );
         setProducts(response.data.product);
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching products:", error);
       } finally {
         setLoading(false);
       }
@@ -69,12 +61,12 @@ const ProductsPage = () => {
                 <span className="text-red-600">&quot;{query}&quot;</span>
               </h1>
               <p className="text-gray-500 text-lg">
-                {products?.length} {products?.length === 1 ? "item" : "items"}{" "}
+                {products.length} {products.length === 1 ? "item" : "items"}{" "}
                 found
               </p>
             </div>
 
-            {/* Products Grid */}
+            {/* Products Grid or Empty Message */}
             {products.length === 0 ? (
               <div className="text-center py-24 space-y-4">
                 <div className="text-red-600 mx-auto w-16 h-16 mb-4">
@@ -88,10 +80,15 @@ const ProductsPage = () => {
                   </svg>
                 </div>
                 <p className="text-xl text-gray-700">No matching products</p>
-                <Link href={"/products"} className="text-red-600 underline cursor-pointer">Continue Shopping</Link>
+                <Link
+                  href={"/products"}
+                  className="text-red-600 underline cursor-pointer"
+                >
+                  Continue Shopping
+                </Link>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              <div className="grid col-span-4 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ml-[10px]">
                 {products.map((product, index) => (
                   <div
                     key={index}
@@ -108,13 +105,13 @@ const ProductsPage = () => {
                               product.images[0] || "/api/placeholder/300/300"
                             }
                             alt={product.name}
-                            width={300}
-                            height={300}
+                            width={600}
+                            height={600}
                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                           />
                         </div>
                       </Link>
-                      {/* Wishlist Button */}
+
                       <Link
                         href={`/category/${product.categoryId}/product-details-${product._id}`}
                         className="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -127,7 +124,7 @@ const ProductsPage = () => {
                     </div>
 
                     <div className="p-4">
-                      {/* Brand*/}
+                      {/* Brand */}
                       <div className="flex justify-between items-center mb-2">
                         {product.brand && (
                           <span className="text-xs font-semibold text-gray-500 uppercase">
@@ -136,7 +133,7 @@ const ProductsPage = () => {
                         )}
                       </div>
 
-                      {/* Product Name */}
+                      {/* Name */}
                       <Link
                         href={`/category/${product.categoryId}/product-details-${product._id}`}
                       >
@@ -150,7 +147,7 @@ const ProductsPage = () => {
                         {product.description}
                       </p>
 
-                      {/* Color Variants */}
+                      {/* Color */}
                       <div className="flex gap-1 mb-3">
                         {product.color?.split(",").map((clr, i) => (
                           <span
@@ -165,7 +162,7 @@ const ProductsPage = () => {
                         ))}
                       </div>
 
-                      {/* Price & Add to Cart */}
+                      {/* Price */}
                       <div className="flex justify-between items-center">
                         <div className="flex items-end gap-2">
                           {product?.discountPrice &&
