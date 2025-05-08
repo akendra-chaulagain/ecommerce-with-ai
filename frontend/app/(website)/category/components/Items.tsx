@@ -159,7 +159,6 @@ const Items = ({ category, colorData }: ItemsProps) => {
                   {/* Wishlist Button */}
                   <Link
                     href={`/category/${product.categoryId}/product-details-${product._id}`}
-                    onClick={() => handleAddToCart(product._id)}
                     className="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   >
                     <Eye
@@ -227,12 +226,7 @@ const Items = ({ category, colorData }: ItemsProps) => {
                         </h2>
                       )}
                     </div>
-                    <button
-                      onClick={() => handleAddToCart(product._id)}
-                      className="bg-red-600 hover:bg-red-700 text-white p-2 rounded transition-colors duration-300"
-                    >
-                      {/* <ShoppingCart size={18} /> */}
-                    </button>
+                   
                   </div>
                 </div>
               </div>
