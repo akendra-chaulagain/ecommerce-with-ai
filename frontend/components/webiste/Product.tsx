@@ -5,14 +5,10 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { iProduct } from "@/types/types";
 import { axiosInstence } from "@/hooks/axiosInstence";
-import { useNotificationToast } from "@/hooks/toast";
-import { useCart } from "@/context/CartContent";
-import { useAuth } from "@/context/AuthContext";
 
 const Product = () => {
   const [product, setproduct] = useState<iProduct[]>([]);
   const [error, setError] = useState<boolean>(false);
-  const showToast = useNotificationToast();
 
   console.log(error);
 
@@ -27,27 +23,6 @@ const Product = () => {
       }
     })();
   }, []);
-  const { refreshCart } = useCart();
-  const user = useAuth();
-  const handleAddToCart = async (productId: number) => {
-    if (!user.user) {
-      showToast("You must be logged in to perform this action.");
-    }
-    try {
-      const response = await axiosInstence.post(
-        "/cart/add-to-cart",
-        {
-          productId,
-          quantity: 1,
-        },
-        { withCredentials: true }
-      );
-      showToast(response.data.message);
-      await refreshCart();
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   return (
     <>
@@ -60,7 +35,7 @@ const Product = () => {
           </div>
 
           <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6 sm:gap-8">
-            {product?.map((product,index) => (
+            {product?.map((product, index) => (
               <div
                 key={index}
                 className="group bg-white border-2 border-[#f2f2f2] rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300"
@@ -80,16 +55,16 @@ const Product = () => {
                       />
                     </div>
                   </Link>
-                  {/* Wishlist Button */}
-                  <button
-                    onClick={() => handleAddToCart(product?._id)}
+
+                  <Link
+                    href={`/category/${product.categoryId}/product-details-${product._id}`}
                     className="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   >
                     <Eye
                       size={18}
                       className="text-gray-600 hover:text-red-600 transition-colors"
                     />
-                  </button>
+                  </Link>
                   {/* Discount Badge */}
                 </div>
 

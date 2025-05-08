@@ -3,10 +3,6 @@ import Image from "next/image";
 import React from "react";
 import Link from "next/link";
 import { iCategoryResponse, iColor } from "@/types/types";
-import { axiosInstence } from "@/hooks/axiosInstence";
-import { useNotificationToast } from "@/hooks/toast";
-import { useCart } from "@/context/CartContent";
-import { useAuth } from "@/context/AuthContext";
 
 interface ItemsProps {
   category: iCategoryResponse | null;
@@ -14,30 +10,6 @@ interface ItemsProps {
 }
 
 const Items = ({ category, colorData }: ItemsProps) => {
-  const showToast = useNotificationToast();
-
-  const { refreshCart } = useCart();
-  const user = useAuth();
-  const handleAddToCart = async (productId: number) => {
-    if (!user.user) {
-      showToast("You must be logged in to perform this action.");
-    }
-    try {
-      const response = await axiosInstence.post(
-        "/cart/add-to-cart",
-        {
-          productId,
-          quantity: 1,
-        },
-        { withCredentials: true }
-      );
-      showToast(response.data.message);
-      await refreshCart();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   return (
     <>
       <div className="grid col-span-4 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ml-[10px]">
@@ -63,16 +35,15 @@ const Items = ({ category, colorData }: ItemsProps) => {
                     </div>
                   </Link>
                   {/* Wishlist Button */}
-                  <button
-                    onClick={() => handleAddToCart(product?._id)}
+                  <Link
+                    href={`/category/${product.categoryId}/product-details-${product._id}`}
                     className="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   >
                     <Eye
                       size={18}
                       className="text-gray-600 hover:text-red-600 transition-colors"
                     />
-                  </button>
-                  {/* Discount Badge */}
+                  </Link>
                 </div>
 
                 <div className="p-4">
@@ -226,7 +197,6 @@ const Items = ({ category, colorData }: ItemsProps) => {
                         </h2>
                       )}
                     </div>
-                   
                   </div>
                 </div>
               </div>
