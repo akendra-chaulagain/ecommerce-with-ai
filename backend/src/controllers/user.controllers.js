@@ -216,19 +216,21 @@ const getLoginUser = async (req, res) => {
 // logout user
 const logOutUser = async (req, res) => {
   try {
+    // Invalidate refresh token in DB
     await User.findByIdAndUpdate(
       req.user.id,
-      {
-        refreshToken: null,
-      },
+      { refreshToken: null },
       { new: true }
     );
 
     const options = {
       httpOnly: true,
-      secure: true, 
-      sameSite: "Lax",
+      secure: true,
+      sameSite: "None",
+      path: "/",
     };
+
+    // Clear cookies
     return res
       .status(200)
       .clearCookie("accessToken", options)
@@ -237,7 +239,7 @@ const logOutUser = async (req, res) => {
   } catch (error) {
     return res
       .status(500)
-      .json({ message: "server error. Try again later", error: error.message });
+      .json({ message: "Server error. Try again later", error: error.message });
   }
 };
 
