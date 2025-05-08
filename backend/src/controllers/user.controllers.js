@@ -89,12 +89,7 @@ const loginUser = async (req, res) => {
 
     // Set the temporary token as a cookie
     await SentOtpWhileLogin(email, otp);
-    res.cookie("tempToken", temporaryAccessToken, {
-      httpOnly: true, 
-      secure: true, 
-      maxAge: 10 * 60 * 1000, 
-      sameSite: "Strict", 
-    });
+    res.cookie("tempToken", temporaryAccessToken);
 
     // Send a response to indicate success
     res.status(200).json({ message: "OTP sent to your email" });
@@ -142,15 +137,10 @@ const verifyUserOtp = async (req, res) => {
     res.clearCookie("tempToken"); // Remove temp token
 
     const loggedInUser = await User.findById(user._id).select("-password");
-    const options = {
-      httpOnly: true, // Prevent XSS attacks
-      secure: true, // Send only over HTTPS
-      sameSite: "None",
-      maxAge: 1 * 24 * 60 * 60 * 1000,
-    };
-    return res.status(200).cookie("refreshToken", refreshToken, options).json({
+    return res.status(200).json({
       message: "OTP verified successfully",
       accessToken,
+      refreshToken,
       loggedInUser,
     });
   } catch (error) {
@@ -216,33 +206,18 @@ const getLoginUser = async (req, res) => {
 // logout user
 const logOutUser = async (req, res) => {
   try {
-    // Invalidate refresh token in DB
     await User.findByIdAndUpdate(
       req.user.id,
       { refreshToken: null },
       { new: true }
     );
-
-    const options = {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-      path: "/",
-    };
-
-    // Clear cookies
-    return res
-      .status(200)
-      .clearCookie("accessToken", options)
-      .clearCookie("refreshToken", options)
-      .json({ message: "Logout successfully" });
+    res.status(200).json({ message: "Logout successfully" });
   } catch (error) {
     return res
       .status(500)
       .json({ message: "Server error. Try again later", error: error.message });
   }
 };
-
 // update password
 const updatePassword = async (req, res) => {
   try {

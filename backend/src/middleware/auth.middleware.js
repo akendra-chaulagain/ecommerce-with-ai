@@ -5,57 +5,37 @@ dotenv.config();
 
 const verifyJwt = async (req, res, next) => {
   try {
-    const accessToken = req.cookies?.accessToken;
-    const refreshToken = req.cookies?.refreshToken;
-    // to verify the access token
-    if (accessToken) {
-      try {
-        if (!accessToken) {
-          return res.status(401).json("No token access provideds");
-        }
-        const user = await jwt.verify(
-          accessToken,
-          process.env.ACCESS_JSONTOKEN
-        );
-        if (!user) {
-          return res.status(401).json("User Logged out, login again");
-        }
-        req.user = user;
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(" ")[1];
 
+    if (token) {
+      try {
+        const user = jwt.verify(token, process.env.ACCESS_JSONTOKEN);
+        req.user = user;
         return next();
-      } catch (error) {
-        // return res.status(401).json({
-        //   message: "invalid User or Token expired",
-        //   error: error.message,
-        // });
-        // console.log("Access token expired:", error.message);
+      } catch (err) {
+        // Try refresh token if access token failed
       }
     }
 
-    // verify refresh token and create a access token
+    const refreshToken = req.headers["x-refresh-token"];
     if (refreshToken) {
       try {
-        if (!refreshToken) {
-          return res.status(401).json("No  refresh token provideds");
-        }
-        const decodeToken = jwt.verify(
-          refreshToken,
-          process.env.REFRESH_JSONTOKEN
-        );
-        const user = await User.findById(decodeToken.id);
+        const decoded = jwt.verify(refreshToken, process.env.REFRESH_JSONTOKEN);
+        const user = await User.findById(decoded.id);
 
-        // create a new access token
+        if (!user || user.refreshToken !== refreshToken) {
+          return res.status(403).json({ message: "Invalid refresh token" });
+        }
+
         const newAccessToken = jwt.sign(
           { id: user._id, role: user.role },
           process.env.ACCESS_JSONTOKEN,
           { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
         );
-        res.cookie("accessToken", newAccessToken, {
-          httpOnly: true,
-          secure: true,
-        });
 
         req.user = { id: user._id, role: user.role };
+        res.setHeader("x-access-token", newAccessToken);
         return next();
       } catch (error) {
         return res
@@ -63,13 +43,14 @@ const verifyJwt = async (req, res, next) => {
           .json({ message: "Refresh token expired or invalid" });
       }
     }
+
+    return res.status(401).json({ message: "Unauthorized. Please login." });
   } catch (error) {
     return res
       .status(500)
       .json({ message: "Server error", error: error.message });
   }
 };
-
 // Authorize middleware to restrict access based on user role
 const authorize = (...roles) => {
   return (req, res, next) => {
