@@ -1,8 +1,8 @@
 "use client";
 import { useAuth } from "@/context/AuthContext";
-import { useCart } from "@/context/CartContent";
+
 import { axiosInstence } from "@/hooks/axiosInstence";
-import { useNotificationToast } from "@/hooks/toast";
+
 import { Eye, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -22,7 +22,7 @@ interface Product {
 }
 
 const ProductsPage = () => {
-  const showToast = useNotificationToast();
+
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,27 +52,9 @@ const ProductsPage = () => {
     fetchProducts(currentPage);
   }, [fetchProducts, currentPage]);
 
-  const { refreshCart } = useCart();
 
-  const handleAddToCart = async (productId: string) => {
-    if (!user.user) {
-      showToast("You must be logged in to perform this action.");
-    }
-    try {
-      const response = await axiosInstence.post(
-        "/cart/add-to-cart",
-        {
-          productId,
-          quantity: 1,
-        },
-        { withCredentials: true }
-      );
-      showToast(response.data.message);
-      await refreshCart();
-    } catch (error) {
-      console.error(error);
-    }
-  };
+
+
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
