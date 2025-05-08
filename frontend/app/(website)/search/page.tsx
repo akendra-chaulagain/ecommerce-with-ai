@@ -25,7 +25,6 @@ const ProductsPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-
   // Extract query param on the client
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -56,8 +55,6 @@ const ProductsPage = () => {
     fetchSearchResults();
   }, [query]);
 
- 
-
   return (
     <>
       {loading ? (
@@ -80,10 +77,7 @@ const ProductsPage = () => {
             {/* Products Grid */}
             {products.length === 0 ? (
               <div className="text-center py-24 space-y-4">
-                <Link
-                  href={"/products"}
-                  className="text-red-600 mx-auto w-16 h-16 mb-4"
-                >
+                <div className="text-red-600 mx-auto w-16 h-16 mb-4">
                   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
@@ -92,12 +86,13 @@ const ProductsPage = () => {
                       d="M6 18L18 6M6 6l12 12"
                     />
                   </svg>
-                </Link>
+                </div>
                 <p className="text-xl text-gray-700">No matching products</p>
+                <Link href={"/products"} className="text-red-600 underline cursor-pointer">Continue Shopping</Link>
               </div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                {products.map((product,index) => (
+                {products.map((product, index) => (
                   <div
                     key={index}
                     className="group bg-white border-2 border-[#f2f2f2] rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300"
