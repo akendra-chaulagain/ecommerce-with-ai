@@ -118,7 +118,7 @@ const Page = () => {
      localStorage.setItem("refreshToken", response.data.refreshToken);
 
      setTimeout(() => {
-       // window.location.href = "/";
+       window.location.href = "/";
      }, 2000);
    } catch (error: unknown) {
      console.log(error);
