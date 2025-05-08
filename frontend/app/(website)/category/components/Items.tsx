@@ -1,4 +1,4 @@
-import { Eye, ShoppingCart } from "lucide-react";
+import { Eye } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 import Link from "next/link";
@@ -17,11 +17,11 @@ const Items = ({ category, colorData }: ItemsProps) => {
   const showToast = useNotificationToast();
 
   const { refreshCart } = useCart();
-  const user = useAuth()
+  const user = useAuth();
   const handleAddToCart = async (productId: number) => {
-     if (!user.user) {
-       showToast("You must be logged in to perform this action.");
-     }
+    if (!user.user) {
+      showToast("You must be logged in to perform this action.");
+    }
     try {
       const response = await axiosInstence.post(
         "/cart/add-to-cart",
@@ -131,12 +131,6 @@ const Items = ({ category, colorData }: ItemsProps) => {
                         </h2>
                       )}
                     </div>
-                    <button
-                      onClick={() => handleAddToCart(product._id)}
-                      className="bg-red-600 hover:bg-red-700 text-white p-2 rounded transition-colors duration-300"
-                    >
-                      <ShoppingCart size={18} />
-                    </button>
                   </div>
                 </div>
               </div>
@@ -163,7 +157,8 @@ const Items = ({ category, colorData }: ItemsProps) => {
                   </Link>
 
                   {/* Wishlist Button */}
-                  <button
+                  <Link
+                    href={`/category/${product.categoryId}/product-details-${product._id}`}
                     onClick={() => handleAddToCart(product._id)}
                     className="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   >
@@ -171,7 +166,7 @@ const Items = ({ category, colorData }: ItemsProps) => {
                       size={18}
                       className="text-gray-600 hover:text-red-600 transition-colors"
                     />
-                  </button>
+                  </Link>
 
                   {/* Discount Badge */}
                 </div>
@@ -236,7 +231,7 @@ const Items = ({ category, colorData }: ItemsProps) => {
                       onClick={() => handleAddToCart(product._id)}
                       className="bg-red-600 hover:bg-red-700 text-white p-2 rounded transition-colors duration-300"
                     >
-                      <ShoppingCart size={18} />
+                      {/* <ShoppingCart size={18} /> */}
                     </button>
                   </div>
                 </div>
