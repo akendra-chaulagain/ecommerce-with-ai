@@ -1,6 +1,6 @@
+import { AuthProvider } from "@/context/AuthContext";
 import "./globals.css";
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+
 
 export default function RootLayout({
   children,
@@ -9,7 +9,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="website">{children}</body>
+
+      <AuthProvider>
+        <body className="website">{children}</body>
+      </AuthProvider>
     </html>
   );
 }

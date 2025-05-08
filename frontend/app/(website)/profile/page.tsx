@@ -11,14 +11,14 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function UserSettings() {
-  const { user, getLoginUser } = useAuth();
+  const { user, getLoginUser, loading } = useAuth();
   const [email, setEmail] = useState<string | undefined>();
   const [contact, setContact] = useState<string | undefined>();
   const [name, setName] = useState<string | undefined>();
   const [password, setPassword] = useState<string | undefined>();
   const [newPassword, setNewPassword] = useState<string | undefined>();
   const [confirmPassword, setConfirmPassword] = useState<string | undefined>();
-  const [loading, setLoading] = useState<boolean>(false);
+  const [profileLoading, setProfileLoading] = useState<boolean>(false);
   const [avtarImage, setAvtarImage] = useState<File | undefined>();
   const [error, setError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
@@ -27,7 +27,7 @@ export default function UserSettings() {
 
   const handleUpdateDetails = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
+    setProfileLoading(true);
 
     try {
       if (avtarImage) {
@@ -58,7 +58,7 @@ export default function UserSettings() {
       );
 
       showToast("Profile Updated");
-      getLoginUser();
+     await getLoginUser();
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const errorMessage =
@@ -71,13 +71,13 @@ export default function UserSettings() {
         setError("Network error or server not reachable.");
       }
     } finally {
-      setLoading(false);
+      setProfileLoading(false);
     }
   };
 
   const handleUpdatePassword = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
+    setProfileLoading(true);
 
     try {
       await axiosInstence.put(
@@ -106,7 +106,7 @@ export default function UserSettings() {
         setPasswordError("Network error or server not reachable.");
       }
     } finally {
-      setLoading(false);
+      setProfileLoading(false);
     }
   };
   const [avtarPreview, setAvtarPreview] = useState<string | null>(null);
@@ -124,14 +124,16 @@ export default function UserSettings() {
   }, [avtarImage]);
 
   useEffect(() => {
+    if (loading) return;
     if (!user) {
-      router.push("/login"); // Redirect to login if user is not logged in
+      router.push("/login");
     }
-  }, [user, router]);
+  }, [user, router, loading]);
+
 
   return (
     <>
-      {loading ? (
+      {profileLoading ? (
         <LoadingPage />
       ) : (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-red-50 py-8 mt-[10px]">

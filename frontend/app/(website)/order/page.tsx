@@ -19,8 +19,8 @@ const formatDate = (dateStr: string) => {
 
 function Page() {
   const [order, setOrder] = useState<iOrder[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const [loadingOrder, setLoadingOrder] = useState(true);
+  const { user, loading } = useAuth();
   const router = useRouter();
 
   const getOrderData = async () => {
@@ -32,23 +32,23 @@ function Page() {
     } catch (error) {
       console.log(error);
     } finally {
-      setLoading(false);
+      setLoadingOrder(false);
     }
   };
 
   useEffect(() => {
-    if (user === null) {
+    if (loading) return;
+    if (!user) {
+      console.log("No user, redirecting to login...");
       router.push("/login");
-    } else if (user) {
+    } else {
       getOrderData();
     }
-  }, [user, router]);
-
-  // Get order status badge color
+  }, [user, router, loading]);
 
   return (
     <>
-      {loading ? (
+      {loadingOrder ? (
         <LoadingPage />
       ) : (
         <div className="min-h-screen bg-gray-50">
@@ -153,7 +153,6 @@ function Page() {
                     <div className="bg-gray-50 px-6 py-4">
                       <div className="flex justify-between items-center">
                         <div className="flex space-x-4">
-                        
                           <button className="text-sm font-medium text-gray-500 hover:text-gray-700">
                             Get Invoice
                           </button>

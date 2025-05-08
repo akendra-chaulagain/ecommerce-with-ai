@@ -13,6 +13,8 @@ import { useRouter } from "next/navigation";
 interface LoginResponse {
   message: string;
   token?: string;
+  refreshToken: string;
+  accessToken:string
 }
 
 const Page = () => {
@@ -105,11 +107,16 @@ const Page = () => {
           withCredentials: true,
         }
       );
+      console.log(response);
+      
       const message = response.data.message;
       showToast(message);
+      // Save accessToken and refreshToken to localStorage
+      localStorage.setItem("accessToken", response.data.accessToken);
+      localStorage.setItem("refreshToken", response.data.refreshToken);
 
       setTimeout(() => {
-        window.location.href = "/";
+        // window.location.href = "/";
       }, 2000);
     } catch (error: unknown) {
       console.log(error);

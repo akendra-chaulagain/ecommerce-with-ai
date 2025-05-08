@@ -3,10 +3,12 @@ import dotenv from "dotenv";
 import { User } from "../models/user.models.js";
 dotenv.config();
 
+// const jwt = require("jsonwebtoken");
+
 const verifyJwt = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
-    const token = authHeader && authHeader.split(" ")[1];
+    const token = authHeader?.split(" ")[1];
 
     if (token) {
       try {
@@ -14,11 +16,16 @@ const verifyJwt = async (req, res, next) => {
         req.user = user;
         return next();
       } catch (err) {
-        // Try refresh token if access token failed
+        if (err.name !== "TokenExpiredError") {
+          console.error("Access token error:", err.message);
+          return res.status(401).json({ message: "Invalid access token" });
+        }
       }
     }
 
+    // 🔁 Try refreshing the token
     const refreshToken = req.headers["x-refresh-token"];
+
     if (refreshToken) {
       try {
         const decoded = jwt.verify(refreshToken, process.env.REFRESH_JSONTOKEN);
@@ -35,9 +42,12 @@ const verifyJwt = async (req, res, next) => {
         );
 
         req.user = { id: user._id, role: user.role };
+
         res.setHeader("x-access-token", newAccessToken);
+
         return next();
       } catch (error) {
+        console.error("Refresh token error:", error.message);
         return res
           .status(401)
           .json({ message: "Refresh token expired or invalid" });
@@ -51,6 +61,7 @@ const verifyJwt = async (req, res, next) => {
       .json({ message: "Server error", error: error.message });
   }
 };
+
 // Authorize middleware to restrict access based on user role
 const authorize = (...roles) => {
   return (req, res, next) => {

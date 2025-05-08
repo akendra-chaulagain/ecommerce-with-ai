@@ -30,18 +30,25 @@ const AuthContext = createContext(defaultUserValue);
 export const AuthProvider = ({ children }: iChildren) => {
   const [user, setUser] = useState<User | null>(null);
 
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const getLoginUser = async () => {
-    // setLoading(true);
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      setUser(null);
+      setLoading(false);
+      return;
+    }
     try {
       const res = await axiosInstence.get("users/login-user/profile", {
-        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
-      setUser(res.data ?? null);
+
+      setUser(res.data);
     } catch (error) {
       setUser(null);
-      console.error("Error fetching user", error);
     } finally {
       setLoading(false);
     }

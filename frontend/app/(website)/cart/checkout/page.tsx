@@ -2,7 +2,7 @@
 import { useCart } from "@/context/CartContent";
 
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Paypal from "@/components/webiste/Paypal";
 import { Button } from "@/components/ui/button";
 import { useShippingAddress } from "@/context/ShippingContext";
@@ -18,8 +18,9 @@ import {
 
 import { axiosInstence } from "@/hooks/axiosInstence";
 import { useNotificationToast } from "@/hooks/toast";
-
+import { useRouter } from "next/navigation";
 import axios from "axios";
+import { useAuth } from "@/context/AuthContext";
 
 const CheckoutPage = () => {
   const toast = useNotificationToast();
@@ -30,6 +31,7 @@ const CheckoutPage = () => {
 
   const [error, setError] = useState("");
   console.log(error);
+    const router = useRouter();
 
   //  total price
   const subtotal = cart?.cart?.totalPrice || 0;
@@ -132,6 +134,15 @@ const CheckoutPage = () => {
       }
     }
   };
+  const {user,loading} = useAuth()
+
+    useEffect(() => {
+      if (loading) return;
+      if (!user) {
+        router.push("/login");
+      }
+    }, [user, router, loading]);
+  
 
   return (
     <>

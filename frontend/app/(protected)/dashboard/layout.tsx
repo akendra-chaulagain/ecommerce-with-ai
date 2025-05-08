@@ -9,10 +9,10 @@ import { OrderProvider } from "@/context/admin/OrderContext";
 import { axiosInstence } from "@/hooks/axiosInstence";
 import SearchResults from "@/components/dashboard/search";
 import { usePathname } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
 
 import LoadingPage from "@/components/webiste/Loading";
-
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 export default function DashboardLayout({
   children,
 }: {
@@ -21,6 +21,10 @@ export default function DashboardLayout({
   const [searchTerm, setSearchTerm] = useState("");
   const [results, setResults] = useState(null);
   const pathname = usePathname();
+    const { user, loading } = useAuth();
+  const router = useRouter();;
+    
+
   useEffect(() => {
     setSearchTerm("");
   }, [pathname]);
@@ -42,30 +46,16 @@ export default function DashboardLayout({
     return () => clearTimeout(delayDebounce);
   }, [searchTerm]);
 
-  const { user } = useAuth();
-
-  // redirect to the webiste
-  // useEffect(() => {
-  //   if (loading) return;
-
-  //   if (user?.role !== "Admin") {
-  //     router.push("/login");
-  //   }
-  // }, [user, router, loading]);
-
-  // if (loading) {
-  //   return <LoadingPage />;
-  // }
-
-  // if (user?.role !== "Admin") {
-  //   return null;
-  // }
-  // const user = await currentUser();
-
   const isAdmin = user?.role === "Admin";
-  if (!isAdmin) {
-    return <LoadingPage />;
-  }
+   useEffect(() => {
+     if (loading) return;
+     if (!isAdmin) {
+       router.push("/login");
+     }
+   }, [user, router, loading, isAdmin]);
+
+
+  
 
   return (
     <CategoryProvider>

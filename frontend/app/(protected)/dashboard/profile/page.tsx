@@ -45,7 +45,7 @@ export default function UserSettings() {
         showToast(message);
       }
 
-       await axiosInstence.put(
+      await axiosInstence.put(
         "/users/update-user",
         {
           email,
@@ -55,9 +55,9 @@ export default function UserSettings() {
         { withCredentials: true }
       );
       // const message = response.data.message;
-      window.location.reload();
+
       // showToast(message);
-      getLoginUser();
+      await getLoginUser();
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const errorMessage =
@@ -172,9 +172,7 @@ export default function UserSettings() {
                     <div className="relative w-32 h-32 rounded-full overflow-hidden mb-4 border-4 border-red-200 shadow-lg">
                       <Image
                         src={
-                          avtarPreview ||
-                          user?.avtar ||
-                          "/default-avatar.png"
+                          avtarPreview || user?.avtar || "/default-avatar.png"
                         }
                         alt="Profile"
                         layout="fill"

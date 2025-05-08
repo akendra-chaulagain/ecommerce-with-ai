@@ -5,7 +5,7 @@ import "../globals.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider } from "@/context/AuthContext";
+
 import { CartProvider } from "@/context/CartContent";
 import { ShippingProvider } from "@/context/ShippingContext";
 import Topbar from "@/components/webiste/Topbar";
@@ -41,7 +41,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased website`}
       >
-        <AuthProvider>
+        
           <CartProvider>
             <ShippingProvider>
               <ResponsiveNavBar />
@@ -58,7 +58,7 @@ export default function RootLayout({
               <Toaster />
             </ShippingProvider>
           </CartProvider>
-        </AuthProvider>
+       
       </body>
     </html>
   );

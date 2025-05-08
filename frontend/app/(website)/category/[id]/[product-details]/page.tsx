@@ -75,6 +75,7 @@ const Page = () => {
   // size and color
   const colorData = product?.details?.color?.split(",");
   const sizeData = product?.details?.size?.split(",");
+   
 
   // handle add to cart
   const handleAddToCart = async () => {
