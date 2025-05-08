@@ -93,47 +93,49 @@ const Page = () => {
   };
 
   // Verify OTP
-  const verifyOTP = async () => {
-    setLoading(true);
-    const otpData = {
-      otp,
-    };
+ const verifyOTP = async () => {
+   setLoading(true);
+   const otpData = { otp };
+   const tempToken = localStorage.getItem("tempToken"); // or however you're storing it
 
-    try {
-      const response = await axiosInstence.post<LoginResponse>(
-        "/users/login/verify-user",
-        otpData,
-        {
-          withCredentials: true,
-        }
-      );
-      console.log(response);
-      
-      const message = response.data.message;
-      showToast(message);
-      // Save accessToken and refreshToken to localStorage
-      localStorage.setItem("accessToken", response.data.accessToken);
-      localStorage.setItem("refreshToken", response.data.refreshToken);
+   try {
+     const response = await axiosInstence.post<LoginResponse>(
+       "/users/login/verify-user",
+       otpData,
+       {
+         headers: {
+           Authorization: `Bearer ${tempToken}`,
+         },
+       }
+     );
 
-      setTimeout(() => {
-        // window.location.href = "/";
-      }, 2000);
-    } catch (error: unknown) {
-      console.log(error);
-      if (axios.isAxiosError(error)) {
-        const errorMessage =
-          typeof error.response?.data === "object"
-            ? error.response?.data?.message ||
-              "An unknown error occurred. Try again"
-            : error.response?.data;
-        setError(errorMessage);
-      } else {
-        setError("Network error or server not reachable.");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+     console.log(response);
+     const message = response.data.message;
+     showToast(message);
+
+     // Store permanent tokens
+     localStorage.setItem("accessToken", response.data.accessToken);
+     localStorage.setItem("refreshToken", response.data.refreshToken);
+
+     setTimeout(() => {
+       // window.location.href = "/";
+     }, 2000);
+   } catch (error: unknown) {
+     console.log(error);
+     if (axios.isAxiosError(error)) {
+       const errorMessage =
+         typeof error.response?.data === "object"
+           ? error.response?.data?.message ||
+             "An unknown error occurred. Try again"
+           : error.response?.data;
+       setError(errorMessage);
+     } else {
+       setError("Network error or server not reachable.");
+     }
+   } finally {
+     setLoading(false);
+   }
+ };
 
   // for resend otp
   const handleResendCode = async () => {

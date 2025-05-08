@@ -73,21 +73,19 @@ const authorize = (...roles) => {
 };
 
 const verifyTemporaryToken = async (req, res, next) => {
-  const tempToken = req.cookies.tempToken;
-  console.log("trmp token", tempToken);
+  const authHeader = req.headers.authorization;
+  const tempToken = authHeader?.split(" ")[1];
 
   if (!tempToken) {
     return res.status(401).json({ message: "Token not found" });
   }
 
   try {
-    // Verify the token
     const decoded = jwt.verify(
       tempToken,
       process.env.TEMPORARY_ACCESS_JSONTOKEN
     );
     req.user = decoded;
-
     next();
   } catch (error) {
     return res.status(401).json({ message: "Invalid or expired token" });
