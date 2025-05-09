@@ -75,7 +75,8 @@ const Page = () => {
   // size and color
   const colorData = product?.details?.color?.split(",");
   const sizeData = product?.details?.size?.split(",");
-   
+
+  console.log(product);
 
   // handle add to cart
   const handleAddToCart = async () => {
@@ -104,6 +105,8 @@ const Page = () => {
       console.error(error);
     }
   };
+  console.log(product);
+  
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -181,11 +184,11 @@ const Page = () => {
               {product?.details?.discountPrice &&
               product.details.discountPrice > 0 ? (
                 <>
-                  <h2 className="text-2xl font-bold text-red-600">
-                    ${product.details.discountPrice}
-                  </h2>
-                  <span className="ml-2 text-gray-500 line-through text-lg">
+                  <h2 className="text-2xl font-bold text-red-600  ">
                     ${product.details.price}
+                  </h2>
+                  <span className="ml-2 text-gray-500 text-lg  line-through">
+                    ${product.details.discountPrice}
                   </span>
                 </>
               ) : (
@@ -277,6 +280,12 @@ const Page = () => {
             <h3 className="font-medium text-gray-900 mb-3">DESCRIPTION</h3>
             <div className="prose prose-sm text-gray-700">
               <p>{product?.details?.description}</p>
+            </div>
+          </div>
+          <div className="py-4 border-t border-gray-200">
+            <h3 className="font-medium text-gray-900 mb-3"> SPECIFICATIONS</h3>
+            <div className="prose prose-sm text-gray-700">
+              <p>{product?.details?.specifications}</p>
             </div>
           </div>
         </div>

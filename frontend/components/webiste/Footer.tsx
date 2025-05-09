@@ -24,11 +24,11 @@ const Footer = () => {
           <div>
             <div className="mb-6">
               <Image
-                src="/images/logo.svg"
+                src="/logo.png"
                 alt="Brand Logo"
                 width={150}
                 height={50}
-                className="brightness-0 invert"
+                className="bg-red-600 "
               />
             </div>
             <p className="mb-6">

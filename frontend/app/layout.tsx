@@ -1,6 +1,12 @@
 import { AuthProvider } from "@/context/AuthContext";
 import "./globals.css";
 
+export const metadata = {
+  title: "AK Store",
+  icons: {
+    icon: "/favicon.png",
+  },
+};
 
 export default function RootLayout({
   children,
@@ -9,10 +15,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-
-      <AuthProvider>
-        <body className="website">{children}</body>
-      </AuthProvider>
+      <body className="website">
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

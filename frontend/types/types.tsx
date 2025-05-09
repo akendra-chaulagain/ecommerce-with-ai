@@ -31,6 +31,7 @@ export interface iProduct {
   brand: string;
   color: string;
   discountPrice: number;
+  specifications:string
   // images: string;
 }
 
@@ -54,7 +55,8 @@ export interface iProductDetails {
   SKU: number;
   color: string;
   size: string;
-  discountPrice?:number | undefined
+  discountPrice?: number | undefined;
+  specifications:string
 }
 
 export interface iReview {

@@ -268,7 +268,10 @@ const getProductsAcoordingToCategory = async (req, res) => {
       },
     ]);
 
-    const allProducts = result[0]?.products || [];
+    let allProducts = result[0]?.products || [];
+
+    // Sort by createdAt descending (latest first)
+    allProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     // Apply pagination manually
     const totalProducts = allProducts.length;
@@ -297,9 +300,10 @@ const getProductsAcoordingToCategory = async (req, res) => {
   }
 };
 
+
 const categoryTree = async (req, res) => {
   try {
-    const { page = 1, limit = 5 } = req.query;
+    const { page = 1, limit = 6 } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
     // Get all categories first

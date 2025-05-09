@@ -74,13 +74,13 @@ export function AppSidebar() {
       <SidebarContent className="bg-gray-50 h-full shadow-xl">
         <div className="flex flex-col justify-between h-full">
           <SidebarGroup>
-            <SidebarGroupLabel className="px-5 pt-10 pb-6 flex items-center gap-2">
+            <SidebarGroupLabel className="px-5 pt-10 pb-14 flex items-center gap-2  mt-[15px]">
               <Link href={"/dashboard"}>
                 <Image
-                  src="/images/logo.svg"
+                  src="/logo.png"
                   alt="logo"
-                  width={150}
-                  height={150}
+                  width={80}
+                  height={100}
                   className="cursor-pointer drop-shadow-lg"
                 />
               </Link>

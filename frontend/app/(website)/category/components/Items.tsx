@@ -87,13 +87,13 @@ const Items = ({ category, colorData }: ItemsProps) => {
                   {/* Price & Add to Cart */}
                   <div className="flex justify-between items-center">
                     <div className="flex items-end gap-2">
-                      {product?.discountPrice && product.discountPrice > 0 ? (
+                      {product?.discountPrice && product?.discountPrice > 0 ? (
                         <>
-                          <h2 className="text-2xl font-bold text-red-600">
-                            ${product.discountPrice}
+                          <h2 className="text-2xl font-bold text-red-600  ">
+                            ${product?.price}
                           </h2>
-                          <span className="ml-2 text-gray-500 line-through text-lg">
-                            ${product.price}
+                          <span className="ml-2 text-gray-500 text-lg  line-through">
+                            ${product?.discountPrice}
                           </span>
                         </>
                       ) : (
@@ -182,13 +182,13 @@ const Items = ({ category, colorData }: ItemsProps) => {
                   {/* Price & Add to Cart */}
                   <div className="flex justify-between items-center">
                     <div className="flex items-end gap-2">
-                      {product?.discountPrice && product.discountPrice > 0 ? (
+                      {product?.discountPrice && product?.discountPrice > 0 ? (
                         <>
-                          <h2 className="text-2xl font-bold text-red-600">
-                            ${product.discountPrice}
+                          <h2 className="text-2xl font-bold text-red-600  ">
+                            ${product?.price}
                           </h2>
-                          <span className="ml-2 text-gray-500 line-through text-lg">
-                            ${product.price}
+                          <span className="ml-2 text-gray-500 text-lg  line-through">
+                            ${product?.discountPrice}
                           </span>
                         </>
                       ) : (

@@ -37,7 +37,7 @@ interface iProductDetails {
 const Page = () => {
   const { id } = useParams();
   const showToast = useNotificationToast();
-  // const [productDetails, setProductDetails] = useState<iProduct>();
+  
 
   
 
@@ -45,7 +45,7 @@ const Page = () => {
   const [productImages, setProductImages] = useState<File[]>([]);
 
   const [loading, setLoading] = useState(false);
-  // const [error, setError] = useState("");
+  
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && productImages.length < 5) {
@@ -95,7 +95,7 @@ const Page = () => {
         }
       );
       setLoading(false);
-      // setProductDetails(response.data);
+     
       const productData = response.data.data;
       setProduct({
         ...productData,
@@ -114,9 +114,9 @@ const Page = () => {
 
   // update product
   const handleUpdateProduct = async (e: React.FormEvent) => {
-    // Prevent the default form submission behavior
+   
     e.preventDefault();
-    setLoading(true);
+   
 
     try {
       const formData = new FormData();
@@ -137,10 +137,7 @@ const Page = () => {
       formData.append("size", product.size || "");
       formData.append("color", product.color || "");
 
-      // Flattened arrays as strings
-
-      // size.forEach((s) => formData.append("size", s));
-      // color.forEach((c) => formData.append("color", c));
+     
 
       // Append image files
       productImages.forEach((image) => {
@@ -150,17 +147,14 @@ const Page = () => {
       await axiosInstence.put(`/product/update-product/${id}`, formData, {
         withCredentials: true,
         headers: {
-          "Content-Type": "multipart/form-data", // optional; axios sets it for FormData
+          "Content-Type": "multipart/form-data", 
         },
       });
-      setLoading(false);
+    ;
       showToast("Product updated successfully");
-
-      fetchDataFromId();
+      await fetchDataFromId();
     } catch (error) {
       console.log(error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -174,14 +168,14 @@ const Page = () => {
       );
       showToast("Image deleted");
       setLoading(false);
-      fetchDataFromId();
+      await fetchDataFromId();
     } catch (error) {
       console.log(error);
     } finally {
       setLoading(false);
     }
   };
-  console.log(product);
+ ;
 
   return (
     <>
