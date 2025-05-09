@@ -48,7 +48,7 @@ const Category = () => {
     <>
       {/* <ResposnsiveBar /> */}
 
-      <span className="block text-center mt-6 text-sm sm:text-base text-red-700 px-4">
+      <span className="block text-center text-sm sm:text-base text-red-700 px-4">
         Discount will appear in shopping bag. Exclusions apply
       </span>
 

@@ -66,7 +66,7 @@ const ProductsPage = () => {
     <div className="min-h-screen bg-gray-50 py-16">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="text-center mb-12 mt-14">
+        <div className="text-center mb-12 ">
           <h1 className="text-4xl sm:text-4xl font-bold text-gray-900 mb-6">
             Our Premium Products
           </h1>

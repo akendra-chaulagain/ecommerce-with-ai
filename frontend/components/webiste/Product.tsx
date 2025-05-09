@@ -133,7 +133,7 @@ const Product = () => {
       </section>
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto relative overflow-hidden rounded-lg max-w-1xl">
-          <div className="grid grid-cols-1 lg:grid-cols-2">
+          <div className="grid grid-cols-1 lg:grid-cols-1  justify-center">
             <div className="bg-red-600 text-white p-8 sm:p-12 lg:p-16 flex items-center">
               <div>
                 <span className="inline-block px-4 py-1  text-white-900 text-sm font-bold mb-6">
@@ -155,14 +155,7 @@ const Product = () => {
                 </Link>
               </div>
             </div>
-            <div className="relative h-64 sm:h-80 md:h-96 lg:h-auto">
-              <Image
-                src="/images/slider/s2.webp"
-                alt="Feature collection"
-                fill
-                className="object-cover"
-              />
-            </div>
+          
           </div>
         </div>
       </section>
